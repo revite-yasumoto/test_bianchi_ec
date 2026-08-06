@@ -65,7 +65,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Tokyo',
 
     /*
     |--------------------------------------------------------------------------
@@ -122,5 +122,17 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Seed Password
+    |--------------------------------------------------------------------------
+    |
+    | AdminSeeder がデモ用管理者アカウントに設定する初期パスワード。値は必ず
+    | 環境変数から読み、コードに直書きしない。
+    |
+    */
+
+    'admin_seed_password' => env('ADMIN_SEED_PASSWORD'),
 
 ];

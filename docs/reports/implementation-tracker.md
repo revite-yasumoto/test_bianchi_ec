@@ -26,7 +26,7 @@
 
 | No | 単位 | 計画ファイル | 依存 | 状態 |
 |---|---|---|---|---|
-| 01 | DB設計（全テーブル・Model・Seeder） | `docs/plans/01-database-design.md` | - | 未着手 |
+| 01 | DB設計（全テーブル・Model・Seeder） | 完了（`docs/1_system_overview.md`, `docs/2_database.md`） | - | 完了 |
 | 02 | 会員認証＋フロント共通レイアウト | `docs/plans/02-auth-front.md` | 01 | 未着手 |
 | 03 | 管理者認証＋管理画面共通レイアウト | `docs/plans/03-auth-admin.md` | 01 | 未着手 |
 | 04 | 管理：カテゴリ管理・規格管理 | `docs/plans/04-admin-category-spec.md` | 03 | 未着手 |
