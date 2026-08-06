@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Noto Sans JP', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* ブランドカラー（チェレステ）。design_reference/Admin Panel.dc.html の実値に合わせて確定。管理画面のアクティブ表示等に最小限使用する */
+    --color-celeste: #4dc5bc;
+    --color-celeste-dark: #41a7a0;
+
+    /* 管理画面共通トークン（design_reference/Admin Panel.dc.html より抽出） */
+    --color-admin-ink: #1c2126;
+    --color-admin-bg: #f5f6f7;
+    --color-admin-surface-alt: #fafbfb;
+    --color-admin-border: #e5e7ea;
+    --color-admin-border-light: #f0f1f2;
+    --color-admin-input-border: #d8dadd;
+    --color-admin-muted: #8a8f98;
+    --color-admin-danger: #d64545;
+    --color-admin-success: #2e9b6f;
+    --color-admin-warning: #e0a020;
+    --color-admin-info: #4a90d9;
+    --color-admin-neutral: #c4c7cb;
+
+    --width-admin-sidebar: 216px;
+    --height-admin-header: 58px;
+}
