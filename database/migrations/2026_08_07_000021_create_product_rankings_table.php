@@ -21,8 +21,9 @@ return new class extends Migration
             $table->dateTime('aggregated_at')->comment('集計実行日時');
             $table->timestamps();
 
-            $table->unique(['target_year_month', 'category_id', 'rank_position']);
-            $table->index(['target_year_month', 'category_id']);
+            // 自動生成される索引名（テーブル名+全列名+_unique）はMySQLの識別子長上限64文字を超えるため、明示的に短い名前を付ける。
+            $table->unique(['target_year_month', 'category_id', 'rank_position'], 'product_rankings_ym_cat_rank_unique');
+            $table->index(['target_year_month', 'category_id'], 'product_rankings_ym_cat_index');
         });
     }
 
