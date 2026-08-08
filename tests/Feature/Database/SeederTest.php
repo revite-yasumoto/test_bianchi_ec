@@ -64,11 +64,12 @@ class SeederTest extends TestCase
     }
 
     #[Test]
-    public function admin_seeder_creates_four_admins(): void
+    public function admin_seeder_creates_five_admins(): void
     {
         $this->seed(AdminSeeder::class);
 
-        $this->assertDatabaseCount('admins', 4);
+        $this->assertDatabaseCount('admins', 5);
+        $this->assertTrue(Admin::query()->where('admin_code', 'admin')->exists());
         $this->assertTrue(Admin::query()->where('admin_code', 'A-001')->exists());
     }
 

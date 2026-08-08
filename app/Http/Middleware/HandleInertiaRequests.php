@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -35,8 +38,37 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        if ($request->is('admin/*') || $request->is('admin')) {
+            return [
+                ...parent::share($request),
+                'auth' => [
+                    'admin' => $this->adminAuthProps($request),
+                ],
+            ];
+        }
+
         return [
             ...parent::share($request),
+        ];
+    }
+
+    /**
+     * サイドバーの管理者名・メール表示にのみ使うため、この2カラムのみをallowlistとして共有する。
+     *
+     * @return array{name: string, email: string}|null
+     */
+    private function adminAuthProps(Request $request): ?array
+    {
+        /** @var Admin|null $admin */
+        $admin = $request->user('admin');
+
+        if (! $admin) {
+            return null;
+        }
+
+        return [
+            'name' => $admin->name,
+            'email' => $admin->email,
         ];
     }
 }
