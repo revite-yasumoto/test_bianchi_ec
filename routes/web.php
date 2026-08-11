@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\HomeController as AdminHomeController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SpecOptionController;
+use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Front\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Front\Auth\RegisteredUserController;
 use App\Http\Controllers\Front\TopController;
@@ -21,6 +22,12 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('logout');
 
         Route::resource('products', ProductController::class)->except(['show']);
+
+        // bulk は {stock} にマッチしてしまうため、個別更新より先に定義する
+        Route::put('stocks/bulk', [StockController::class, 'bulkUpdate'])->name('stocks.bulk-update');
+        Route::get('stocks', [StockController::class, 'index'])->name('stocks.index');
+        Route::put('stocks/{stock}', [StockController::class, 'update'])->name('stocks.update');
+
         Route::resource('categories', CategoryController::class)->only(['index', 'store', 'destroy']);
         // 既定のパラメータ名 spec_option ではメソッド引数 $specOption とバインドされないため明示する
         Route::resource('spec-options', SpecOptionController::class)
