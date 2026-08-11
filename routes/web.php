@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AdminAuthenticatedSessionController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\HomeController as AdminHomeController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\OrderStatusController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SpecOptionController;
 use App\Http\Controllers\Admin\StockController;
@@ -20,6 +22,10 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
     Route::middleware('auth:admin')->group(function (): void {
         Route::get('/', [AdminHomeController::class, 'index'])->name('home');
         Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+        Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::put('orders/{order}/status', [OrderStatusController::class, 'update'])->name('orders.status.update');
 
         Route::resource('products', ProductController::class)->except(['show']);
 

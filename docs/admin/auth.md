@@ -89,7 +89,7 @@ type AdminSharedProps = {
 ## 業務ルール
 
 - ログイン失敗時のメッセージは、管理者IDの存在有無を区別できる内容にしない（アカウント列挙攻撃対策）。
-- ログイン成功後の遷移先は固定URLではなく `AuthenticatedSessionController::landingUrl()` が動的に決定する。名前付きルート `admin.dashboard` → `admin.orders.index` → `admin.home`（常に存在する暫定ホーム画面）の順で存在確認する。単位07（注文管理）・単位12（ダッシュボード）の実装後は、コード変更なしに自動的にそちらへ遷移するようになる。
+- ログイン成功後の遷移先は固定URLではなく `AuthenticatedSessionController::landingUrl()` が動的に決定する。名前付きルート `admin.dashboard` → `admin.orders.index` → `admin.home`（常に存在する暫定ホーム画面）の順で存在確認する。単位07（注文管理）の実装により、現在は `admin.orders.index` へ遷移する。単位12（ダッシュボード）の実装後は、コード変更なしに `admin.dashboard` へ切り替わる。
 - `bootstrap/app.php` の `redirectGuestsTo` / `redirectUsersTo` はリクエストパスが `admin/*` かどうかで管理者向け・会員向けの遷移先を振り分ける。会員向け分岐の遷移先は [docs/front/auth.md](../front/auth.md) が正本。`admin/*` は `admin`（`admin.home` のような末尾セグメントなしのパス）にマッチしないため、`$request->is('admin/*') || $request->is('admin')` の形で両方を判定する（`HandleInertiaRequests::share()` も同様）。
 - `config/inertia.php` の `testing.ensure_pages_exist` は `false` にする。`front/Xxx`・`admin/Xxx` の形式のページ名を `resources/js/{area}/Pages/...` へ解決するカスタムresolve（`resources/js/app.tsx`）を使っており、`path + component名` を単純連結するInertiaパッケージ標準のファイル存在チェックとは前提が合わないため。
 
@@ -131,7 +131,7 @@ type AdminSharedProps = {
 - `password` が8文字未満はバリデーションエラーになる: 同上（`login_requires_password_of_at_least_eight_characters`）
 - 5回失敗するとレート制限される: 同上（`login_is_rate_limited_after_five_failed_attempts`）
 - ログイン成功時にセッションIDが再生成される: 同上（`successful_login_regenerates_session_id`）
-- ログイン成功後、実装済み画面がなくても404にならず遷移先が正しいInertiaコンポーネントで表示される: 同上（`successful_login_redirects_to_a_working_page`）
+- ログイン成功後の遷移先が正しいInertiaコンポーネントで表示される（現在は注文一覧）: 同上（`successful_login_redirects_to_a_working_page`）
 - ログアウトできる: `tests/Feature/Admin/Auth/LogoutTest.php`（`admin_can_logout`）
 - ログアウトでセッションが無効化される（データ破棄＋ID再生成）: 同上（`logout_invalidates_the_session`）
 - 未ログインはログアウトエンドポイントにアクセスできない: 同上（`guest_cannot_access_logout_route`）
