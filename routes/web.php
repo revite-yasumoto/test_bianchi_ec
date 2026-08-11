@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AdminAuthenticatedSessionController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\HomeController as AdminHomeController;
+use App\Http\Controllers\Admin\MemberController;
+use App\Http\Controllers\Admin\MemberStatusController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\OrderStatusController;
 use App\Http\Controllers\Admin\ProductController;
@@ -22,6 +25,12 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
     Route::middleware('auth:admin')->group(function (): void {
         Route::get('/', [AdminHomeController::class, 'index'])->name('home');
         Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+        Route::get('members', [MemberController::class, 'index'])->name('members.index');
+        Route::get('members/{user}', [MemberController::class, 'show'])->name('members.show');
+        Route::put('members/{user}/status', [MemberStatusController::class, 'update'])->name('members.status.update');
+
+        Route::resource('admins', AdminUserController::class)->except(['show'])->parameters(['admins' => 'admin']);
 
         Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
         Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');

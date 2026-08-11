@@ -7,3 +7,10 @@ export const SpecOptionType = {
 
 export type SpecOptionType =
     (typeof SpecOptionType)[keyof typeof SpecOptionType];
+
+export const UserStatus = {
+    Active: 'active',
+    Suspended: 'suspended',
+} as const;
+
+export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus];
