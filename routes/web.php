@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\HomeController as AdminHomeController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\MemberCsvController;
 use App\Http\Controllers\Admin\MemberStatusController;
+use App\Http\Controllers\Admin\NewsController;
+use App\Http\Controllers\Admin\NoticeController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\OrderStatusController;
 use App\Http\Controllers\Admin\ProductController;
@@ -63,6 +65,9 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
 
         Route::get('ec-settings', [EcSettingController::class, 'edit'])->name('ec-settings.edit');
         Route::put('ec-settings', [EcSettingController::class, 'update'])->name('ec-settings.update');
+
+        Route::resource('news', NewsController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::resource('notices', NoticeController::class)->only(['index', 'store', 'update', 'destroy']);
 
         Route::resource('categories', CategoryController::class)->only(['index', 'store', 'destroy']);
         // 既定のパラメータ名 spec_option ではメソッド引数 $specOption とバインドされないため明示する

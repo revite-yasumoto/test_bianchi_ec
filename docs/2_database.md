@@ -285,7 +285,7 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 | display_start_on | date | |
 | display_end_on | date | |
 
-索引: `index(display_start_on, display_end_on)`。掲載状態はカラムを持たず、`Notice::displayable()` スコープが当日日付と掲載期間から算出する（`display_start_on <= 当日 <= display_end_on`）。
+索引: `index(display_start_on, display_end_on)`。掲載状態はカラムを持たず、`Notice::displayable()` スコープと `Notice::state()` が当日日付と掲載期間から算出する。算出規則は [docs/admin/notice.md](admin/notice.md) が正本。
 
 #### `product_rankings`
 
