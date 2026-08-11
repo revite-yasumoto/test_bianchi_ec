@@ -4,8 +4,23 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Noto Sans JP', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    /* フォント。モックのデザインシステム（zip内 _ds/.../site.css）の3書体に合わせる */
+    --font-sans: 'Schibsted Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --font-jp: 'Zen Kaku Gothic New', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono: 'Space Mono', ui-monospace, monospace;
+
+    /* フロント共通トークン。zip内 EC Demo Front.dc.html および _ds/.../site.css の実値 */
+    --color-bg2: #f5f1ea;
+    --color-ink: #232323;
+    --color-ink2: #5e6b77;
+    --color-line: #e7dfd2;
+    --color-brand: #2f6f86;
+    --color-brand-deep: #274f60;
+    --color-amber: #e7a93a;
+    --color-coral: #e1664b;
+    --color-rose: #c25e86;
+    --color-teal: #3e9e8f;
 
     /* 管理画面ブランドカラー。docs/Markdown file UI mockups.zip 内 EC Demo Admin.dc.html の実値に合わせる */
     --color-admin-brand: #2f6f86;

@@ -21,4 +21,21 @@ declare global {
             admin: AdminAuthUser | null;
         };
     };
+
+    type FrontAuthUser = {
+        id: number;
+        member_code: string;
+        name: string;
+    };
+
+    type FrontSharedProps = {
+        auth: {
+            user: FrontAuthUser | null;
+        };
+        cartCount: number;
+        favoriteCount: number;
+        flash: {
+            success: string | null;
+        };
+    };
 }

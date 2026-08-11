@@ -1,0 +1,287 @@
+# フロント共通レイアウト・共通UIコンポーネント
+
+本ドキュメントはフロント（会員向け画面）の共通レイアウト（ヘッダー・フッター・SPメニュー・カートドロワー・トースト）、フロント／管理画面の双方から使う共通UIコンポーネント（`resources/js/shared/`）、およびフォント・デザイントークンの**正本**。単位13以降の各フロント画面の仕様書は、これらの構成・Props型を再掲せず本書へリンクする。
+
+## 機能概要
+
+- **対象画面・機能の目的:** フロントの全ページが共通で使うレイアウトとUIパーツ、および両画面共通のフォント・配色トークンを提供する。
+- **URL / メソッド:** 該当なし（画面固有のルートを持たないレイアウト・コンポーネント群）。
+- **アクセス権限・ミドルウェア:** `FrontLayout` は認証の有無を問わず利用される。表示内容はログイン状態で切り替わる。認証そのものは [docs/front/auth.md](auth.md) が正本。
+- **本ドキュメントのスコープ:** レイアウト・共通UIコンポーネントの構成とProps、共有プロパティ（`FrontSharedProps`）、フォント構成、デザイントークン。各画面固有の実装は各単位の仕様書に委ねる。
+
+## 使用テーブル
+
+共有プロパティの件数表示に `cart_items`（数量の合計）と `favorites`（明細数）を参照する。定義は [docs/2_database.md](../2_database.md) が正本。
+
+## ユーザーインターフェース仕様（ワイヤーフレーム）
+
+```
+PC幅（lg以上）:
++------------------------------------------------------------------+
+| Bianchi        商品一覧 新着ニュース 買い物ガイド      ♡3 [カート 5] |
+| BICYCLE STORE  マイページ お問い合わせ                  ログアウト  |
++------------------------------------------------------------------+
+|                        （各画面のmain）                            |
++------------------------------------------------------------------+
+| Bianchi   | SHOPPING     | SUPPORT        | LEGAL                 |
+| BICYCLE   | 商品一覧      | 買い物ガイド    | 特定商取引法に基づく表記 |
+| STORE     | カート        | お問い合わせ    | プライバシーポリシー    |
+| — DEMO    | マイページ    | 新着ニュース    | 利用規約               |
+|           | お気に入り    | 重要なお知らせ  |                       |
+| © 2026 Bianchi Demo Store. これはデモ用のダミーサイトです。          |
++------------------------------------------------------------------+
+       [トースト（下部中央・2.2秒で自動消去）]
+
+SP幅（lg未満）: ヘッダーのナビを隠し、右端のハンバーガー（≡）で開閉する
+パネルにナビ項目とログアウトを縦積みで表示する。
+
+カートドロワー（カートボタン押下時・右からスライドイン・幅 min(360px,86%)）:
++---------------------------+
+| カート（5）             × |
++---------------------------+
+| （明細は単位15で実装）      |
+|      カートは空です        |
++---------------------------+
+| [     カートを見る     ]  |
++---------------------------+
+```
+
+- 未ログイン時のヘッダー右側は「ログイン」「会員登録」の2ボタンになる（お気に入り・カート・ログアウトは表示しない）。カートとお気に入りは会員に紐づくため、ゲストは利用できない。
+- ヘッダー・フッター・SPメニューの各リンクは、対応するルート名が存在する（`route().has()` が `true`）場合のみリンクとして機能し、それ以外は非活性表示（クリック不可・淡色）になる。単位13以降が対応するルートを実装すると、コード変更なしに自動的に有効化される。
+- カートドロワー・モーダルは `Escape` キーと背景クリックで閉じ、閉じたときに元のフォーカス位置へ戻る。
+
+## インターフェース ＆ データロジック
+
+### 共有プロパティ（`HandleInertiaRequests::share()`）
+
+```ts
+type FrontAuthUser = {
+    id: number;
+    member_code: string;
+    name: string;
+};
+
+type FrontSharedProps = {
+    auth: { user: FrontAuthUser | null };
+    cartCount: number;
+    favoriteCount: number;
+    flash: { success: string | null };
+};
+```
+
+- `/admin/*` 以外のInertiaリクエストに共有される（管理画面側には `auth.user` キー自体が存在しない。管理画面向けの `auth.admin` は [docs/admin/auth.md](../admin/auth.md) が正本）。
+- 共有する会員のカラムは allowlist とし、ヘッダー表示とマイページ導線が使う `id`・`member_code`・`name` のみに絞る。`email`・`tel`・`status`・パスワードハッシュ・`remember_token` は共有しない。
+- `cartCount` はカート明細の**数量の合計**、`favoriteCount` はお気に入りの**明細数**。未ログイン時はいずれも `0`。
+- `flash.success` はセッションの `success` キーを渡す。`Toast` が監視して表示する。
+
+### フォント
+
+3書体を `laravel-vite-plugin/fonts` の `bunny()` でセルフホストする（`vite.config.js`）。ビルド時に woff2/woff を取得して `public/build/` へ出力するため、実行時に外部CDNへ接続しない。
+
+| トークン | 書体 | ウェイト | 用途 |
+|---|---|---|---|
+| `--font-sans` | `Schibsted Grotesk` | 400 / 700 / 800 | ロゴ・英字見出し |
+| `--font-jp` | `Zen Kaku Gothic New` | 400 / 500 / 700 / 900 | 日本語本文（既定） |
+| `--font-mono` | `Space Mono` | 400 / 700 | 金額・コード・日付 |
+
+日本語本文を既定にするため、`resources/views/app.blade.php` の `<body>` に `font-jp` を指定する（Tailwind の既定である `--font-sans` は英字書体のため）。この指定はフロント・管理画面の共通テンプレートであり、管理画面の本文書体も `Zen Kaku Gothic New` になる。
+
+### デザイントークン（`resources/css/app.css` `@theme`）
+
+フロント用。管理画面用の `--color-admin-*` は [docs/admin/common-layout.md](../admin/common-layout.md) が正本。
+
+| トークン | 値 | 用途 |
+|---|---|---|
+| `--color-bg2` | `#f5f1ea` | セクション背景・サイドカード |
+| `--color-ink` | `#232323` | 本文 |
+| `--color-ink2` | `#5e6b77` | 補助テキスト |
+| `--color-line` | `#e7dfd2` | 罫線・枠線 |
+| `--color-brand` | `#2f6f86` | ブランド色（主要ボタン・リンク） |
+| `--color-brand-deep` | `#274f60` | ロゴ・フッター背景 |
+| `--color-amber` | `#e7a93a` | 強調 |
+| `--color-coral` | `#e1664b` | 購入導線ボタン・削除・エラー |
+| `--color-rose` | `#c25e86` | アクセント |
+| `--color-teal` | `#3e9e8f` | 成功・在庫あり |
+
+基本背景（モックの `--bg` = `#FFFFFF`）はTailwind標準の `white` を使うためトークン化しない。
+
+ステータス表示の文字色／背景色の対は、Tailwindのトークンでは表せないため `resources/js/shared/lib/tone.ts` に定数として持つ。
+
+```ts
+type Tone = { fg: string; bg: string };
+
+TONE.positive  // 在庫あり・出荷済み       { fg: '#2b6f64', bg: '#E4F2EF' }
+TONE.negative  // 在庫切れ・キャンセル      { fg: '#8a4030', bg: '#FBE7E1' }
+TONE.info      // 新商品・受付中           { fg: '#2F6F86', bg: '#E7F0F4' }
+TONE.warning   // お知らせ                { fg: '#B0521F', bg: '#FDF0E2' }
+```
+
+### `FrontLayout`（`resources/js/front/Layouts/FrontLayout.tsx`）
+
+```ts
+type FrontLayoutProps = {
+    title: string;
+    description?: string;
+    children: ReactNode;
+};
+```
+
+`title` は `<Head>` のタイトル、`description` は `<meta name="description">` に渡す。カートドロワーの開閉状態を保持し、`Header` の `onOpenCart` と `CartDrawer` を接続する。
+
+### `Header`（`resources/js/front/Components/Header.tsx`）
+
+```ts
+type HeaderProps = { onOpenCart: () => void };
+```
+
+`usePage<FrontSharedProps>()` からログイン状態・カート点数・お気に入り件数を取得する。SPメニューの開閉状態を保持する。
+
+### `MobileMenu`（`resources/js/front/Components/MobileMenu.tsx`）
+
+```ts
+type MobileMenuProps = { isOpen: boolean; onNavigate: () => void };
+```
+
+### `NavMenu`（`resources/js/front/Components/NavMenu.ts`）
+
+ヘッダーの `NAV_MENU`（5項目）とフッターの `FOOTER_COLUMNS`（3カラム）を定義する。
+
+```ts
+type NavMenuItem = { key: string; label: string; routeName: string };
+type FooterColumn = { key: string; heading: string; links: NavMenuItem[] };
+```
+
+| 配置 | 表示名 | `routeName` |
+|---|---|---|
+| ヘッダー | 商品一覧 / 新着ニュース / 買い物ガイド / マイページ / お問い合わせ | `products.index` / `news.index` / `guide` / `mypage.index` / `contact` |
+| フッター SHOPPING | 商品一覧 / カート / マイページ / お気に入り | `products.index` / `cart.index` / `mypage.index` / `mypage.favorites` |
+| フッター SUPPORT | 買い物ガイド / お問い合わせ / 新着ニュース / 重要なお知らせ | `guide` / `contact` / `news.index` / `notices.index` |
+| フッター LEGAL | 特定商取引法に基づく表記 / プライバシーポリシー / 利用規約 | `legal.tokushoho` / `legal.privacy` / `legal.terms` |
+
+各ルート名は、対応する単位がその名前でルートを実装することを前提に本書が定めたもの。単位13以降で異なる名前を採用する場合は、実装側で本テーブルと `NavMenu.ts` の両方を更新する。
+
+### `NavLink`（`resources/js/front/Components/NavLink.tsx`）
+
+```ts
+type NavLinkProps = {
+    item: NavMenuItem;
+    className?: string;
+    currentClassName?: string;
+};
+```
+
+`route().has()` が `false` の項目は `<span aria-disabled="true">` として非活性表示にする。現在ページには `aria-current="page"` を付ける。
+
+### `Footer`（`resources/js/front/Components/Footer.tsx`）
+
+Props なし。`FOOTER_COLUMNS` を3カラムで描画する。
+
+### `CartDrawer`（`resources/js/front/Components/CartDrawer.tsx`）
+
+```ts
+type CartDrawerProps = { isOpen: boolean; onClose: () => void };
+```
+
+本単位では表示枠のみで、明細は常に空表示。単位15でカート明細を受け取るようにして差し替える。ヘッダーの件数は共有プロパティの `cartCount` を表示する。
+
+### 共通UIコンポーネント（`resources/js/shared/Components/`）
+
+```ts
+// Button — variant: primary(brand) / cta(coral) / outline / ghost
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant };
+
+// FormField — TextInput / SelectInput / TextareaInput が共通で使うラベル・エラーの枠
+type FormFieldProps = {
+    id: string;
+    label: string;
+    error?: string;
+    required?: boolean;
+    className?: string;
+};
+
+// TextInput / SelectInput / TextareaInput
+type TextInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'id'> & FormFieldProps;
+type SelectInputProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, 'id'> & FormFieldProps;
+type TextareaInputProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'id'> & FormFieldProps;
+
+// Checkbox — モックの角丸カスタム表示に合わせ、ネイティブのinputを sr-only にして隣接spanで描画する
+type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
+    children: ReactNode;
+    error?: string;
+};
+
+// Badge — 配色は Tailwind のトークン外のため tone の実値を style で当てる
+type BadgeProps = { tone: Tone; className?: string; children: ReactNode };
+
+// Modal — 中央表示。背景クリック・Escape で閉じる
+type ModalProps = {
+    isOpen: boolean;
+    title: string;
+    onClose: () => void;
+    className?: string;
+    children: ReactNode;
+};
+
+// EmptyState
+type EmptyStateProps = { message: string; className?: string };
+```
+
+`Toast`（`resources/js/shared/Components/Toast.tsx`）は Props なし。`flash.success` を監視し、2200ms後に自動で消える。
+
+`yen(amount: number): string`（`resources/js/shared/lib/yen.ts`）は金額を `¥12,345` 形式に整形する。
+
+## 業務ルール
+
+- 未実装リンクは押せる状態のまま残さない（`route().has()` が `false` の間は非活性表示にする）。各単位が対応するルートを実装した時点で、`NavMenu.ts` の変更なしに有効化される。
+- フロント（会員向け）はレスポンシブ対応する。ヘッダーのナビは `lg`（1024px）未満でハンバーガーメニューへ切り替える。モックのSP切り替え幅は900pxだが、独自ブレークポイントを追加せずTailwind標準の `lg` を使う。
+- 入力要素のフォントサイズは16px以上にする（iOS Safariの自動ズーム防止）。
+
+## 関連ドキュメント
+
+- [docs/front/auth.md](auth.md) — 会員登録・ログイン・ログアウトの正本。共通レイアウトを使う最初の画面
+- [docs/admin/common-layout.md](../admin/common-layout.md) — 管理画面共通レイアウトの正本。`--color-admin-*` トークンはこちらが正本
+- [docs/1_system_overview.md](../1_system_overview.md) — ブランド表記・技術構成の前提
+- [docs/2_database.md](../2_database.md) — `cart_items`・`favorites` テーブル定義の正本
+
+## ソースファイル
+
+| 種別 | パス |
+|---|---|
+| Middleware | `app/Http/Middleware/HandleInertiaRequests.php` |
+| ビルド設定 | `vite.config.js` |
+| テンプレート | `resources/views/app.blade.php` |
+| スタイル | `resources/css/app.css` |
+| Layout | `resources/js/front/Layouts/FrontLayout.tsx` |
+| Component | `resources/js/front/Components/Header.tsx` |
+| Component | `resources/js/front/Components/MobileMenu.tsx` |
+| Component | `resources/js/front/Components/Footer.tsx` |
+| Component | `resources/js/front/Components/CartDrawer.tsx` |
+| Component | `resources/js/front/Components/NavMenu.ts` |
+| Component | `resources/js/front/Components/NavLink.tsx` |
+| 共通UI | `resources/js/shared/Components/Button.tsx` |
+| 共通UI | `resources/js/shared/Components/FormField.tsx` |
+| 共通UI | `resources/js/shared/Components/TextInput.tsx` |
+| 共通UI | `resources/js/shared/Components/SelectInput.tsx` |
+| 共通UI | `resources/js/shared/Components/TextareaInput.tsx` |
+| 共通UI | `resources/js/shared/Components/Checkbox.tsx` |
+| 共通UI | `resources/js/shared/Components/Badge.tsx` |
+| 共通UI | `resources/js/shared/Components/Modal.tsx` |
+| 共通UI | `resources/js/shared/Components/Toast.tsx` |
+| 共通UI | `resources/js/shared/Components/EmptyState.tsx` |
+| ユーティリティ | `resources/js/shared/lib/yen.ts` |
+| ユーティリティ | `resources/js/shared/lib/tone.ts` |
+| 型 | `resources/js/types/global.d.ts` |
+| Test | `tests/Feature/Front/SharedPropsTest.php` |
+
+## 受け入れ条件
+
+- 共有データの会員情報が `id`・`member_code`・`name` のみで、メールアドレス・パスワードハッシュ・電話番号・ステータスを含まない: `tests/Feature/Front/SharedPropsTest.php`（`共有データの会員情報は識別子・会員番号・氏名のみを含む`）
+- 未ログイン時は `auth.user` が `null` で件数が0になる: 同上（`未ログイン時の共有データは会員情報を持たず件数が0になる`）
+- `cartCount` が数量の合計、`favoriteCount` が明細数で共有される: 同上（`カート件数は数量の合計・お気に入り件数は明細数で共有される`）
+- `auth.admin` はフロントのパスに共有されない: 同上（`管理画面の共有データはフロントのパスに現れない`）
+- 未実装リンクが非活性表示になり、実装済みリンクが機能する: 自動テストなし。目視確認で担保する
+- SP幅でハンバーガーメニューが開閉し、PC幅でナビが横並びになる: 自動テストなし。目視確認で担保する
+- カートドロワーの開閉（背景クリック・`Escape`キー・閉じるボタン）とフォーカス復帰: 自動テストなし。目視確認で担保する
+- トーストの表示位置・自動消去（2.2秒）: 自動テストなし。目視確認で担保する
+- 3書体（`Schibsted Grotesk` / `Zen Kaku Gothic New` / `Space Mono`）が適用される: 自動テストなし。目視確認で担保する
+- Props型定義の整合性: `npx tsc --noEmit`

@@ -63,6 +63,8 @@
 
 配色は `docs/Markdown file UI mockups.zip` 内 `EC Demo Admin.dc.html`（ブランド表記 `VELOCE`）の実値を、`Bianchi` ブランドに読み替えて採用したもの。
 
+フォント（`--font-sans` / `--font-jp` / `--font-mono`）はフロントと共通で、[docs/front/common-layout.md](../front/common-layout.md) が正本。管理画面の本文書体も共通テンプレート（`resources/views/app.blade.php`）の指定に従う。
+
 ### `AdminLayout`（`resources/js/admin/Layouts/AdminLayout.tsx`）
 
 ```ts
@@ -155,6 +157,7 @@ type ConfirmDialogProps = {
 ## 関連ドキュメント
 
 - [docs/admin/auth.md](auth.md) — 管理者ログイン・ログアウトの正本。`AdminSharedProps` の型定義はこちらが正本
+- [docs/front/common-layout.md](../front/common-layout.md) — フロント共通レイアウトの正本。フォント構成と共通UIコンポーネント（`resources/js/shared/`）はこちらが正本
 - [docs/1_system_overview.md](../1_system_overview.md) — ブランド表記・技術構成の前提
 
 ## ソースファイル

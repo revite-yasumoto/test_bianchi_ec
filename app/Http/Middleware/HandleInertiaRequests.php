@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -49,7 +50,55 @@ class HandleInertiaRequests extends Middleware
 
         return [
             ...parent::share($request),
+            'auth' => [
+                'user' => $this->userAuthProps($request),
+            ],
+            'cartCount' => fn (): int => $this->cartCount($request),
+            'favoriteCount' => fn (): int => $this->favoriteCount($request),
+            'flash' => [
+                'success' => $request->session()->get('success'),
+            ],
         ];
+    }
+
+    /**
+     * ヘッダーの会員名表示とマイページ導線にのみ使うため、この3カラムのみをallowlistとして共有する。
+     *
+     * @return array{id: int, member_code: string, name: string}|null
+     */
+    private function userAuthProps(Request $request): ?array
+    {
+        /** @var User|null $user */
+        $user = $request->user('web');
+
+        if (! $user) {
+            return null;
+        }
+
+        return [
+            'id' => $user->id,
+            'member_code' => $user->member_code,
+            'name' => $user->name,
+        ];
+    }
+
+    /**
+     * ヘッダーのカートボタンに出す点数。モックに合わせて明細数ではなく数量の合計を返す。
+     */
+    private function cartCount(Request $request): int
+    {
+        /** @var User|null $user */
+        $user = $request->user('web');
+
+        return $user ? (int) $user->cartItems()->sum('quantity') : 0;
+    }
+
+    private function favoriteCount(Request $request): int
+    {
+        /** @var User|null $user */
+        $user = $request->user('web');
+
+        return $user ? $user->favorites()->count() : 0;
     }
 
     /**

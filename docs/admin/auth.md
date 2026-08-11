@@ -90,12 +90,13 @@ type AdminSharedProps = {
 
 - ログイン失敗時のメッセージは、管理者IDの存在有無を区別できる内容にしない（アカウント列挙攻撃対策）。
 - ログイン成功後の遷移先は固定URLではなく `AuthenticatedSessionController::landingUrl()` が動的に決定する。名前付きルート `admin.dashboard` → `admin.orders.index` → `admin.home`（常に存在する暫定ホーム画面）の順で存在確認する。単位07（注文管理）・単位12（ダッシュボード）の実装後は、コード変更なしに自動的にそちらへ遷移するようになる。
-- `bootstrap/app.php` の `redirectGuestsTo` / `redirectUsersTo` はリクエストパスが `admin/*` かどうかで管理者向け・会員向けの遷移先を振り分ける。会員向け分岐（`route('login')` 等）は単位02（会員認証）の実装を前提とする。`admin/*` は `admin`（`admin.home` のような末尾セグメントなしのパス）にマッチしないため、`$request->is('admin/*') || $request->is('admin')` の形で両方を判定する（`HandleInertiaRequests::share()` も同様）。
+- `bootstrap/app.php` の `redirectGuestsTo` / `redirectUsersTo` はリクエストパスが `admin/*` かどうかで管理者向け・会員向けの遷移先を振り分ける。会員向け分岐の遷移先は [docs/front/auth.md](../front/auth.md) が正本。`admin/*` は `admin`（`admin.home` のような末尾セグメントなしのパス）にマッチしないため、`$request->is('admin/*') || $request->is('admin')` の形で両方を判定する（`HandleInertiaRequests::share()` も同様）。
 - `config/inertia.php` の `testing.ensure_pages_exist` は `false` にする。`front/Xxx`・`admin/Xxx` の形式のページ名を `resources/js/{area}/Pages/...` へ解決するカスタムresolve（`resources/js/app.tsx`）を使っており、`path + component名` を単純連結するInertiaパッケージ標準のファイル存在チェックとは前提が合わないため。
 
 ## 関連ドキュメント
 
 - [docs/admin/common-layout.md](common-layout.md) — 管理画面共通レイアウト・共通UIコンポーネントの正本。ログイン後の画面はここのAdminLayoutを使う
+- [docs/front/auth.md](../front/auth.md) — 会員認証の正本。`HandleInertiaRequests::share()` の会員向け分岐・`bootstrap/app.php` の会員向け遷移先はこちらに対応する
 - [docs/1_system_overview.md](../1_system_overview.md) — 2ガード構成の前提
 - [docs/2_database.md](../2_database.md) — `admins` テーブル定義の正本
 

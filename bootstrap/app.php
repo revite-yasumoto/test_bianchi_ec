@@ -26,11 +26,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 : route('login'),
         );
 
-        // 認証済みで guest:admin ルート（管理者ログイン画面）へアクセスした場合の遷移先
+        // 認証済みで guest ルート（ログイン・会員登録画面）へアクセスした場合の遷移先
         $middleware->redirectUsersTo(
             fn (Request $request) => $request->is('admin/*') || $request->is('admin')
                 ? AuthenticatedSessionController::landingUrl()
-                : route('dashboard'),
+                : route('top'),
         );
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -1,17 +1,34 @@
 <?php
 
-use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Admin\HomeController;
+use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AdminAuthenticatedSessionController;
+use App\Http\Controllers\Admin\HomeController as AdminHomeController;
+use App\Http\Controllers\Front\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Front\Auth\RegisteredUserController;
+use App\Http\Controllers\Front\TopController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function (): void {
     Route::middleware('guest:admin')->group(function (): void {
-        Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
-        Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
+        Route::get('login', [AdminAuthenticatedSessionController::class, 'create'])->name('login');
+        Route::post('login', [AdminAuthenticatedSessionController::class, 'store'])->name('login.store');
     });
 
     Route::middleware('auth:admin')->group(function (): void {
-        Route::get('/', [HomeController::class, 'index'])->name('home');
-        Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+        Route::get('/', [AdminHomeController::class, 'index'])->name('home');
+        Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('logout');
     });
+});
+
+// 単位14でTOPページの中身を実装するまでは、共通レイアウトの表示とログイン後の遷移先を兼ねる暫定ページを返す
+Route::get('/', [TopController::class, 'index'])->name('top');
+
+Route::middleware('guest')->group(function (): void {
+    Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
+    Route::post('register', [RegisteredUserController::class, 'store'])->name('register.store');
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
+});
+
+Route::middleware('auth')->group(function (): void {
+    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });

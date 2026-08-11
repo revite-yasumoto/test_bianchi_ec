@@ -6,8 +6,6 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Admin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -33,22 +31,16 @@ class AdminSharedPropsTest extends TestCase
             );
     }
 
-    /**
-     * 単位02（会員認証）が未実装で front 側のページが存在しないため、
-     * このテスト内だけに front 相当のページを一時定義して検証する。
-     */
     #[Test]
     public function shared_props_do_not_expose_admin_key_outside_admin_paths(): void
     {
-        Route::middleware('web')
-            ->get('/__test/front-page', fn () => Inertia::render('__test/Blank'))
-            ->name('__test.front-page');
-        Route::getRoutes()->refreshNameLookups();
-
         $admin = Admin::factory()->create();
 
         $this->actingAs($admin, 'admin')
-            ->get(route('__test.front-page'))
-            ->assertInertia(fn ($page) => $page->missing('auth'));
+            ->get(route('top'))
+            ->assertInertia(fn ($page) => $page
+                ->missing('auth.admin')
+                ->where('auth.user', null)
+            );
     }
 }
