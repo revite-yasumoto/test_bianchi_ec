@@ -100,7 +100,7 @@ type SidebarMenuItem = {
 |---|---|---|
 | ダッシュボード | - | `admin.dashboard` |
 | 注文管理 | - | `admin.orders.index` |
-| 商品管理（グループ） | 商品一覧 `admin.products.index` / 商品登録 `admin.products.create` / 規格管理 `admin.specs.index` / カテゴリ管理 `admin.categories.index` / 商品CSV登録 `admin.products.csv` / 在庫 `admin.stocks.index` | - |
+| 商品管理（グループ） | 商品一覧 `admin.products.index` / 商品登録 `admin.products.create` / 規格管理 `admin.spec-options.index` / カテゴリ管理 `admin.categories.index` / 商品CSV登録 `admin.products.csv` / 在庫 `admin.stocks.index` | - |
 | 会員マスタ | - | `admin.members.index` |
 | 管理者マスタ | - | `admin.admins.index` |
 | 送料設定マスタ | - | `admin.shipping-settings.index` |
@@ -133,6 +133,30 @@ type DataTableProps<T> = { columns: Column<T>[]; rows: T[]; rowKey: (row: T) => 
 
 `rows` が0件の場合は罫線付きカード内にメッセージ（既定「該当するデータがありません」）を表示する。横スクロール対応（`overflow-x-auto`）。
 
+### `MasterListCard`（`resources/js/admin/Components/MasterListCard.tsx`）
+
+```ts
+type MasterListRow = { id: number; name: string; note?: string };
+
+type MasterListCardProps = {
+    title?: string;
+    description: string;
+    rows: MasterListRow[];
+    storeRouteName: string;
+    storeParams?: Record<string, string>;
+    destroyRouteName: string;
+    placeholder: string;
+    addedMessage: string;
+    deletedMessage: string;
+    deleteNote: string;
+    className?: string;
+};
+```
+
+名称の一覧と末尾の追加フォームを1枚の白カードにまとめたマスタ編集用のカード。追加（`useForm`）・削除（`router.delete` ＋ `ConfirmDialog`）・成功時のトースト表示までをカード内で完結させる。`storeParams` は追加時に `name` と一緒に送る固定値（規格管理の `type` 等）。削除に失敗した場合はサーバーが返す `delete` キーのメッセージをトーストで表示する。
+
+利用画面: [docs/admin/category.md](category.md)（カテゴリ管理）、[docs/admin/spec-option.md](spec-option.md)（規格管理）。
+
 ### `ConfirmDialog`（`resources/js/admin/Components/ConfirmDialog.tsx`）
 
 ```ts
@@ -158,6 +182,8 @@ type ConfirmDialogProps = {
 
 - [docs/admin/auth.md](auth.md) — 管理者ログイン・ログアウトの正本。`AdminSharedProps` の型定義はこちらが正本
 - [docs/front/common-layout.md](../front/common-layout.md) — フロント共通レイアウトの正本。フォント構成と共通UIコンポーネント（`resources/js/shared/`）はこちらが正本
+- [docs/admin/category.md](category.md) — `MasterListCard` の利用画面
+- [docs/admin/spec-option.md](spec-option.md) — `MasterListCard` の利用画面
 - [docs/1_system_overview.md](../1_system_overview.md) — ブランド表記・技術構成の前提
 
 ## ソースファイル
@@ -171,6 +197,7 @@ type ConfirmDialogProps = {
 | Component | `resources/js/admin/Components/FilterBar.tsx` |
 | Component | `resources/js/admin/Components/DataTable.tsx` |
 | Component | `resources/js/admin/Components/ConfirmDialog.tsx` |
+| Component | `resources/js/admin/Components/MasterListCard.tsx` |
 | スタイル | `resources/css/app.css` |
 
 ## 受け入れ条件
@@ -178,7 +205,7 @@ type ConfirmDialogProps = {
 本機能を担保する自動テストは存在しない（フロントエンドのユニットテスト基盤は本プロジェクトに未導入）。以下は型チェック（`npx tsc --noEmit`）と目視確認で担保する。
 
 - サイドバーの全10メニューが表示され、未実装項目は非活性表示になる: 目視確認
-- 実装済み項目（現時点では `admin.home`・ログアウトのみが `auth:admin` 配下。サイドメニュー10項目自体はまだいずれも対応するルートを持たない）へのリンクが機能する: 目視確認
+- 実装済み項目（現時点ではサイドメニューのうちカテゴリ管理・規格管理）へのリンクが機能する: 目視確認
 - グループの開閉、開閉時のデフォルト状態: 目視確認
 - ログアウト確認モーダルの表示・キャンセル・`Escape`キーでの閉じる動作: 目視確認
 - トーストの表示位置・自動消去（2.2秒）: 目視確認

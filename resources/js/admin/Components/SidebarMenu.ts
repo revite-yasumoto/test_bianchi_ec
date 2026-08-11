@@ -26,7 +26,11 @@ export const SIDEBAR_MENU: SidebarMenuItem[] = [
                 label: '商品登録',
                 routeName: 'admin.products.create',
             },
-            { key: 'specs', label: '規格管理', routeName: 'admin.specs.index' },
+            {
+                key: 'spec-options',
+                label: '規格管理',
+                routeName: 'admin.spec-options.index',
+            },
             {
                 key: 'categories',
                 label: 'カテゴリ管理',

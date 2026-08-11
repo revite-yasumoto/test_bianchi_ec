@@ -29,7 +29,7 @@
 | 01 | DB設計（全テーブル・Model・Seeder） | 完了（`docs/1_system_overview.md`, `docs/2_database.md`） | - | 完了 |
 | 02 | 会員認証＋フロント共通レイアウト | 完了（`docs/front/auth.md`, `docs/front/common-layout.md`） | 01 | 完了 |
 | 03 | 管理者認証＋管理画面共通レイアウト | 完了（`docs/admin/auth.md`, `docs/admin/common-layout.md`） | 01 | 完了 |
-| 04 | 管理：カテゴリ管理・規格管理 | `docs/plans/04-admin-category-spec.md` | 03 | 未着手 |
+| 04 | 管理：カテゴリ管理・規格管理 | 完了（`docs/admin/category.md`, `docs/admin/spec-option.md`） | 03 | 完了 |
 | 05 | 管理：商品管理（一覧・登録／編集） | `docs/plans/05-admin-product.md` | 04 | 未着手 |
 | 06 | 管理：在庫管理 | `docs/plans/06-admin-stock.md` | 05 | 未着手 |
 | 07 | 管理：注文管理 | `docs/plans/07-admin-order.md` | 03 | 未着手 |

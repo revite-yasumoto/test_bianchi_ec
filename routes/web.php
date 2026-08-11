@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AdminAuthenticatedSessionController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\HomeController as AdminHomeController;
+use App\Http\Controllers\Admin\SpecOptionController;
 use App\Http\Controllers\Front\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Front\Auth\RegisteredUserController;
 use App\Http\Controllers\Front\TopController;
@@ -16,6 +18,12 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
     Route::middleware('auth:admin')->group(function (): void {
         Route::get('/', [AdminHomeController::class, 'index'])->name('home');
         Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+        Route::resource('categories', CategoryController::class)->only(['index', 'store', 'destroy']);
+        // 既定のパラメータ名 spec_option ではメソッド引数 $specOption とバインドされないため明示する
+        Route::resource('spec-options', SpecOptionController::class)
+            ->only(['index', 'store', 'destroy'])
+            ->parameters(['spec-options' => 'specOption']);
     });
 });
 
