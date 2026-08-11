@@ -32,6 +32,12 @@ export default defineConfig({
         },
     },
     server: {
+        // 既定の localhost ではコンテナ内の 127.0.0.1 にしか listen せず、
+        // ホストのブラウザからポートフォワード経由で接続できない
+        host: '0.0.0.0',
+        hmr: {
+            host: 'localhost',
+        },
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },
