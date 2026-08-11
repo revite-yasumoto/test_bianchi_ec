@@ -34,7 +34,7 @@
 | 06 | 管理：在庫管理 | 完了（`docs/admin/stock.md`） | 05 | 完了 |
 | 07 | 管理：注文管理 | 完了（`docs/admin/order-index.md`, `docs/admin/order-show.md`） | 03 | 完了 |
 | 08 | 管理：会員マスタ・管理者マスタ | 完了（`docs/admin/member.md`, `docs/admin/admin-user.md`） | 03 | 完了 |
-| 09 | 管理：CSVインポート／エクスポート | `docs/plans/09-admin-csv.md` | 05, 08 | 未着手 |
+| 09 | 管理：CSVインポート／エクスポート | 完了（`docs/admin/csv.md`） | 05, 08 | 完了 |
 | 10 | 管理：送料設定マスタ・EC基本設定 | `docs/plans/10-admin-settings.md` | 03 | 未着手 |
 | 11 | 管理：新着ニュース・重要なお知らせ管理 | `docs/plans/11-admin-news-notice.md` | 03 | 未着手 |
 | 12 | 管理：ダッシュボード | `docs/plans/12-admin-dashboard.md` | 07 | 未着手 |

@@ -108,6 +108,7 @@ type FormProps = {
 
 ## 関連ドキュメント
 
+- [docs/admin/csv.md](csv.md) — 管理者CSVの取り込み・書き出しの正本
 - [docs/admin/auth.md](auth.md) — 管理者ログインの正本。`admin_code` またはメールアドレスで認証する
 - [docs/admin/order-show.md](order-show.md) — 管理者を参照するステータス変更履歴
 - [docs/admin/common-layout.md](common-layout.md) — `DataTable`・`ConfirmDialog` の正本

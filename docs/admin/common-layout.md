@@ -100,7 +100,7 @@ type SidebarMenuItem = {
 |---|---|---|
 | ダッシュボード | - | `admin.dashboard` |
 | 注文管理 | - | `admin.orders.index` |
-| 商品管理（グループ） | 商品一覧 `admin.products.index` / 商品登録 `admin.products.create` / 規格管理 `admin.spec-options.index` / カテゴリ管理 `admin.categories.index` / 商品CSV登録 `admin.products.csv` / 在庫 `admin.stocks.index` | - |
+| 商品管理（グループ） | 商品一覧 `admin.products.index` / 商品登録 `admin.products.create` / 規格管理 `admin.spec-options.index` / カテゴリ管理 `admin.categories.index` / 商品CSV登録 `admin.products.csv.index` / 在庫 `admin.stocks.index` | - |
 | 会員マスタ | - | `admin.members.index` |
 | 管理者マスタ | - | `admin.admins.index` |
 | 送料設定マスタ | - | `admin.shipping-settings.index` |
@@ -215,7 +215,7 @@ type ConfirmDialogProps = {
 本機能を担保する自動テストは存在しない（フロントエンドのユニットテスト基盤は本プロジェクトに未導入）。以下は型チェック（`npx tsc --noEmit`）と目視確認で担保する。
 
 - サイドバーの全10メニューが表示され、未実装項目は非活性表示になる: 目視確認
-- 実装済み項目（現時点ではサイドメニューのうち注文管理・商品一覧・商品登録・カテゴリ管理・規格管理・在庫・会員マスタ・管理者マスタ）へのリンクが機能する: 目視確認
+- 実装済み項目（現時点ではダッシュボードを除くサイドメニューの全項目）へのリンクが機能する: 目視確認
 - グループの開閉、開閉時のデフォルト状態: 目視確認
 - ログアウト確認モーダルの表示・キャンセル・`Escape`キーでの閉じる動作: 目視確認
 - トーストの表示位置・自動消去（2.2秒）: 目視確認

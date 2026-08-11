@@ -110,6 +110,7 @@ type ShowProps = {
 
 ## 関連ドキュメント
 
+- [docs/admin/csv.md](csv.md) — 会員CSVの取り込み・書き出しの正本
 - [docs/front/auth.md](../front/auth.md) — 休会会員のログイン拒否の正本
 - [docs/admin/order-show.md](order-show.md) — 直近注文からリンクする注文詳細
 - [docs/admin/common-layout.md](common-layout.md) — `FilterBar`・`DataTable`・`Pagination`・`ConfirmDialog` の正本

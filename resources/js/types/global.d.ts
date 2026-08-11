@@ -27,9 +27,19 @@ declare global {
         email: string;
     };
 
+    /** CSVインポートの結果。エラーがある場合は1件も適用されていない */
+    type CsvImportResult = {
+        created: number;
+        updated: number;
+        errors: { line: number; message: string }[];
+    };
+
     type AdminSharedProps = {
         auth: {
             admin: AdminAuthUser | null;
+        };
+        flash: {
+            importResult: CsvImportResult | null;
         };
     };
 

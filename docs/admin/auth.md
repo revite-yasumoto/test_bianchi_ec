@@ -56,12 +56,21 @@ type AdminAuthUser = {
     email: string;
 };
 
+type CsvImportResult = {
+    created: number;
+    updated: number;
+    errors: { line: number; message: string }[];
+};
+
 type AdminSharedProps = {
     auth: { admin: AdminAuthUser | null };
+    flash: { importResult: CsvImportResult | null };
 };
 ```
 
 `AdminSharedProps` は `/admin/*` へのInertiaリクエストにのみ共有される（`front` 側のページには `auth.admin` キー自体が存在しない）。共有するカラムは `Sidebar` が実際に表示する `name`・`email` のみに絞る（allowlist）。`id`・`admin_code` 等、参照側で使っていないカラムは追加しない。
+
+`flash.importResult` はCSVインポートの結果を画面へ渡すためのもの。中身の意味は [docs/admin/csv.md](csv.md) が正本。
 
 - **入力値バリデーションルール（`Admin\Auth\LoginRequest`）:**
 

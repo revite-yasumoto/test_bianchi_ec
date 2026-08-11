@@ -39,7 +39,7 @@ export const SIDEBAR_MENU: SidebarMenuItem[] = [
             {
                 key: 'products.csv',
                 label: '商品CSV登録',
-                routeName: 'admin.products.csv',
+                routeName: 'admin.products.csv.index',
             },
             { key: 'stocks', label: '在庫', routeName: 'admin.stocks.index' },
         ],

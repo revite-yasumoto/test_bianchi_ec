@@ -1,14 +1,17 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminUserCsvController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AdminAuthenticatedSessionController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\HomeController as AdminHomeController;
 use App\Http\Controllers\Admin\MemberController;
+use App\Http\Controllers\Admin\MemberCsvController;
 use App\Http\Controllers\Admin\MemberStatusController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\OrderStatusController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductCsvController;
 use App\Http\Controllers\Admin\SpecOptionController;
 use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Front\Auth\AuthenticatedSessionController;
@@ -25,6 +28,16 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
     Route::middleware('auth:admin')->group(function (): void {
         Route::get('/', [AdminHomeController::class, 'index'])->name('home');
         Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+        // CSVのルートは `{user}` `{admin}` `{product}` として解釈されないよう、各リソースより先に定義する
+        Route::post('members/csv/import', [MemberCsvController::class, 'import'])->name('members.csv.import');
+        Route::get('members/csv/export', [MemberCsvController::class, 'export'])->name('members.csv.export');
+        Route::post('admins/csv/import', [AdminUserCsvController::class, 'import'])->name('admins.csv.import');
+        Route::get('admins/csv/export', [AdminUserCsvController::class, 'export'])->name('admins.csv.export');
+        Route::get('products/csv', [ProductCsvController::class, 'index'])->name('products.csv.index');
+        Route::post('products/csv/import', [ProductCsvController::class, 'import'])->name('products.csv.import');
+        Route::get('products/csv/export', [ProductCsvController::class, 'export'])->name('products.csv.export');
+        Route::get('products/csv/template', [ProductCsvController::class, 'template'])->name('products.csv.template');
 
         Route::get('members', [MemberController::class, 'index'])->name('members.index');
         Route::get('members/{user}', [MemberController::class, 'show'])->name('members.show');

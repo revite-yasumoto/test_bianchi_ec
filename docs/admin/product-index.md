@@ -89,6 +89,7 @@ type Props = {
 ## 関連ドキュメント
 
 - [docs/admin/product-form.md](product-form.md) — 商品登録／編集／削除の正本
+- [docs/admin/csv.md](csv.md) — 商品CSVの取り込み・書き出しの正本
 - [docs/admin/common-layout.md](common-layout.md) — `FilterBar`・`DataTable`・`Pagination` の正本
 - [docs/admin/category.md](category.md) — 絞り込みの選択肢になるカテゴリの管理
 - [docs/2_database.md](../2_database.md) — テーブル定義の正本

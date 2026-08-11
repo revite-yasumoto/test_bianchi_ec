@@ -1,6 +1,8 @@
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import { AdminLayout } from '@/admin/Layouts/AdminLayout';
+import { CsvActions } from '@/admin/Components/Csv/CsvActions';
+import { ImportResultPanel } from '@/admin/Components/Csv/ImportResultPanel';
 import { DataTable } from '@/admin/Components/DataTable';
 import { FilterBar } from '@/admin/Components/FilterBar';
 import { Pagination } from '@/admin/Components/Pagination';
@@ -25,6 +27,7 @@ type Props = {
 };
 
 export default function Index({ members, filters, totalCount }: Props) {
+    const { flash } = usePage<AdminSharedProps>().props;
     const [keyword, setKeyword] = useState(filters.q ?? '');
     const isFirstRender = useRef(true);
 
@@ -47,7 +50,18 @@ export default function Index({ members, filters, totalCount }: Props) {
     }, [keyword]);
 
     return (
-        <AdminLayout title="会員マスタ">
+        <AdminLayout
+            title="会員マスタ"
+            headerActions={
+                <CsvActions
+                    exportUrl={route('admin.members.csv.export')}
+                    importUrl={route('admin.members.csv.import')}
+                    targetLabel="会員データ"
+                />
+            }
+        >
+            <ImportResultPanel result={flash.importResult} className="mb-3.5" />
+
             <FilterBar
                 resultCount={members.total}
                 totalCount={totalCount}

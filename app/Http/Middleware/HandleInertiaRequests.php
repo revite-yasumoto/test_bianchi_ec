@@ -45,6 +45,9 @@ class HandleInertiaRequests extends Middleware
                 'auth' => [
                     'admin' => $this->adminAuthProps($request),
                 ],
+                'flash' => [
+                    'importResult' => $request->session()->get('importResult'),
+                ],
             ];
         }
 
