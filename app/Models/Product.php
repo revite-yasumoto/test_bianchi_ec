@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable(['product_code', 'name', 'category_id', 'price', 'description', 'has_sku', 'is_published'])]
@@ -68,7 +69,18 @@ class Product extends Model
      */
     public function variants(): HasMany
     {
-        return $this->hasMany(ProductVariant::class);
+        // 編集画面のカラー・サイズの並びを作成順で安定させる
+        return $this->hasMany(ProductVariant::class)->orderBy('id');
+    }
+
+    /**
+     * 在庫合計の集計に使う。`withSum('stocks', 'quantity')` でバリエーションを跨いだ合計を1クエリで得る。
+     *
+     * @return HasManyThrough<Stock, ProductVariant, $this>
+     */
+    public function stocks(): HasManyThrough
+    {
+        return $this->hasManyThrough(Stock::class, ProductVariant::class);
     }
 
     /**

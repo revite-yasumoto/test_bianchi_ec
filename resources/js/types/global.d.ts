@@ -11,6 +11,17 @@ declare global {
         has: (name: string) => boolean;
     };
 
+    /** Laravel の `paginate()` が返すページャの形（`through()` 適用後も同じ） */
+    type Paginated<T> = {
+        data: T[];
+        links: { url: string | null; label: string; active: boolean }[];
+        current_page: number;
+        last_page: number;
+        total: number;
+        from: number | null;
+        to: number | null;
+    };
+
     type AdminAuthUser = {
         name: string;
         email: string;

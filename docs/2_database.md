@@ -164,7 +164,7 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 | id | bigIncrements | PK |
 | product_id | foreignId | → `products.id` cascade, index |
 | branch_code | string(20) | nullable。枝番（SKUあり商品のみ） |
-| sku_code | string(80) | nullable, unique。`商品ID-枝番`。取扱対象外・SKUなしは `null` |
+| sku_code | string(80) | nullable, unique。SKUあり=`商品ID-枝番`、SKUなし=商品IDそのもの。取扱対象外は `null` |
 | size_name | string(50) | nullable |
 | color_name | string(50) | nullable |
 | is_available | boolean | default `true`。`false`=規格なし（取扱対象外） |

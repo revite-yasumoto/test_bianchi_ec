@@ -119,10 +119,18 @@ type PageHeaderProps = { title: string; actions?: ReactNode };
 ### `FilterBar`（`resources/js/admin/Components/FilterBar.tsx`）
 
 ```ts
-type FilterBarProps = { resultCount: number; onClear: () => void; children: ReactNode };
+type FilterBarProps = { resultCount: number; totalCount?: number; onClear: () => void; children: ReactNode };
 ```
 
-白カード内に絞り込み入力（`children`）を横並びに配置し、右端に件数表示とクリアボタンを共通設置する。
+白カード内に絞り込み入力（`children`）を横並びに配置し、右端に件数表示とクリアボタンを共通設置する。`totalCount` を渡すと「N件 / 全M件」の形式になり、省略すると「N件」のみを表示する。
+
+### `Pagination`（`resources/js/admin/Components/Pagination.tsx`）
+
+```ts
+type PaginationProps = { links: { url: string | null; label: string; active: boolean }[] };
+```
+
+Laravel の `paginate()` が返す `links` をそのまま渡す。1ページに収まる場合（リンクが3件以下）は何も描画しない。`&laquo; Previous` 等の既定ラベルは「前へ」「次へ」に置き換える。
 
 ### `DataTable`（`resources/js/admin/Components/DataTable.tsx`）
 
@@ -198,6 +206,8 @@ type ConfirmDialogProps = {
 | Component | `resources/js/admin/Components/DataTable.tsx` |
 | Component | `resources/js/admin/Components/ConfirmDialog.tsx` |
 | Component | `resources/js/admin/Components/MasterListCard.tsx` |
+| Component | `resources/js/admin/Components/Pagination.tsx` |
+| 型 | `resources/js/types/global.d.ts` |
 | スタイル | `resources/css/app.css` |
 
 ## 受け入れ条件
@@ -205,7 +215,7 @@ type ConfirmDialogProps = {
 本機能を担保する自動テストは存在しない（フロントエンドのユニットテスト基盤は本プロジェクトに未導入）。以下は型チェック（`npx tsc --noEmit`）と目視確認で担保する。
 
 - サイドバーの全10メニューが表示され、未実装項目は非活性表示になる: 目視確認
-- 実装済み項目（現時点ではサイドメニューのうちカテゴリ管理・規格管理）へのリンクが機能する: 目視確認
+- 実装済み項目（現時点ではサイドメニューのうち商品一覧・商品登録・カテゴリ管理・規格管理）へのリンクが機能する: 目視確認
 - グループの開閉、開閉時のデフォルト状態: 目視確認
 - ログアウト確認モーダルの表示・キャンセル・`Escape`キーでの閉じる動作: 目視確認
 - トーストの表示位置・自動消去（2.2秒）: 目視確認
