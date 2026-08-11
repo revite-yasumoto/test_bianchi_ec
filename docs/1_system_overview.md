@@ -39,3 +39,4 @@
 ## 関連ドキュメント
 
 - [docs/2_database.md](2_database.md) — 全テーブル定義の正本
+- [docs/shipping-calculation.md](shipping-calculation.md) — 送料・配達予定日・合計金額の算出の正本

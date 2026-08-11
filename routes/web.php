@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminUserCsvController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AdminAuthenticatedSessionController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\EcSettingController;
 use App\Http\Controllers\Admin\HomeController as AdminHomeController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\MemberCsvController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\OrderStatusController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductCsvController;
+use App\Http\Controllers\Admin\ShippingSettingController;
 use App\Http\Controllers\Admin\SpecOptionController;
 use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Front\Auth\AuthenticatedSessionController;
@@ -55,6 +57,12 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::put('stocks/bulk', [StockController::class, 'bulkUpdate'])->name('stocks.bulk-update');
         Route::get('stocks', [StockController::class, 'index'])->name('stocks.index');
         Route::put('stocks/{stock}', [StockController::class, 'update'])->name('stocks.update');
+
+        Route::get('shipping-settings', [ShippingSettingController::class, 'index'])->name('shipping-settings.index');
+        Route::put('shipping-settings', [ShippingSettingController::class, 'update'])->name('shipping-settings.update');
+
+        Route::get('ec-settings', [EcSettingController::class, 'edit'])->name('ec-settings.edit');
+        Route::put('ec-settings', [EcSettingController::class, 'update'])->name('ec-settings.update');
 
         Route::resource('categories', CategoryController::class)->only(['index', 'store', 'destroy']);
         // 既定のパラメータ名 spec_option ではメソッド引数 $specOption とバインドされないため明示する
