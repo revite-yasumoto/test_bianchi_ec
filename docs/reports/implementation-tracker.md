@@ -37,7 +37,7 @@
 | 09 | 管理：CSVインポート／エクスポート | 完了（`docs/admin/csv.md`） | 05, 08 | 完了 |
 | 10 | 管理：送料設定マスタ・EC基本設定 | 完了（`docs/admin/shipping-setting.md`, `docs/admin/ec-setting.md`, `docs/shipping-calculation.md`） | 03 | 完了 |
 | 11 | 管理：新着ニュース・重要なお知らせ管理 | 完了（`docs/admin/news.md`, `docs/admin/notice.md`） | 03 | 完了 |
-| 12 | 管理：ダッシュボード | `docs/plans/12-admin-dashboard.md` | 07 | 未着手 |
+| 12 | 管理：ダッシュボード | 完了（`docs/admin/dashboard.md`） | 07 | 完了 |
 | 13 | フロント：商品一覧・商品詳細 | `docs/plans/13-front-product.md` | 02, 05, 06 | 未着手 |
 | 14 | フロント：TOPページ | `docs/plans/14-front-top.md` | 13, 11 | 未着手 |
 | 15 | フロント：カート | `docs/plans/15-front-cart.md` | 13, 10 | 未着手 |

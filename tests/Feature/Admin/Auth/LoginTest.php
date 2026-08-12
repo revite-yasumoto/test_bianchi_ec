@@ -30,10 +30,9 @@ class LoginTest extends TestCase
             'password' => 'password',
         ]);
 
-        // 遷移先は landingUrl() が動的に決める。単位12（ダッシュボード）の実装後は admin.dashboard に変わる
-        $response->assertRedirect(route('admin.orders.index'));
-        $this->get(route('admin.orders.index'))
-            ->assertInertia(fn ($page) => $page->component('admin/Order/Index'));
+        $response->assertRedirect(route('admin.dashboard'));
+        $this->get(route('admin.dashboard'))
+            ->assertInertia(fn ($page) => $page->component('admin/Dashboard/Index'));
     }
 
     #[Test]

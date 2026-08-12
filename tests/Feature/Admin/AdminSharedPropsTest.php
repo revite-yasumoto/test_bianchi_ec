@@ -19,9 +19,9 @@ class AdminSharedPropsTest extends TestCase
         $admin = Admin::factory()->create();
 
         $this->actingAs($admin, 'admin')
-            ->get(route('admin.home'))
+            ->get(route('admin.dashboard'))
             ->assertInertia(fn ($page) => $page
-                ->component('admin/Home')
+                ->component('admin/Dashboard/Index')
                 ->where('auth.admin.name', $admin->name)
                 ->where('auth.admin.email', $admin->email)
                 ->missing('auth.admin.id')

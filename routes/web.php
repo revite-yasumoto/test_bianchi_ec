@@ -4,8 +4,8 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminUserCsvController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AdminAuthenticatedSessionController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EcSettingController;
-use App\Http\Controllers\Admin\HomeController as AdminHomeController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\MemberCsvController;
 use App\Http\Controllers\Admin\MemberStatusController;
@@ -30,7 +30,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
     });
 
     Route::middleware('auth:admin')->group(function (): void {
-        Route::get('/', [AdminHomeController::class, 'index'])->name('home');
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('logout');
 
         // CSVのルートは `{user}` `{admin}` `{product}` として解釈されないよう、各リソースより先に定義する
