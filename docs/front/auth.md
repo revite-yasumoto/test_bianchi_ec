@@ -15,7 +15,7 @@
 | POST | `/logout` | `logout` | `auth` |
 
 - **アクセス権限・ミドルウェア:** 上表の通り。フロント側のルート名は `admin.` のような prefix を付けない。
-- **本ドキュメントのスコープ:** 会員登録・ログイン・ログアウトのバックエンド処理、会員登録画面（`Register.tsx`）・ログイン画面（`Login.tsx`）、およびTOPページ実装（単位14）までの暫定TOP（`Top/Index.tsx`）。各画面が使う共通レイアウト・共通UIコンポーネント・デザイントークンは [docs/front/common-layout.md](common-layout.md) が正本。
+- **本ドキュメントのスコープ:** 会員登録・ログイン・ログアウトのバックエンド処理、会員登録画面（`Register.tsx`）・ログイン画面（`Login.tsx`）。遷移先のTOPページは [docs/front/top.md](top.md) が正本。各画面が使う共通レイアウト・共通UIコンポーネント・デザイントークンは [docs/front/common-layout.md](common-layout.md) が正本。
 
 ## 使用テーブル
 
@@ -117,8 +117,6 @@ type RegisterForm = {
 
 **ログアウト（`AuthenticatedSessionController::destroy()`）:** `web` ガードからログアウト → セッション無効化（`invalidate()`） → CSRFトークン再生成（`regenerateToken()`） → `top` へリダイレクトし、`success` フラッシュに「ログアウトしました。」を渡す。
 
-**暫定TOP（`TopController::index()`）:** `GET /` で `front/Top/Index` を返す。単位14でTOPページの各セクションに差し替えるまでの暫定表示であり、共通レイアウトの確認とログイン後の遷移先を兼ねる。
-
 ## 業務ルール
 
 - ログイン失敗時のメッセージは、メールアドレスの登録有無を区別できる内容にしない（アカウント列挙攻撃対策）。休会中のメッセージのみ、利用者が問い合わせ先を判断できるよう区別して返す。
@@ -129,6 +127,7 @@ type RegisterForm = {
 ## 関連ドキュメント
 
 - [docs/front/common-layout.md](common-layout.md) — フロント共通レイアウト・共通UIコンポーネント・デザイントークンの正本。`FrontSharedProps` の型定義もこちらが正本
+- [docs/front/top.md](top.md) — ログイン後・ログアウト後の遷移先であるTOPページの正本
 - [docs/admin/auth.md](../admin/auth.md) — 管理者認証の正本。`bootstrap/app.php` のパス分岐・`config/inertia.php` の設定はこちらが正本
 - [docs/1_system_overview.md](../1_system_overview.md) — 2ガード構成の前提
 - [docs/2_database.md](../2_database.md) — `users` テーブル定義の正本
@@ -139,14 +138,12 @@ type RegisterForm = {
 |---|---|
 | Controller | `app/Http/Controllers/Front/Auth/AuthenticatedSessionController.php` |
 | Controller | `app/Http/Controllers/Front/Auth/RegisteredUserController.php` |
-| Controller | `app/Http/Controllers/Front/TopController.php` |
 | FormRequest | `app/Http/Requests/Front/Auth/LoginRequest.php` |
 | FormRequest | `app/Http/Requests/Front/Auth/RegisterRequest.php` |
 | Action | `app/Actions/Front/Auth/GenerateMemberCode.php` |
 | ルート | `routes/web.php` |
 | Page | `resources/js/front/Pages/Auth/Login.tsx` |
 | Page | `resources/js/front/Pages/Auth/Register.tsx` |
-| Page | `resources/js/front/Pages/Top/Index.tsx` |
 | Test | `tests/Feature/Front/Auth/LoginTest.php` |
 | Test | `tests/Feature/Front/Auth/LogoutTest.php` |
 | Test | `tests/Feature/Front/Auth/RegisterTest.php` |
