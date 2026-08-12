@@ -54,8 +54,9 @@
 ```
 
 - ページの主題を示す `<h1>` は読み上げ用（`sr-only`）に置き、視覚的な見出しはメインビジュアルが担う。
-- メインビジュアルは5.2秒間隔で自動的に切り替わる。ドットを押すと任意のスライドへ移動し、タイマーは張り直す。バナーが1件のときはドットを出さず自動切替もしない。
+- メインビジュアルは5.2秒間隔で自動的に切り替わる。ドットを押すと任意のスライドへ移動し、タイマーは張り直す。バナーが1件のときはドットを出さず自動切替もしない。ポインタが乗っている間・内部の要素にフォーカスがある間、および `prefers-reduced-motion: reduce` の環境では自動切替を止める。
 - 重要なお知らせ・ランキング・おすすめ・最近見た商品・新着ニュースは、対象データが0件ならセクションごと表示しない。
+- ランキングのカードに重ねる順位の数字は、読み上げでは「第N位」と読ませる。
 - 「詳細 →」「すべて見る →」の遷移先（重要なお知らせ一覧・新着ニュース一覧）は単位18で実装するため、それまではリンクにしない。
 - 商品画像が未登録の場合はカテゴリごとのグラデーションを表示する（[docs/front/common-layout.md](common-layout.md) の `categoryTint` が正本）。
 
@@ -68,6 +69,7 @@
 type Props = {
     notice: { id: number; title: string } | null;
     banners: {
+        id: number;
         tag: string;
         title: string;        // 改行を含む
         subtitle: string | null;
@@ -77,12 +79,14 @@ type Props = {
     categoryEntries: { id: number; name: string; product_count: number }[];
     rankingTabs: { key: string; label: string; category_id: number | null }[];
     rankings: Record<string, (ProductCardData & { rank_position: number })[]>;
-    rankingUpdatedAt: string | null;   // 'YYYY.MM.DD HH:mm'
+    rankingUpdatedAt: string | null;      // 'YYYY.MM.DD HH:mm'（表示用）
+    rankingUpdatedAtIso: string | null;   // ISO 8601（<time> の datetime 用）
     recommends: ProductCardData[];
-    histories: ProductCardData[];      // 未ログインは空配列
+    histories: ProductCardData[];         // 未ログインは空配列
     news: {
         id: number;
-        published_on: string;          // 'YYYY.MM.DD'
+        published_on: string;             // 'YYYY.MM.DD'（表示用）
+        published_on_iso: string;         // 'YYYY-MM-DD'（<time> の datetime 用）
         category: string;
         category_tone: { fg: string; bg: string };
         title: string;
@@ -103,9 +107,9 @@ type Props = {
 | 重要なお知らせ | 掲載中（`Notice::displayable()`）のうち `display_start_on` の降順で1件。0件なら `null` |
 | メインビジュアル | `Banner::active()` を `sort_order` 昇順で全件 |
 | 購入方法から探す | `categories` を `sort_order` 昇順。件数は公開商品のみを数える |
-| ランキング | 公開中の集計月（[docs/ranking.md](../ranking.md)）の `product_rankings` を `rank_position` 昇順で取得し、タブごとに上位4件。集計後に非公開・削除された商品は除外する。タブは全体を含めて最大4つ |
+| ランキング | 公開中の集計月（[docs/ranking.md](../ranking.md)）の `product_rankings` を `rank_position` 昇順で取得し、タブごとに上位4件。集計後に非公開・削除された商品は除外する。タブは全体を含めて最大4つで、タブに出ないカテゴリの商品は渡さない |
 | おすすめ | 公開商品を `id` の降順で4件（新着をおすすめとして扱う） |
-| 最近見た商品 | ログイン中のみ。`browsing_histories` を `viewed_at` 降順で6件取得し、非公開になった商品は除外する。並びは閲覧の新しい順を保つ |
+| 最近見た商品 | ログイン中のみ。公開中の商品に限定したうえで `browsing_histories` を `viewed_at` 降順で6件取得する（非公開商品があっても表示件数が減らない） |
 | 新着ニュース | `News::published()` を `published_on` 降順で4件 |
 
 ### 主要な処理フロー
@@ -158,11 +162,11 @@ type Props = {
 - 非公開バナーが表示されない: 同上（`非公開のバナーは表示されない`）
 - おすすめが公開商品の新着順4件になる: 同上（`おすすめは公開商品の新着順で四件まで返る`）
 - カテゴリ入口の件数が公開商品のみを数える: 同上（`カテゴリ入口に公開商品の件数が付く`）
-- 閲覧履歴が新しい順で返り、非公開商品を除外する: 同上（`ログイン中は閲覧履歴が新しい順で返る`・`非公開になった商品は閲覧履歴に出さない`）
+- 閲覧履歴が新しい順で返り、非公開商品があっても表示件数が減らない: 同上（`ログイン中は閲覧履歴が新しい順で返る`・`非公開になった商品は閲覧履歴に出さない`・`非公開商品があっても閲覧履歴の表示件数が減らない`）
 - 商品件数が増えてもクエリ数が増えない（N+1が発生しない）: 同上（`商品件数が増えてもクエリ数が増えない`）
 - 重要なお知らせの掲載期間判定と0件時の扱い: `tests/Feature/Front/Top/TopNoticeTest.php`
-- ランキングのタブ構成・上位4件・非公開除外・0件時の扱い・タブ数上限: `tests/Feature/Front/Top/TopRankingTest.php`
+- ランキングのタブ構成・上位4件・非公開除外・0件時の扱い・タブ数上限とタブ外カテゴリの除外: `tests/Feature/Front/Top/TopRankingTest.php`
 - 新着ニュースの公開判定・件数・種別と配色: `tests/Feature/Front/Top/TopNewsTest.php`
-- メインビジュアルの自動切替（5.2秒）とドット操作: 自動テストなし。目視確認で担保する
+- メインビジュアルの自動切替（5.2秒）・ドット操作・ポインタ/フォーカス中と `prefers-reduced-motion: reduce` での停止: 自動テストなし。目視確認で担保する
 - レスポンシブ（PC 21:9 / SP 4:5、カードの折り返し、横スクロール）: 自動テストなし。目視確認で担保する
 - Props型定義の整合性: `npx tsc --noEmit`

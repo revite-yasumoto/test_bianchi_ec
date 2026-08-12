@@ -22,6 +22,7 @@ type Props = {
     rankingTabs: RankingTab[];
     rankings: Record<string, RankingItem[]>;
     rankingUpdatedAt: string | null;
+    rankingUpdatedAtIso: string | null;
     recommends: ProductCardData[];
     histories: ProductCardData[];
     news: NewsRow[];
@@ -34,6 +35,7 @@ export default function Index({
     rankingTabs,
     rankings,
     rankingUpdatedAt,
+    rankingUpdatedAtIso,
     recommends,
     histories,
     news,
@@ -52,6 +54,7 @@ export default function Index({
                 tabs={rankingTabs}
                 rankings={rankings}
                 updatedAt={rankingUpdatedAt}
+                updatedAtIso={rankingUpdatedAtIso}
             />
             <RecommendSection products={recommends} />
             <HistorySection products={histories} />

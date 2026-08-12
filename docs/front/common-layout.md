@@ -117,6 +117,10 @@ type FrontSharedProps = {
 | `--color-coral` | `#e1664b` | 購入導線ボタン・削除・エラー |
 | `--color-rose` | `#c25e86` | アクセント |
 | `--color-teal` | `#3e9e8f` | 成功・在庫あり |
+| `--color-notice-bg` | `#fdf3e3` | 重要なお知らせバーの背景 |
+| `--color-notice-line` | `#f0dfbe` | 同バーの下罫線 |
+| `--color-notice-ink` | `#7a5a1e` | 同バーの本文 |
+| `--color-notice-ink-muted` | `#9a7c3e` | 同バーの補助テキスト |
 
 基本背景（モックの `--bg` = `#FFFFFF`）はTailwind標準の `white` を使うためトークン化しない。
 

@@ -22,6 +22,12 @@
     --color-rose: #c25e86;
     --color-teal: #3e9e8f;
 
+    /* 重要なお知らせバーの配色（同モックの notice バー） */
+    --color-notice-bg: #fdf3e3;
+    --color-notice-line: #f0dfbe;
+    --color-notice-ink: #7a5a1e;
+    --color-notice-ink-muted: #9a7c3e;
+
     /* 管理画面ブランドカラー。docs/Markdown file UI mockups.zip 内 EC Demo Admin.dc.html の実値に合わせる */
     --color-admin-brand: #2f6f86;
     --color-admin-brand-deep: #274f60;

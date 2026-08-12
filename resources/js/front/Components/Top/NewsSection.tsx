@@ -5,6 +5,7 @@ import type { Tone } from '@/shared/lib/tone';
 export type NewsRow = {
     id: number;
     published_on: string;
+    published_on_iso: string;
     category: string;
     category_tone: Tone;
     title: string;
@@ -41,7 +42,7 @@ export function NewsSection({ news }: NewsSectionProps) {
                     const content = (
                         <>
                             <time
-                                dateTime={row.published_on.replaceAll('.', '-')}
+                                dateTime={row.published_on_iso}
                                 className="shrink-0 font-mono text-[11.5px] text-ink2"
                             >
                                 {row.published_on}
@@ -52,7 +53,7 @@ export function NewsSection({ news }: NewsSectionProps) {
                             >
                                 {row.category}
                             </Badge>
-                            <span className="text-[13.5px] font-semibold">
+                            <span className="min-w-0 text-[13.5px] font-semibold break-words">
                                 {row.title}
                             </span>
                         </>

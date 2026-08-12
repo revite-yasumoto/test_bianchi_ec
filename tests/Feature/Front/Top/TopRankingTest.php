@@ -80,6 +80,7 @@ class TopRankingTest extends TestCase
                 ->where('rankings.all.0.name', 'ロードスター')
                 ->where('rankings.all.0.rank_position', 1)
                 ->where('rankingUpdatedAt', '2026.08.01 01:00')
+                ->where('rankingUpdatedAtIso', '2026-08-01T01:00:00+09:00')
             );
     }
 
@@ -122,17 +123,24 @@ class TopRankingTest extends TestCase
     }
 
     #[Test]
-    public function タブは全体を含めて四つまでに絞られる(): void
+    public function タブは全体を含めて四つまでに絞られ表示しないカテゴリは渡さない(): void
     {
         $product = $this->makeProduct();
         $this->makeRanking($product, 1);
 
+        $categories = [];
+
         foreach (['ロード', 'MTB', 'パーツ', 'アパレル'] as $index => $name) {
             $category = Category::factory()->create(['name' => $name, 'sort_order' => $index]);
+            $categories[] = $category;
             $this->makeRanking($this->makeProduct(['category_id' => $category->id]), 1, $category);
         }
 
         $this->get(route('top'))
-            ->assertInertia(fn ($page) => $page->has('rankingTabs', 4));
+            ->assertInertia(fn ($page) => $page
+                ->has('rankingTabs', 4)
+                ->has('rankings', 4)
+                ->missing('rankings.'.$categories[3]->id)
+            );
     }
 }

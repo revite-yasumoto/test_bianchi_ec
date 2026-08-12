@@ -51,6 +51,7 @@ class TopPageService
             'rankingTabs' => $ranking['tabs'],
             'rankings' => $ranking['items'],
             'rankingUpdatedAt' => $ranking['updated_at'],
+            'rankingUpdatedAtIso' => $ranking['updated_at_iso'],
             'recommends' => $this->recommends(),
             'histories' => $user ? $this->histories($user) : [],
             'news' => $this->news(),
@@ -72,7 +73,7 @@ class TopPageService
     }
 
     /**
-     * @return array<int, array{tag: string, title: string, subtitle: string|null, background: string, link_url: string|null}>
+     * @return array<int, array{id: int, tag: string, title: string, subtitle: string|null, background: string, link_url: string|null}>
      */
     private function banners(): array
     {
@@ -82,6 +83,7 @@ class TopPageService
             ->orderBy('id')
             ->get()
             ->map(fn (Banner $banner): array => [
+                'id' => $banner->id,
                 'tag' => $banner->tag,
                 'title' => $banner->title,
                 'subtitle' => $banner->subtitle,
@@ -110,14 +112,14 @@ class TopPageService
     }
 
     /**
-     * @return array{tabs: array<int, array{key: string, label: string, category_id: int|null}>, items: array<string, array<int, array<string, mixed>>>, updated_at: string|null}
+     * @return array{tabs: array<int, array{key: string, label: string, category_id: int|null}>, items: array<array-key, array<int, array<string, mixed>>>, updated_at: string|null, updated_at_iso: string|null}
      */
     private function ranking(): array
     {
         $yearMonth = $this->publishedYearMonth();
 
         if ($yearMonth === null) {
-            return ['tabs' => [], 'items' => [], 'updated_at' => null];
+            return ['tabs' => [], 'items' => [], 'updated_at' => null, 'updated_at_iso' => null];
         }
 
         $rankings = ProductRanking::query()
@@ -128,7 +130,7 @@ class TopPageService
 
         $products = $this->cardsOf($rankings->pluck('product_id')->all());
 
-        /** @var array<string, array<int, array<string, mixed>>> $items */
+        /** @var array<array-key, array<int, array<string, mixed>>> $items */
         $items = [];
 
         foreach ($rankings as $ranking) {
@@ -145,10 +147,16 @@ class TopPageService
             ];
         }
 
+        $tabs = $this->rankingTabs($items);
+        $aggregatedAt = $rankings->first()?->aggregated_at;
+
         return [
-            'tabs' => $this->rankingTabs($items),
-            'items' => $items,
-            'updated_at' => $rankings->first()?->aggregated_at?->format('Y.m.d H:i'),
+            'tabs' => $tabs,
+            // タブ数の上限で切り捨てたカテゴリの商品は描画されないため送らない
+            'items' => array_intersect_key($items, array_flip(array_column($tabs, 'key'))),
+            'updated_at' => $aggregatedAt?->format('Y.m.d H:i'),
+            // <time> の datetime 属性に入れるため、併記する表示テキストと壁時計時刻がずれるUTC表記にしない
+            'updated_at_iso' => $aggregatedAt?->toIso8601String(),
         ];
     }
 
@@ -187,7 +195,7 @@ class TopPageService
     }
 
     /**
-     * @param  array<string, array<int, array<string, mixed>>>  $items
+     * @param  array<array-key, array<int, array<string, mixed>>>  $items
      * @return array<int, array{key: string, label: string, category_id: int|null}>
      */
     private function rankingTabs(array $items): array
@@ -200,9 +208,10 @@ class TopPageService
             ? [['key' => 'all', 'label' => '全体ランキング', 'category_id' => null]]
             : [];
 
+        // 数値文字列のキーはPHPの配列で整数に正規化されるため、両方の型を受ける
         $categoryIds = array_values(array_filter(
             array_keys($items),
-            fn (string $key): bool => $key !== 'all',
+            fn (int|string $key): bool => (string) $key !== 'all',
         ));
 
         $categories = Category::query()
@@ -241,7 +250,9 @@ class TopPageService
      */
     private function histories(User $user): array
     {
+        // 非公開商品の除外はSQL側で行う（取得後に落とすと表示件数が目減りするため）
         $productIds = $user->browsingHistories()
+            ->whereHas('product', fn (Builder $query) => $query->where('is_published', true))
             ->orderByDesc('viewed_at')
             ->orderByDesc('id')
             ->limit(self::HISTORY_LIMIT)
@@ -249,7 +260,7 @@ class TopPageService
 
         $cards = $this->cardsOf($productIds->all());
 
-        // 閲覧の新しい順を保ったまま、非公開になった商品を落とす
+        // 閲覧の新しい順を保つ
         return $productIds
             ->map(fn (int $productId): ?array => $cards[$productId] ?? null)
             ->filter()
@@ -279,7 +290,7 @@ class TopPageService
     }
 
     /**
-     * @return array<int, array{id: int, published_on: string, category: string, category_tone: array{fg: string, bg: string}, title: string}>
+     * @return array<int, array{id: int, published_on: string, published_on_iso: string, category: string, category_tone: array{fg: string, bg: string}, title: string}>
      */
     private function news(): array
     {
@@ -295,6 +306,7 @@ class TopPageService
                 return [
                     'id' => $news->id,
                     'published_on' => $news->published_on->format('Y.m.d'),
+                    'published_on_iso' => $news->published_on->toDateString(),
                     'category' => $news->category->value,
                     'category_tone' => ['fg' => $foreground, 'bg' => $background],
                     'title' => $news->title,

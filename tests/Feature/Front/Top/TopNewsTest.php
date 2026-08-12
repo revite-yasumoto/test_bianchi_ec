@@ -57,6 +57,7 @@ class TopNewsTest extends TestCase
         $this->get(route('top'))
             ->assertInertia(fn ($page) => $page
                 ->where('news.0.published_on', '2026.08.01')
+                ->where('news.0.published_on_iso', '2026-08-01')
                 ->where('news.0.category', '新商品')
                 ->where('news.0.category_tone.fg', '#2F6F86')
                 ->where('news.0.category_tone.bg', '#E7F0F4')

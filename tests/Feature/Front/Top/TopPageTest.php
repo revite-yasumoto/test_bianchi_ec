@@ -39,7 +39,7 @@ class TopPageTest extends TestCase
     #[Test]
     public function 未ログインでもトップページが表示される(): void
     {
-        Banner::factory()->create(['title' => 'キャンペーン']);
+        $banner = Banner::factory()->create(['title' => 'キャンペーン']);
         $this->makeProduct(['name' => 'ロードスター']);
 
         $this->get(route('top'))
@@ -47,6 +47,7 @@ class TopPageTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->component('front/Top/Index')
                 ->has('banners', 1)
+                ->where('banners.0.id', $banner->id)
                 ->where('banners.0.title', 'キャンペーン')
                 ->has('recommends', 1)
                 ->where('recommends.0.name', 'ロードスター')
@@ -139,6 +140,30 @@ class TopPageTest extends TestCase
         $this->actingAs($user)
             ->get(route('top'))
             ->assertInertia(fn ($page) => $page->where('histories', []));
+    }
+
+    #[Test]
+    public function 非公開商品があっても閲覧履歴の表示件数が減らない(): void
+    {
+        $user = User::factory()->create();
+
+        BrowsingHistory::factory()->create([
+            'user_id' => $user->id,
+            'product_id' => $this->makeProduct(['is_published' => false])->id,
+            'viewed_at' => now(),
+        ]);
+
+        foreach (range(1, 6) as $index) {
+            BrowsingHistory::factory()->create([
+                'user_id' => $user->id,
+                'product_id' => $this->makeProduct()->id,
+                'viewed_at' => now()->subMinutes($index),
+            ]);
+        }
+
+        $this->actingAs($user)
+            ->get(route('top'))
+            ->assertInertia(fn ($page) => $page->has('histories', 6));
     }
 
     #[Test]

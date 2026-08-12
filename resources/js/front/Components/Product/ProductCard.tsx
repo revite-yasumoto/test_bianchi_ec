@@ -43,7 +43,8 @@ export function ProductCard({ product, rank }: ProductCardProps) {
                 )}
                 {rank !== undefined ? (
                     <span className="absolute top-2.5 left-2.5 flex h-6.5 w-6.5 items-center justify-center rounded-full bg-white font-mono text-xs font-bold text-ink">
-                        {rank}
+                        <span className="sr-only">第{rank}位</span>
+                        <span aria-hidden="true">{rank}</span>
                     </span>
                 ) : null}
                 {product.is_sold_out ? (

@@ -1,8 +1,10 @@
 import { Link } from '@inertiajs/react';
+import { useState } from 'react';
 import { useAutoSlide } from '@/front/hooks/useAutoSlide';
 import { cn } from '@/lib/utils';
 
 export type BannerData = {
+    id: number;
     tag: string;
     title: string;
     subtitle: string | null;
@@ -22,7 +24,13 @@ function linkOf(url: string | null): string {
 }
 
 export function HeroSlider({ banners }: HeroSliderProps) {
-    const { index, select } = useAutoSlide(banners.length, SLIDE_INTERVAL_MS);
+    // 読んでいる間に切り替わらないよう、ポインタ・フォーカスが乗っている間は自動送りを止める
+    const [isPaused, setIsPaused] = useState(false);
+    const { index, select } = useAutoSlide(
+        banners.length,
+        SLIDE_INTERVAL_MS,
+        isPaused,
+    );
     const current = banners[index];
 
     if (!current) {
@@ -30,9 +38,16 @@ export function HeroSlider({ banners }: HeroSliderProps) {
     }
 
     return (
-        <section aria-label="メインビジュアル" className="relative bg-bg2">
+        <section
+            aria-label="メインビジュアル"
+            className="relative bg-bg2"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            onFocusCapture={() => setIsPaused(true)}
+            onBlurCapture={() => setIsPaused(false)}
+        >
             <div
-                className="flex aspect-[4/5] items-end p-8 transition-colors duration-500 lg:aspect-[21/9] lg:p-12"
+                className="flex aspect-[4/5] items-end p-8 lg:aspect-[21/9] lg:p-12"
                 style={{ backgroundImage: current.background }}
             >
                 <div className="max-w-[520px]">
@@ -57,23 +72,24 @@ export function HeroSlider({ banners }: HeroSliderProps) {
             </div>
 
             {banners.length > 1 ? (
-                <div className="absolute right-6 bottom-4 flex gap-1.5">
+                <ul className="absolute right-6 bottom-4 flex gap-1.5">
                     {banners.map((banner, slideIndex) => (
-                        <button
-                            key={banner.title}
-                            type="button"
-                            aria-label={`${slideIndex + 1}枚目のバナーを表示`}
-                            aria-pressed={slideIndex === index}
-                            onClick={() => select(slideIndex)}
-                            className={cn(
-                                'h-2 rounded-full transition-all duration-300',
-                                slideIndex === index
-                                    ? 'w-6.5 bg-white'
-                                    : 'w-2 bg-white/45',
-                            )}
-                        />
+                        <li key={banner.id}>
+                            <button
+                                type="button"
+                                aria-label={`${slideIndex + 1}枚目のバナーを表示`}
+                                aria-current={slideIndex === index}
+                                onClick={() => select(slideIndex)}
+                                className={cn(
+                                    'block h-2 rounded-full transition-all duration-300',
+                                    slideIndex === index
+                                        ? 'w-6.5 bg-white'
+                                        : 'w-2 bg-white/45',
+                                )}
+                            />
+                        </li>
                     ))}
-                </div>
+                </ul>
             ) : null}
         </section>
     );

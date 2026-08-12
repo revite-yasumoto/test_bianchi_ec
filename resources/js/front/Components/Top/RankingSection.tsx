@@ -15,19 +15,26 @@ type RankingSectionProps = {
     tabs: RankingTab[];
     rankings: Record<string, RankingItem[]>;
     updatedAt: string | null;
+    updatedAtIso: string | null;
 };
 
 export function RankingSection({
     tabs,
     rankings,
     updatedAt,
+    updatedAtIso,
 }: RankingSectionProps) {
-    const [currentKey, setCurrentKey] = useState(tabs[0]?.key ?? '');
+    const [selectedKey, setSelectedKey] = useState(tabs[0]?.key ?? '');
     const baseId = useId();
 
     if (tabs.length === 0) {
         return null;
     }
+
+    // タブが入れ替わっても選択が外れないよう、描画には実在するキーを使う
+    const currentKey = tabs.some((tab) => tab.key === selectedKey)
+        ? selectedKey
+        : tabs[0].key;
 
     return (
         <section
@@ -40,7 +47,10 @@ export function RankingSection({
                 </h2>
                 {updatedAt ? (
                     <p className="font-mono text-[10.5px] text-ink2">
-                        UPDATED {updatedAt}
+                        UPDATED{' '}
+                        <time dateTime={updatedAtIso ?? undefined}>
+                            {updatedAt}
+                        </time>
                     </p>
                 ) : null}
             </div>
@@ -58,7 +68,7 @@ export function RankingSection({
                         id={`${baseId}-tab-${tab.key}`}
                         aria-selected={tab.key === currentKey}
                         aria-controls={`${baseId}-panel-${tab.key}`}
-                        onClick={() => setCurrentKey(tab.key)}
+                        onClick={() => setSelectedKey(tab.key)}
                         className={cn(
                             'rounded-full border px-4 py-1.5 text-[12.5px] font-bold',
                             tab.key === currentKey
