@@ -83,7 +83,7 @@ type Props = {
 ### 主要な処理フロー
 
 1. `is_published = true` の商品を対象にする。
-2. `category` と `mainImage` を eager load し、取扱対象かつ在庫が1以上のバリエーション数をサブクエリ（`withCount`）で付与する。商品件数が増えてもクエリ数は変わらない。
+2. `BuildProductCard` が `category` と `mainImage` の eager load と、取扱対象かつ在庫が1以上のバリエーション数のサブクエリ（`withCount`）を付与する。商品件数が増えてもクエリ数は変わらない。同じ組み立てをTOPのランキング・おすすめ・閲覧履歴でも使う。
 3. `category_id` の指定があれば絞り込む。
 4. `id` の降順で1ページ24件のページネーションを行い、クエリ文字列を保持する。
 5. カテゴリの選択肢は `sort_order` 昇順・`id` 昇順で返す。
@@ -106,6 +106,7 @@ type Props = {
 |---|---|
 | Route | `routes/web.php` |
 | Controller | `app/Http/Controllers/Front/ProductController.php` |
+| Action | `app/Actions/Front/Product/BuildProductCard.php` |
 | Page | `resources/js/front/Pages/Product/Index.tsx` |
 | Component | `resources/js/front/Components/Product/ProductCard.tsx` |
 | Component | `resources/js/front/Components/Product/CategoryChips.tsx` |

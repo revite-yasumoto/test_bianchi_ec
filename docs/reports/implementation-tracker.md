@@ -39,7 +39,7 @@
 | 11 | 管理：新着ニュース・重要なお知らせ管理 | 完了（`docs/admin/news.md`, `docs/admin/notice.md`） | 03 | 完了 |
 | 12 | 管理：ダッシュボード | 完了（`docs/admin/dashboard.md`） | 07 | 完了 |
 | 13 | フロント：商品一覧・商品詳細 | 完了（`docs/front/product-index.md`, `docs/front/product-show.md`, `docs/front/favorite.md`） | 02, 05, 06 | 完了 |
-| 14 | フロント：TOPページ | `docs/plans/14-front-top.md` | 13, 11 | 未着手 |
+| 14 | フロント：TOPページ | 完了（`docs/front/top.md`, `docs/ranking.md`） | 13, 11 | 完了 |
 | 15 | フロント：カート | `docs/plans/15-front-cart.md` | 13, 10 | 未着手 |
 | 16 | フロント：購入手続き〜注文完了 | `docs/plans/16-front-checkout.md` | 15, 10 | 未着手 |
 | 17 | フロント：マイページ | `docs/plans/17-front-mypage.md` | 16 | 未着手 |

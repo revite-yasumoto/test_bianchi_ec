@@ -15,9 +15,11 @@ export type ProductCardData = {
 
 type ProductCardProps = {
     product: ProductCardData;
+    /** ランキングで表示する順位。指定すると画像左上に順位バッジを重ねる */
+    rank?: number;
 };
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, rank }: ProductCardProps) {
     return (
         <Link
             href={route('products.show', [product.id])}
@@ -39,6 +41,11 @@ export function ProductCard({ product }: ProductCardProps) {
                         {product.product_code}
                     </span>
                 )}
+                {rank !== undefined ? (
+                    <span className="absolute top-2.5 left-2.5 flex h-6.5 w-6.5 items-center justify-center rounded-full bg-white font-mono text-xs font-bold text-ink">
+                        {rank}
+                    </span>
+                ) : null}
                 {product.is_sold_out ? (
                     <span className="absolute top-2.5 right-2.5 rounded-full bg-ink/80 px-2.5 py-1 text-[10.5px] font-bold text-white">
                         在庫切れ

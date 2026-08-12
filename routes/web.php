@@ -80,7 +80,6 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
     });
 });
 
-// 単位14でTOPページの中身を実装するまでは、共通レイアウトの表示とログイン後の遷移先を兼ねる暫定ページを返す
 Route::get('/', [TopController::class, 'index'])->name('top');
 
 // 商品の閲覧は未ログインでも可能。購入導線（カート投入・お気に入り）からログインを求める

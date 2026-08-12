@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Front;
 
+use App\Actions\Front\Product\BuildProductCard;
 use App\Actions\Front\Product\BuildProductDetail;
 use App\Actions\Front\Product\RecordBrowsingHistory;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\ProductImage;
 use App\Models\ShippingSetting;
 use App\Models\User;
 use App\Services\Setting\EcSettingProvider;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -23,30 +22,17 @@ class ProductController extends Controller
 {
     private const PER_PAGE = 24;
 
-    public function index(Request $request): Response
+    public function index(Request $request, BuildProductCard $buildCard): Response
     {
         $categoryId = $request->filled('category_id') ? $request->integer('category_id') : null;
 
-        $products = Product::query()
-            ->where('is_published', true)
-            ->with(['category', 'mainImage'])
-            ->withCount(['variants as in_stock_variants_count' => fn (Builder $query) => $query
-                ->where('is_available', true)
-                ->whereHas('stock', fn (Builder $stock) => $stock->where('quantity', '>', 0)),
-            ])
+        $products = $buildCard
+            ->scope(Product::query()->where('is_published', true))
             ->when($categoryId, fn (Builder $query, int $id) => $query->where('category_id', $id))
             ->orderByDesc('id')
             ->paginate(self::PER_PAGE)
             ->withQueryString()
-            ->through(fn (Product $product): array => [
-                'id' => $product->id,
-                'name' => $product->name,
-                'category_name' => $product->category->name,
-                'product_code' => $product->product_code,
-                'price' => $product->price,
-                'main_image_url' => $this->imageUrl($product->mainImage),
-                'is_sold_out' => ((int) $product->in_stock_variants_count) === 0,
-            ]);
+            ->through($buildCard);
 
         return Inertia::render('front/Product/Index', [
             'products' => $products,
@@ -90,11 +76,6 @@ class ProductController extends Controller
                 'cod_fee' => $ecSetting->cod_fee,
             ],
         ]);
-    }
-
-    private function imageUrl(?ProductImage $image): ?string
-    {
-        return $image ? Storage::disk('public')->url($image->path) : null;
     }
 
     /**
