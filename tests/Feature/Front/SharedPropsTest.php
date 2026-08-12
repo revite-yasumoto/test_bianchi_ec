@@ -6,6 +6,7 @@ namespace Tests\Feature\Front;
 
 use App\Models\CartItem;
 use App\Models\Category;
+use App\Models\EcSetting;
 use App\Models\Favorite;
 use App\Models\Product;
 use App\Models\ProductVariant;
@@ -52,6 +53,7 @@ class SharedPropsTest extends TestCase
     public function カート件数は数量の合計・お気に入り件数は明細数で共有される(): void
     {
         $user = User::factory()->create();
+        EcSetting::factory()->create();
         $product = Product::factory()->create();
         $variants = ProductVariant::factory()->count(2)->create([
             'product_id' => $product->id,
@@ -84,6 +86,7 @@ class SharedPropsTest extends TestCase
     public function カートドロワー用の明細が共有される(): void
     {
         $user = User::factory()->create();
+        EcSetting::factory()->create(['free_shipping_threshold' => 10000]);
         $category = Category::factory()->create(['name' => 'アパレル']);
         $product = Product::factory()->create([
             'name' => 'チームジャージ',
@@ -110,7 +113,19 @@ class SharedPropsTest extends TestCase
                 ->where('cartItems.0.quantity', 2)
                 ->where('cartItems.0.line_total', 29600)
                 ->where('cartItems.0.category_name', 'アパレル')
+                ->where('freeShippingThreshold', 10000)
             );
+    }
+
+    #[Test]
+    public function カートが空のときは送料無料のしきい値を共有しない(): void
+    {
+        $user = User::factory()->create();
+        EcSetting::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('top'))
+            ->assertInertia(fn ($page) => $page->where('freeShippingThreshold', null));
     }
 
     #[Test]

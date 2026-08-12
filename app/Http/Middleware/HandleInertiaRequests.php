@@ -7,6 +7,7 @@ namespace App\Http\Middleware;
 use App\Models\Admin;
 use App\Models\CartItem;
 use App\Models\User;
+use App\Services\Setting\EcSettingProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
@@ -28,6 +29,8 @@ class HandleInertiaRequests extends Middleware
      * @var array<int, array<string, mixed>>|null
      */
     private ?array $cartItems = null;
+
+    public function __construct(private readonly EcSettingProvider $ecSettingProvider) {}
 
     /**
      * Determines the current asset version.
@@ -67,6 +70,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'cartCount' => fn (): int => $this->cartCount($request),
             'cartItems' => fn (): array => $this->cartItems($request),
+            'freeShippingThreshold' => fn (): ?int => $this->freeShippingThreshold($request),
             'favoriteCount' => fn (): int => $this->favoriteCount($request),
             'flash' => [
                 'success' => $request->session()->get('success'),
@@ -141,6 +145,16 @@ class HandleInertiaRequests extends Middleware
                 ];
             })
             ->all();
+    }
+
+    /**
+     * カートドロワーの送料無料案内に使う。案内は明細があるときだけ出すため、空カートでは引かない。
+     */
+    private function freeShippingThreshold(Request $request): ?int
+    {
+        return $this->cartItems($request) === []
+            ? null
+            : $this->ecSettingProvider->get()->free_shipping_threshold;
     }
 
     private function favoriteCount(Request $request): int

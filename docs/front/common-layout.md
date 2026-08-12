@@ -45,6 +45,7 @@ SP幅（lg未満）: ヘッダーのナビを隠し、右端のハンバーガ�
 |      規格なし ×1     ¥3,200|
 +---------------------------+
 | 商品合計          ¥32,800 |
+| あと ¥7,200 で送料無料     |
 | [     カートを見る     ]  |
 +---------------------------+
 ```
@@ -78,6 +79,7 @@ type FrontSharedProps = {
     auth: { user: FrontAuthUser | null };
     cartCount: number;
     cartItems: CartDrawerItem[];
+    freeShippingThreshold: number | null;
     favoriteCount: number;
     flash: { success: string | null };
 };
@@ -87,6 +89,7 @@ type FrontSharedProps = {
 - 共有する会員のカラムは allowlist とし、ヘッダー表示とマイページ導線が使う `id`・`member_code`・`name` のみに絞る。`email`・`tel`・`status`・パスワードハッシュ・`remember_token` は共有しない。
 - `cartCount` はカート明細の**数量の合計**、`favoriteCount` はお気に入りの**明細数**。未ログイン時はいずれも `0`。
 - `cartItems` はカートドロワーの描画に使う明細で、未ログイン時は空配列。表示に使う項目のみの allowlist とし、商品IDや在庫数は含めない。`line_total` は商品単価 × 数量。
+- `freeShippingThreshold` はドロワーの送料無料案内に使う `ec_settings.free_shipping_threshold`。案内は明細があるときだけ出すため、カートが空（未ログインを含む）のときは `null`。
 - `flash.success` はセッションの `success` キーを渡す。`Toast` が監視して表示する。
 
 ### フォント
@@ -203,7 +206,7 @@ Props なし。`FOOTER_COLUMNS` を3カラムで描画する。
 type CartDrawerProps = { isOpen: boolean; onClose: () => void };
 ```
 
-共有プロパティの `cartItems` を明細として描画し、`line_total` の合計を「商品合計」に出す。件数表示は `cartCount`。明細が0件のときは `EmptyState` で「カートは空です」を表示する。画像未登録の明細はカテゴリ別のグラデーション（`categoryTint`）を背景にする。「カートを見る」はカート画面（単位15）のルートが実装されるまで非活性表示になる。
+共有プロパティの `cartItems` を明細として描画し、`line_total` の合計を「商品合計」に出す。件数表示は `cartCount`。明細が0件のときは `EmptyState` で「カートは空です」を表示する。画像未登録の明細はカテゴリ別のグラデーション（`categoryTint`）を背景にする。商品合計の下には送料無料までの案内文を出す（文言は `resources/js/front/lib/freeShipping.ts` の `freeShippingMessage()` でカートページと共通化する。[docs/front/cart.md](cart.md) 参照）。「カートを見る」はカートページ（`cart.index`）へ遷移する。
 
 ### `Pagination`（`resources/js/front/Components/Pagination.tsx`）
 
@@ -280,6 +283,7 @@ type EmptyStateProps = { message: string; className?: string };
 - [docs/front/auth.md](auth.md) — 会員登録・ログイン・ログアウトの正本。共通レイアウトを使う最初の画面
 - [docs/front/product-index.md](product-index.md) — 商品一覧。商品カードとページ送りを使う
 - [docs/front/product-show.md](product-show.md) — 商品詳細。カート投入時に `useCartDrawer()` でドロワーを開く
+- [docs/front/cart.md](cart.md) — カートページ。ドロワーの「カートを見る」の遷移先。送料無料の案内文言を共有する
 - [docs/admin/common-layout.md](../admin/common-layout.md) — 管理画面共通レイアウトの正本。`--color-admin-*` トークンはこちらが正本
 - [docs/1_system_overview.md](../1_system_overview.md) — ブランド表記・技術構成の前提
 - [docs/2_database.md](../2_database.md) — `cart_items`・`favorites` テーブル定義の正本
@@ -321,7 +325,8 @@ type EmptyStateProps = { message: string; className?: string };
 - 共有データの会員情報が `id`・`member_code`・`name` のみで、メールアドレス・パスワードハッシュ・電話番号・ステータスを含まない: `tests/Feature/Front/SharedPropsTest.php`（`共有データの会員情報は識別子・会員番号・氏名のみを含む`）
 - 未ログイン時は `auth.user` が `null` で件数が0になる: 同上（`未ログイン時の共有データは会員情報を持たず件数が0になる`）
 - `cartCount` が数量の合計、`favoriteCount` が明細数で共有される: 同上（`カート件数は数量の合計・お気に入り件数は明細数で共有される`）
-- `cartItems` にカートドロワー用の明細（商品名・バリエーション名・数量・小計・カテゴリ名）が共有される: 同上（`カートドロワー用の明細が共有される`）
+- `cartItems` にカートドロワー用の明細（商品名・バリエーション名・数量・小計・カテゴリ名）と送料無料しきい値が共有される: 同上（`カートドロワー用の明細が共有される`）
+- カートが空のときは送料無料しきい値が `null` になる: 同上（`カートが空のときは送料無料のしきい値を共有しない`）
 - `auth.admin` はフロントのパスに共有されない: 同上（`管理画面の共有データはフロントのパスに現れない`）
 - 未実装リンクが非活性表示になり、実装済みリンクが機能する: 自動テストなし。目視確認で担保する
 - SP幅でハンバーガーメニューが開閉し、PC幅でナビが横並びになる: 自動テストなし。目視確認で担保する

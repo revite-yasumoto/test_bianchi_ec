@@ -66,6 +66,8 @@ declare global {
         };
         cartCount: number;
         cartItems: CartDrawerItem[];
+        /** 送料無料のしきい値。カートが空のときは案内を出さないため null */
+        freeShippingThreshold: number | null;
         favoriteCount: number;
         flash: {
             success: string | null;

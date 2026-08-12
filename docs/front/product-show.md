@@ -9,7 +9,7 @@
   - `GET /products/{product}`（ルート名 `products.show`）
   - `POST /cart/items`（ルート名 `cart.items.store`）
 - **アクセス権限・ミドルウェア:** 詳細の閲覧は認証不要。`POST /cart/items` は `auth` ミドルウェアで保護し、未ログインの投入はログイン画面へ遷移させる（ログイン後は投入元の商品詳細へ戻る）。
-- **本ドキュメントのスコープ:** 商品詳細画面、カートへの投入、閲覧履歴の記録。カート画面本体は単位15、お気に入りは [docs/front/favorite.md](favorite.md) が扱う。
+- **本ドキュメントのスコープ:** 商品詳細画面、カートへの投入、閲覧履歴の記録。カート画面本体は [docs/front/cart.md](cart.md)、お気に入りは [docs/front/favorite.md](favorite.md) が扱う。
 
 ## 使用テーブル
 
@@ -164,6 +164,7 @@ type Props = {
 
 - [docs/front/product-index.md](product-index.md) — 商品一覧。カードの在庫切れ表示は本書の判定に従う
 - [docs/front/favorite.md](favorite.md) — お気に入りの登録・解除の正本
+- [docs/front/cart.md](cart.md) — カートページの正本。投入後の明細・数量変更・削除を扱う
 - [docs/front/common-layout.md](common-layout.md) — `FrontLayout`・カートドロワー・共通UIの正本
 - [docs/shipping-calculation.md](../shipping-calculation.md) — 送料・配達予定日の算出の正本（本画面は案内表示のみで算出は行わない）
 - [docs/admin/product-form.md](../admin/product-form.md) — 商品・規格・画像・スペックの登録元

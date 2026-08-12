@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\SpecOptionController;
 use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Front\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Front\Auth\RegisteredUserController;
+use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\CartItemController;
 use App\Http\Controllers\Front\FavoriteController;
 use App\Http\Controllers\Front\ProductController as FrontProductController;
@@ -96,7 +97,14 @@ Route::middleware('guest')->group(function (): void {
 Route::middleware('auth')->group(function (): void {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
+    Route::get('cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('cart/items', [CartItemController::class, 'store'])->name('cart.items.store');
+    Route::put('cart/items/{cartItem}', [CartItemController::class, 'update'])
+        ->name('cart.items.update')
+        ->can('update', 'cartItem');
+    Route::delete('cart/items/{cartItem}', [CartItemController::class, 'destroy'])
+        ->name('cart.items.destroy')
+        ->can('delete', 'cartItem');
 
     Route::post('favorites', [FavoriteController::class, 'store'])->name('favorites.store');
     Route::delete('favorites/{product}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');

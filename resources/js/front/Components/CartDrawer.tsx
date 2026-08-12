@@ -1,5 +1,6 @@
 import { usePage } from '@inertiajs/react';
 import { useEffect, useId, useRef } from 'react';
+import { freeShippingMessage } from '@/front/lib/freeShipping';
 import { categoryTint } from '@/front/lib/tint';
 import { EmptyState } from '@/shared/Components/EmptyState';
 import { yen } from '@/shared/lib/yen';
@@ -12,7 +13,8 @@ type CartDrawerProps = {
 
 /** ヘッダーのカートボタン、およびカート投入直後に開く右スライドインのドロワー */
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
-    const { cartCount, cartItems } = usePage<FrontSharedProps>().props;
+    const { cartCount, cartItems, freeShippingThreshold } =
+        usePage<FrontSharedProps>().props;
     const itemsTotal = cartItems.reduce(
         (total, item) => total + item.line_total,
         0,
@@ -127,6 +129,13 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         <span>商品合計</span>
                         <span className="font-mono">{yen(itemsTotal)}</span>
                     </div>
+                    {freeShippingThreshold !== null ? (
+                        <p className="mt-1.5 text-[11.5px] text-ink2">
+                            {freeShippingMessage(
+                                freeShippingThreshold - itemsTotal,
+                            )}
+                        </p>
+                    ) : null}
                     <NavLink
                         item={{
                             key: 'cart',
