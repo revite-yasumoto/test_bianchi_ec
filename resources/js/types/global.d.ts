@@ -49,11 +49,23 @@ declare global {
         name: string;
     };
 
+    /** ヘッダーから開くカートドロワーに出す明細 */
+    type CartDrawerItem = {
+        id: number;
+        name: string;
+        variant_label: string;
+        quantity: number;
+        line_total: number;
+        image_url: string | null;
+        category_name: string;
+    };
+
     type FrontSharedProps = {
         auth: {
             user: FrontAuthUser | null;
         };
         cartCount: number;
+        cartItems: CartDrawerItem[];
         favoriteCount: number;
         flash: {
             success: string | null;

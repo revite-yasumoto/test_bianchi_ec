@@ -20,6 +20,9 @@ use App\Http\Controllers\Admin\SpecOptionController;
 use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Front\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Front\Auth\RegisteredUserController;
+use App\Http\Controllers\Front\CartItemController;
+use App\Http\Controllers\Front\FavoriteController;
+use App\Http\Controllers\Front\ProductController as FrontProductController;
 use App\Http\Controllers\Front\TopController;
 use Illuminate\Support\Facades\Route;
 
@@ -80,6 +83,10 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
 // 単位14でTOPページの中身を実装するまでは、共通レイアウトの表示とログイン後の遷移先を兼ねる暫定ページを返す
 Route::get('/', [TopController::class, 'index'])->name('top');
 
+// 商品の閲覧は未ログインでも可能。購入導線（カート投入・お気に入り）からログインを求める
+Route::get('products', [FrontProductController::class, 'index'])->name('products.index');
+Route::get('products/{product}', [FrontProductController::class, 'show'])->name('products.show');
+
 Route::middleware('guest')->group(function (): void {
     Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('register', [RegisteredUserController::class, 'store'])->name('register.store');
@@ -89,4 +96,9 @@ Route::middleware('guest')->group(function (): void {
 
 Route::middleware('auth')->group(function (): void {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+    Route::post('cart/items', [CartItemController::class, 'store'])->name('cart.items.store');
+
+    Route::post('favorites', [FavoriteController::class, 'store'])->name('favorites.store');
+    Route::delete('favorites/{product}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
 });

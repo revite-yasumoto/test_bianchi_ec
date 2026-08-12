@@ -48,7 +48,7 @@ export function Header({ onOpenCart }: HeaderProps) {
                             <NavLink
                                 item={{
                                     key: 'favorites',
-                                    label: `♡ ${favoriteCount}`,
+                                    label: `お気に入り ${favoriteCount}`,
                                     routeName: 'mypage.favorites',
                                 }}
                                 className="rounded-full border border-line px-3 py-2 text-xs font-bold whitespace-nowrap"

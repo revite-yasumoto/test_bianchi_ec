@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Front;
 
 use App\Models\CartItem;
+use App\Models\Category;
 use App\Models\Favorite;
 use App\Models\Product;
 use App\Models\ProductVariant;
@@ -76,6 +77,39 @@ class SharedPropsTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->where('cartCount', 5)
                 ->where('favoriteCount', 1)
+            );
+    }
+
+    #[Test]
+    public function カートドロワー用の明細が共有される(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create(['name' => 'アパレル']);
+        $product = Product::factory()->create([
+            'name' => 'チームジャージ',
+            'price' => 14800,
+            'category_id' => $category->id,
+        ]);
+        $variant = ProductVariant::factory()->create([
+            'product_id' => $product->id,
+            'size_name' => 'M',
+            'color_name' => 'レッド',
+        ]);
+        CartItem::factory()->create([
+            'user_id' => $user->id,
+            'product_variant_id' => $variant->id,
+            'quantity' => 2,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('top'))
+            ->assertInertia(fn ($page) => $page
+                ->has('cartItems', 1)
+                ->where('cartItems.0.name', 'チームジャージ')
+                ->where('cartItems.0.variant_label', 'レッド / M')
+                ->where('cartItems.0.quantity', 2)
+                ->where('cartItems.0.line_total', 29600)
+                ->where('cartItems.0.category_name', 'アパレル')
             );
     }
 

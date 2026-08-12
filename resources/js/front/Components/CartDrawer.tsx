@@ -1,6 +1,8 @@
 import { usePage } from '@inertiajs/react';
 import { useEffect, useId, useRef } from 'react';
+import { categoryTint } from '@/front/lib/tint';
 import { EmptyState } from '@/shared/Components/EmptyState';
+import { yen } from '@/shared/lib/yen';
 import { NavLink } from './NavLink';
 
 type CartDrawerProps = {
@@ -8,12 +10,13 @@ type CartDrawerProps = {
     onClose: () => void;
 };
 
-/**
- * ヘッダーのカートボタンから開く右スライドインのドロワー。
- * 明細の描画は単位15（カート）でカート明細を受け取るようにして差し替える。
- */
+/** ヘッダーのカートボタン、およびカート投入直後に開く右スライドインのドロワー */
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
-    const { cartCount } = usePage<FrontSharedProps>().props;
+    const { cartCount, cartItems } = usePage<FrontSharedProps>().props;
+    const itemsTotal = cartItems.reduce(
+        (total, item) => total + item.line_total,
+        0,
+    );
     const titleId = useId();
     const drawerRef = useRef<HTMLDivElement>(null);
     const previouslyFocusedRef = useRef<HTMLElement | null>(null);
@@ -75,17 +78,62 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 </div>
 
                 <div className="flex-1 overflow-y-auto px-5">
-                    <EmptyState message="カートは空です" />
+                    {cartItems.length > 0 ? (
+                        <ul>
+                            {cartItems.map((item) => (
+                                <li
+                                    key={item.id}
+                                    className="flex gap-3 border-b border-line py-3.5"
+                                >
+                                    <div
+                                        className="h-14 w-14 shrink-0 overflow-hidden rounded-[10px]"
+                                        style={{
+                                            backgroundImage: categoryTint(
+                                                item.category_name,
+                                            ),
+                                        }}
+                                    >
+                                        {item.image_url ? (
+                                            <img
+                                                src={item.image_url}
+                                                alt=""
+                                                loading="lazy"
+                                                className="h-full w-full object-cover"
+                                            />
+                                        ) : null}
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-[12.5px] leading-[1.45] font-bold">
+                                            {item.name}
+                                        </p>
+                                        <p className="mt-0.5 text-[11px] text-ink2">
+                                            {item.variant_label} ×
+                                            {item.quantity}
+                                        </p>
+                                    </div>
+                                    <p className="font-mono text-[12.5px] font-bold">
+                                        {yen(item.line_total)}
+                                    </p>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <EmptyState message="カートは空です" />
+                    )}
                 </div>
 
                 <div className="border-t border-line px-5 py-4">
+                    <div className="flex justify-between text-sm font-extrabold">
+                        <span>商品合計</span>
+                        <span className="font-mono">{yen(itemsTotal)}</span>
+                    </div>
                     <NavLink
                         item={{
                             key: 'cart',
                             label: 'カートを見る',
                             routeName: 'cart.index',
                         }}
-                        className="block w-full rounded-full bg-coral py-3.5 text-center text-sm font-extrabold text-white"
+                        className="mt-3.5 block w-full rounded-full bg-coral py-3.5 text-center text-sm font-extrabold text-white"
                     />
                 </div>
             </div>

@@ -52,4 +52,18 @@ class ProductVariant extends Model
     {
         return ($this->stock?->quantity ?? 0) > 0;
     }
+
+    /**
+     * カート・注文明細に出すバリエーション名（例: レッド / M）。
+     */
+    public function displayName(): string
+    {
+        // 「0」のようなサイズ名を落とさないよう、空判定ではなく未設定かどうかで絞る
+        $parts = array_filter(
+            [$this->color_name, $this->size_name],
+            fn (?string $name): bool => $name !== null && $name !== '',
+        );
+
+        return $parts === [] ? '規格なし' : implode(' / ', $parts);
+    }
 }

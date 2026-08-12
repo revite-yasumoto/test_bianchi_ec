@@ -38,7 +38,7 @@
 | 10 | 管理：送料設定マスタ・EC基本設定 | 完了（`docs/admin/shipping-setting.md`, `docs/admin/ec-setting.md`, `docs/shipping-calculation.md`） | 03 | 完了 |
 | 11 | 管理：新着ニュース・重要なお知らせ管理 | 完了（`docs/admin/news.md`, `docs/admin/notice.md`） | 03 | 完了 |
 | 12 | 管理：ダッシュボード | 完了（`docs/admin/dashboard.md`） | 07 | 完了 |
-| 13 | フロント：商品一覧・商品詳細 | `docs/plans/13-front-product.md` | 02, 05, 06 | 未着手 |
+| 13 | フロント：商品一覧・商品詳細 | 完了（`docs/front/product-index.md`, `docs/front/product-show.md`, `docs/front/favorite.md`） | 02, 05, 06 | 完了 |
 | 14 | フロント：TOPページ | `docs/plans/14-front-top.md` | 13, 11 | 未着手 |
 | 15 | フロント：カート | `docs/plans/15-front-cart.md` | 13, 10 | 未着手 |
 | 16 | フロント：購入手続き〜注文完了 | `docs/plans/16-front-checkout.md` | 15, 10 | 未着手 |
