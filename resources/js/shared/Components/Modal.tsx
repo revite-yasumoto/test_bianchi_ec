@@ -50,7 +50,10 @@ export function Modal({
 
     return (
         <div
-            className="fixed inset-0 z-[75] flex items-center justify-center bg-ink/50 p-6"
+            // 中身がビューポートより高いときは背景側をスクロールさせる。
+            // items-center のままだと上端が切れてスクロールで到達できなくなるため、
+            // items-start + 本体の my-auto で「短いときは中央・長いときは上端から」にする
+            className="fixed inset-0 z-[75] flex items-start justify-center overflow-y-auto bg-ink/50 p-6"
             onClick={onClose}
         >
             <div
@@ -60,7 +63,7 @@ export function Modal({
                 aria-modal="true"
                 aria-labelledby={titleId}
                 className={cn(
-                    'w-full max-w-md rounded-3xl bg-white p-7 shadow-2xl outline-none',
+                    'my-auto w-full max-w-md rounded-3xl bg-white p-7 shadow-2xl outline-none',
                     className,
                 )}
                 onClick={(event) => event.stopPropagation()}

@@ -298,7 +298,8 @@ type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
 // Badge — 配色は Tailwind のトークン外のため tone の実値を style で当てる
 type BadgeProps = { tone: Tone; className?: string; children: ReactNode };
 
-// Modal — 中央表示。背景クリック・Escape で閉じる
+// Modal — 背景クリック・Escape で閉じる。内容が画面より高いときは背景側がスクロールし、
+//         収まるときは中央に置く（入力欄の多いモーダルで下端のボタンに届かなくなるのを防ぐ）
 type ModalProps = {
     isOpen: boolean;
     title: string;
