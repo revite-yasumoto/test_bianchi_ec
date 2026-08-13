@@ -160,22 +160,12 @@ export function PurchasePanel({
                 >
                     送料・お支払い方法・発送日数について →
                 </button>
-                {/* お問い合わせ画面は単位18で実装するため、それまでは非活性で表示する */}
-                {route().has('contact') ? (
-                    <Link
-                        href={route('contact', { product_name: product.name })}
-                        className="text-left text-[13px] font-semibold text-brand"
-                    >
-                        この商品について問い合わせる →
-                    </Link>
-                ) : (
-                    <span
-                        aria-disabled="true"
-                        className="cursor-not-allowed text-left text-[13px] font-semibold text-brand opacity-40"
-                    >
-                        この商品について問い合わせる →
-                    </span>
-                )}
+                <Link
+                    href={route('contact', { product_name: product.name })}
+                    className="text-left text-[13px] font-semibold text-brand"
+                >
+                    この商品について問い合わせる →
+                </Link>
             </div>
         </div>
     );

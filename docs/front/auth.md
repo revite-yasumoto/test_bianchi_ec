@@ -55,6 +55,7 @@
 
 - エラー表示: 各入力欄の直下にインラインで表示する。認証失敗・レート制限・休会中のメッセージは `email` の直下にまとめて表示する。
 - 必須項目のラベルには `*` を表示する。
+- 同意チェックの「利用規約」「プライバシーポリシー」はそれぞれの静的ページ（[docs/front/static-pages.md](static-pages.md)）へのリンクにする。リンクはチェックボックスのラベル内に置く（ラベル内の対話的要素へのクリックではチェックが切り替わらない）。
 
 ## インターフェース ＆ データロジック
 
@@ -128,6 +129,7 @@ type RegisterForm = {
 
 - [docs/front/common-layout.md](common-layout.md) — フロント共通レイアウト・共通UIコンポーネント・デザイントークンの正本。`FrontSharedProps` の型定義もこちらが正本
 - [docs/front/top.md](top.md) — ログイン後・ログアウト後の遷移先であるTOPページの正本
+- [docs/front/static-pages.md](static-pages.md) — 同意チェックからリンクする利用規約・プライバシーポリシーの正本
 - [docs/admin/auth.md](../admin/auth.md) — 管理者認証の正本。`bootstrap/app.php` のパス分岐・`config/inertia.php` の設定はこちらが正本
 - [docs/1_system_overview.md](../1_system_overview.md) — 2ガード構成の前提
 - [docs/2_database.md](../2_database.md) — `users` テーブル定義の正本

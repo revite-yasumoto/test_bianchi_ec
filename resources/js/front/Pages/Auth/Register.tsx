@@ -122,7 +122,20 @@ export default function Register() {
                             setData('agree', event.target.checked)
                         }
                     >
-                        利用規約 および プライバシーポリシー に同意します
+                        <Link
+                            href={route('legal.terms')}
+                            className="font-bold text-brand underline"
+                        >
+                            利用規約
+                        </Link>
+                        {' および '}
+                        <Link
+                            href={route('legal.privacy')}
+                            className="font-bold text-brand underline"
+                        >
+                            プライバシーポリシー
+                        </Link>
+                        {' に同意します'}
                     </Checkbox>
 
                     <Button

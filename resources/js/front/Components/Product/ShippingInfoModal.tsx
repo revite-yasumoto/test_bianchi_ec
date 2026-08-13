@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import { Modal } from '@/shared/Components/Modal';
 import { yen } from '@/shared/lib/yen';
 
@@ -76,6 +77,12 @@ export function ShippingInfoModal({
                     ))}
                 </tbody>
             </table>
+
+            <p className="mt-4 text-[12.5px]">
+                <Link href={route('guide')} className="font-bold text-brand">
+                    買い物ガイドで詳しく見る →
+                </Link>
+            </p>
         </Modal>
     );
 }

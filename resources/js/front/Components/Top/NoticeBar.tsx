@@ -4,13 +4,13 @@ type NoticeBarProps = {
     notice: { id: number; title: string };
 };
 
-const BAR_CLASS =
-    'flex w-full items-center gap-3 border-b border-notice-line bg-notice-bg px-5 py-2.5 text-left';
-
 /** TOP最上部の1行。重要なお知らせが掲載中のときだけ表示する */
 export function NoticeBar({ notice }: NoticeBarProps) {
-    const content = (
-        <>
+    return (
+        <Link
+            href={route('notices.index')}
+            className="flex w-full items-center gap-3 border-b border-notice-line bg-notice-bg px-5 py-2.5 text-left"
+        >
             <span className="shrink-0 rounded bg-coral px-2 py-0.5 font-mono text-[10px] tracking-[.1em] text-white">
                 重要
             </span>
@@ -20,17 +20,6 @@ export function NoticeBar({ notice }: NoticeBarProps) {
             <span className="ml-auto shrink-0 text-xs text-notice-ink-muted">
                 詳細 →
             </span>
-        </>
-    );
-
-    // 重要なお知らせ一覧は単位18で実装するため、それまではリンクにしない
-    if (!route().has('notices.index')) {
-        return <div className={BAR_CLASS}>{content}</div>;
-    }
-
-    return (
-        <Link href={route('notices.index')} className={BAR_CLASS}>
-            {content}
         </Link>
     );
 }

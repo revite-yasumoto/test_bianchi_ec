@@ -58,7 +58,8 @@
 - 在庫切れの商品は「カートに入れる」を「在庫切れ」に変え、灰色で押せない状態にする。
 - 画像が未登録の商品はカテゴリごとのグラデーション背景に商品識別コードを表示する。サムネイルは登録済みの枚数分のみ表示し、1枚以下のときは表示しない。
 - 「送料・お支払い方法・発送日数について」は同一画面上のモーダルを開く（`Escape`・背景クリックで閉じる）。
-- 「この商品について問い合わせる」は `/contact?product_name=<商品名>` へ遷移する。お問い合わせ画面（単位18）が未実装の間は非活性表示にする。
+- 「この商品について問い合わせる」は `/contact?product_name=<商品名>` へ遷移する（[docs/front/contact.md](contact.md)）。
+- 送料モーダルの末尾から買い物ガイド（`guide`）へ遷移できる（[docs/front/static-pages.md](static-pages.md)）。
 
 ## インターフェース ＆ データロジック
 
@@ -166,6 +167,8 @@ type Props = {
 - [docs/front/favorite.md](favorite.md) — お気に入りの登録・解除の正本
 - [docs/front/cart.md](cart.md) — カートページの正本。投入後の明細・数量変更・削除を扱う
 - [docs/front/common-layout.md](common-layout.md) — `FrontLayout`・カートドロワー・共通UIの正本
+- [docs/front/contact.md](contact.md) — 「この商品について問い合わせる」の遷移先の正本
+- [docs/front/static-pages.md](static-pages.md) — 送料モーダルから案内する買い物ガイドの正本
 - [docs/shipping-calculation.md](../shipping-calculation.md) — 送料・配達予定日の算出の正本（本画面は案内表示のみで算出は行わない）
 - [docs/admin/product-form.md](../admin/product-form.md) — 商品・規格・画像・スペックの登録元
 - [docs/admin/stock.md](../admin/stock.md) — 在庫数の更新元

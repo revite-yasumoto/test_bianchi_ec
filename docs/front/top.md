@@ -57,7 +57,7 @@
 - メインビジュアルは5.2秒間隔で自動的に切り替わる。ドットを押すと任意のスライドへ移動し、タイマーは張り直す。バナーが1件のときはドットを出さず自動切替もしない。ポインタが乗っている間・内部の要素にフォーカスがある間、および `prefers-reduced-motion: reduce` の環境では自動切替を止める。
 - 重要なお知らせ・ランキング・おすすめ・最近見た商品・新着ニュースは、対象データが0件ならセクションごと表示しない。
 - ランキングのカードに重ねる順位の数字は、読み上げでは「第N位」と読ませる。
-- 「詳細 →」「すべて見る →」の遷移先（重要なお知らせ一覧・新着ニュース一覧）は単位18で実装するため、それまではリンクにしない。
+- 「詳細 →」は重要なお知らせ一覧（`notices.index`）へ、「すべて見る →」と各ニュース行は新着ニュース一覧（`news.index`）へ遷移する（[docs/front/news-notice.md](news-notice.md)）。
 - 商品画像が未登録の場合はカテゴリごとのグラデーションを表示する（[docs/front/common-layout.md](common-layout.md) の `categoryTint` が正本）。
 
 ## インターフェース ＆ データロジック
@@ -130,6 +130,7 @@ type Props = {
 - [docs/front/product-index.md](product-index.md) — 商品カードの表示データの正本
 - [docs/front/product-show.md](product-show.md) — 在庫の二値判定の正本
 - [docs/front/common-layout.md](common-layout.md) — `FrontLayout`・カテゴリ別グラデーションの正本
+- [docs/front/news-notice.md](news-notice.md) — 「すべて見る →」「詳細 →」の遷移先である一覧画面の正本
 - [docs/admin/news.md](../admin/news.md) — 新着ニュースの登録元
 - [docs/admin/notice.md](../admin/notice.md) — 重要なお知らせの登録元
 - [docs/2_database.md](../2_database.md) — テーブル定義の正本

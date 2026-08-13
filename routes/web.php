@@ -23,6 +23,7 @@ use App\Http\Controllers\Front\Auth\RegisteredUserController;
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\CartItemController;
 use App\Http\Controllers\Front\CheckoutController;
+use App\Http\Controllers\Front\ContactController;
 use App\Http\Controllers\Front\FavoriteController;
 use App\Http\Controllers\Front\MyPage\AddressListController;
 use App\Http\Controllers\Front\MyPage\FavoriteListController;
@@ -30,8 +31,11 @@ use App\Http\Controllers\Front\MyPage\OrderCancelController;
 use App\Http\Controllers\Front\MyPage\OrderHistoryController;
 use App\Http\Controllers\Front\MyPage\PasswordController;
 use App\Http\Controllers\Front\MyPage\ProfileController;
+use App\Http\Controllers\Front\NewsController as FrontNewsController;
+use App\Http\Controllers\Front\NoticeController as FrontNoticeController;
 use App\Http\Controllers\Front\OrderController as FrontOrderController;
 use App\Http\Controllers\Front\ProductController as FrontProductController;
+use App\Http\Controllers\Front\StaticPageController;
 use App\Http\Controllers\Front\TopController;
 use App\Http\Controllers\Front\UserAddressController;
 use Illuminate\Support\Facades\Route;
@@ -95,6 +99,20 @@ Route::get('/', [TopController::class, 'index'])->name('top');
 // 商品の閲覧は未ログインでも可能。購入導線（カート投入・お気に入り）からログインを求める
 Route::get('products', [FrontProductController::class, 'index'])->name('products.index');
 Route::get('products/{product}', [FrontProductController::class, 'show'])->name('products.show');
+
+Route::get('news', [FrontNewsController::class, 'index'])->name('news.index');
+Route::get('notices', [FrontNoticeController::class, 'index'])->name('notices.index');
+
+Route::get('guide', [StaticPageController::class, 'guide'])->name('guide');
+Route::get('legal/tokushoho', [StaticPageController::class, 'tokushoho'])->name('legal.tokushoho');
+Route::get('legal/privacy', [StaticPageController::class, 'privacy'])->name('legal.privacy');
+Route::get('legal/terms', [StaticPageController::class, 'terms'])->name('legal.terms');
+
+Route::get('contact', [ContactController::class, 'create'])->name('contact');
+// 未認証で投稿できるため、同一IPからの連投を抑える
+Route::post('contact', [ContactController::class, 'store'])
+    ->name('contact.store')
+    ->middleware('throttle:10,60');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
