@@ -74,6 +74,7 @@ class HandleInertiaRequests extends Middleware
             'favoriteCount' => fn (): int => $this->favoriteCount($request),
             'flash' => [
                 'success' => $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
             ],
         ];
     }

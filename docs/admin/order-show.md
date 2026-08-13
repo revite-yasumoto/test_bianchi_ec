@@ -1,6 +1,6 @@
 # 注文詳細・ステータス更新
 
-本ドキュメントは**ステータス遷移規則**と**キャンセル時の在庫戻し**の正本。単位16（購入手続き）・単位17（マイページのキャンセル依頼）の仕様書は、これらの規則を再掲せず本書へリンクする。
+本ドキュメントは**ステータス遷移規則**と**キャンセル時の在庫戻し**の正本。[docs/front/checkout.md](../front/checkout.md)・単位17（マイページのキャンセル依頼）の仕様書は、これらの規則を再掲せず本書へリンクする。表示する注文時スナップショットの値の出所は [docs/order-snapshot.md](../order-snapshot.md) が正本。
 
 ## 機能概要
 
@@ -138,6 +138,8 @@ type Props = {
 ## 関連ドキュメント
 
 - [docs/admin/order-index.md](order-index.md) — 注文一覧の正本
+- [docs/order-snapshot.md](../order-snapshot.md) — 表示する注文時スナップショットの値の出所の正本
+- [docs/front/checkout.md](../front/checkout.md) — 注文とステータス履歴の初期行を作成する購入手続きの正本
 - [docs/admin/stock.md](stock.md) — 在庫マスタの正本。手動調整の画面
 - [docs/admin/auth.md](auth.md) — ログイン後の遷移先が注文一覧になる条件
 - [docs/admin/common-layout.md](common-layout.md) — `AdminLayout`・`ConfirmDialog` の正本

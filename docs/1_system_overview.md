@@ -40,3 +40,4 @@
 
 - [docs/2_database.md](2_database.md) — 全テーブル定義の正本
 - [docs/shipping-calculation.md](shipping-calculation.md) — 送料・配達予定日・合計金額の算出の正本
+- [docs/order-snapshot.md](order-snapshot.md) — 注文時スナップショットの設計方針と全列の値の出所の正本

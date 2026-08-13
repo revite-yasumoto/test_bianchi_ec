@@ -16,4 +16,15 @@ enum PaymentMethod: string
             self::Cod => '代金引換',
         };
     }
+
+    /**
+     * 注文確定時に付与するステータス。前払いは入金確認を挟むため入金待ちから始まる。
+     */
+    public function initialOrderStatus(): OrderStatus
+    {
+        return match ($this) {
+            self::BankTransfer => OrderStatus::AwaitingPayment,
+            self::Cod => OrderStatus::Received,
+        };
+    }
 }

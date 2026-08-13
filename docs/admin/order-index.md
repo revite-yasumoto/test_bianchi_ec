@@ -78,6 +78,7 @@ type Props = {
 ## 関連ドキュメント
 
 - [docs/admin/order-show.md](order-show.md) — 注文詳細・ステータス遷移規則・在庫戻しの正本
+- [docs/order-snapshot.md](../order-snapshot.md) — 一覧に表示する注文時スナップショットの値の出所の正本
 - [docs/admin/common-layout.md](common-layout.md) — `FilterBar`・`DataTable`・`Pagination` の正本
 - [docs/2_database.md](../2_database.md) — `orders` テーブル定義の正本
 

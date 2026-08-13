@@ -16,7 +16,7 @@
 `POST /cart/items`（カートへの投入）は [docs/front/product-show.md](product-show.md) が正本。
 
 - **アクセス権限・ミドルウェア:** 全ルートを `auth`（`web` ガード）で保護する。未ログインのアクセスはログイン画面へ遷移する。数量変更・削除は `CartItemPolicy` を `can` ミドルウェアで適用し、自分のカート行以外は403。
-- **本ドキュメントのスコープ:** カートページと明細の数量変更・削除。カートドロワーは [docs/front/common-layout.md](common-layout.md)、購入手続き以降は単位16が扱う。
+- **本ドキュメントのスコープ:** カートページと明細の数量変更・削除。カートドロワーは [docs/front/common-layout.md](common-layout.md)、購入手続き以降は [docs/front/checkout.md](checkout.md) が正本。
 
 ## 使用テーブル
 
@@ -104,7 +104,7 @@ type Props = {
 - **主要な処理フロー:**
 
 **カートページの表示**
-1. 自分の `cart_items` を `variant.product.category` / `variant.product.mainImage` / `variant.stock` を eager load してID昇順で取得する。
+1. 自分の `cart_items` を `variant.product.category` / `variant.product.mainImage` / `variant.stock` を eager load してID昇順で取得する（`CartService::rows()`。購入手続き・注文確認も同じ行の形を参照する）。
 2. 各行の単価に商品の現在価格を用い、小計・商品合計を算出する。
 3. 基準の都道府県で概算送料・合計・送料無料までの残額を算出する。
 4. 購入できない行は `is_purchasable = false` として返し、フロントで理由を表示する。
@@ -119,8 +119,8 @@ type Props = {
 2. 明細を削除し、元の画面へ戻して `商品を削除しました` を表示する。
 
 **購入手続きへ進む**
-1. 明細が1件以上あり、すべての行が `is_purchasable = true` のときのみ遷移できる。
-2. 遷移先は `checkout.index`（単位16）。同ルートが実装されるまでボタンは非活性表示になる。
+1. 明細が1件以上あり、すべての行が `is_purchasable = true` のときのみ遷移できる。満たさないときはボタンを非活性表示にする。
+2. 遷移先は `checkout.index`（[docs/front/checkout.md](checkout.md)）。購入手続き画面側でも同じ条件を再判定し、満たさない場合はカートページへ戻す。
 
 ## 業務ルール
 
@@ -134,6 +134,7 @@ type Props = {
 ## 関連ドキュメント
 
 - [docs/front/product-show.md](product-show.md) — カート投入と在庫の二値判定の正本
+- [docs/front/checkout.md](checkout.md) — 購入手続き以降（配送先・支払い方法・注文確定）の正本
 - [docs/front/common-layout.md](common-layout.md) — `FrontLayout`・カートドロワー・共有プロパティの正本
 - [docs/shipping-calculation.md](../shipping-calculation.md) — 送料・配達予定日・合計金額の算出の正本
 - [docs/admin/ec-setting.md](../admin/ec-setting.md) — 送料無料しきい値の設定元
@@ -178,5 +179,5 @@ type Props = {
 - 削除の正常系と異常系（他人の行403・未ログイン）: `tests/Feature/Front/Cart/DestroyCartItemTest.php`
 - 数量ステッパーの下限・上限での非活性、削除ボタンの動作: 自動テストなし。目視確認で担保する
 - 送料無料の進捗バーの伸長と、達成時の配色・文言の切り替え: 自動テストなし。目視確認で担保する
-- 購入不可の行がある場合に「購入手続きへ進む」が非活性になる: 自動テストなし。目視確認で担保する
+- 購入不可の行がある場合に「購入手続きへ進む」が非活性になる: 自動テストなし。目視確認で担保する（サーバー側での再判定は `tests/Feature/Front/Checkout/CheckoutIndexTest.php` が担保する）
 - Props型定義の整合性: `npx tsc --noEmit`

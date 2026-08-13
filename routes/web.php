@@ -22,9 +22,12 @@ use App\Http\Controllers\Front\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Front\Auth\RegisteredUserController;
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\CartItemController;
+use App\Http\Controllers\Front\CheckoutController;
 use App\Http\Controllers\Front\FavoriteController;
+use App\Http\Controllers\Front\OrderController as FrontOrderController;
 use App\Http\Controllers\Front\ProductController as FrontProductController;
 use App\Http\Controllers\Front\TopController;
+use App\Http\Controllers\Front\UserAddressController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function (): void {
@@ -108,4 +111,15 @@ Route::middleware('auth')->group(function (): void {
 
     Route::post('favorites', [FavoriteController::class, 'store'])->name('favorites.store');
     Route::delete('favorites/{product}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
+
+    Route::get('checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('checkout/confirm', [CheckoutController::class, 'confirm'])->name('checkout.confirm');
+
+    Route::post('orders', [FrontOrderController::class, 'store'])->name('orders.store');
+    Route::get('orders/{order}/complete', [FrontOrderController::class, 'complete'])
+        ->name('orders.complete')
+        ->can('view', 'order');
+
+    Route::post('addresses', [UserAddressController::class, 'store'])->name('addresses.store');
 });

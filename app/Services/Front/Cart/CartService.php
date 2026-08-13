@@ -28,10 +28,7 @@ class CartService
      */
     public function build(User $user): array
     {
-        $rows = $this->items($user)
-            ->map(fn (CartItem $item): array => $this->row($item))
-            ->all();
-
+        $rows = $this->rows($user);
         $subtotal = array_sum(array_column($rows, 'subtotal'));
         $prefecture = $this->estimatedPrefecture($user);
 
@@ -53,6 +50,19 @@ class CartService
             'remainingForFreeShipping' => max(0, $calculation->freeShippingThreshold - $subtotal),
             'estimatedPrefectureName' => $prefecture->name,
         ];
+    }
+
+    /**
+     * カート明細の表示用の行。カートページと購入手続きが同じ形で参照する。
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function rows(User $user): array
+    {
+        return $this->items($user)
+            ->map(fn (CartItem $item): array => $this->row($item))
+            ->values()
+            ->all();
     }
 
     /**

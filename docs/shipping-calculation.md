@@ -67,6 +67,8 @@
 
 - [docs/admin/shipping-setting.md](admin/shipping-setting.md) — 都道府県ごとの送料・配送予定日数を編集する画面
 - [docs/admin/ec-setting.md](admin/ec-setting.md) — 送料無料しきい値・代引き手数料・銀行振込の案内文を編集する画面
+- [docs/front/checkout.md](front/checkout.md) — 算出結果を確定金額として保存する購入手続き・注文確定の正本
+- [docs/order-snapshot.md](order-snapshot.md) — 算出結果を `orders` のどの列へ保存するかの正本
 - [docs/2_database.md](2_database.md) — `shipping_settings`・`ec_settings`・`orders` テーブル定義の正本
 
 ## ソースファイル
@@ -86,4 +88,4 @@
 - 代引き・銀行振込で代引き手数料が切り替わる: 同上（`代引きのときは代引き手数料が適用される`・`銀行振込のときは代引き手数料が0になる`）
 - 配達予定日が当日＋配送予定日数（暦日）になる: 同上（`配達予定日は当日に配送予定日数を暦日で加算した日付になる`）
 - 合計が商品合計＋適用送料＋代引き手数料になる: 同上（`合計は商品合計と適用送料と代引き手数料の合算になる`・`送料無料が適用されると合計に送料が含まれない`）
-- 確定済み注文の金額が設定変更の影響を受けない: 単位16（購入手続き〜注文完了）の実装時にテストを追加して担保する
+- 確定済み注文の金額が設定変更の影響を受けない: `tests/Feature/Front/Order/OrderSnapshotTest.php`（`送料設定を変更しても注文の送料と配達予定日は変わらない`・`基本設定を変更しても注文のしきい値と手数料と案内文は変わらない`）

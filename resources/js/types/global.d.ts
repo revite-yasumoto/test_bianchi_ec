@@ -71,6 +71,7 @@ declare global {
         favoriteCount: number;
         flash: {
             success: string | null;
+            error: string | null;
         };
     };
 }

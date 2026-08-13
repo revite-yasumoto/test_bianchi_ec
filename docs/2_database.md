@@ -9,7 +9,9 @@
 
 ## 設計方針: 注文時スナップショット
 
-`orders` / `order_items` は参照用の外部キー（`user_id` / `product_id` / `product_variant_id`）を持つが、表示・金額計算に使う値はすべて自テーブルの列に複製して保存する。商品・バリエーションが削除されても注文明細は残す（`product_id` / `product_variant_id` は `ON DELETE SET NULL`）。会員は削除させないため `orders.user_id` は `ON DELETE RESTRICT`。算出根拠（送料無料しきい値・都道府県の素の送料・配送日数・振込案内文）も保存し、注文一覧・詳細・マイページ注文履歴は `products` / `categories` / `shipping_settings` / `ec_settings` を一切 JOIN せずに描画できる。
+`orders` / `order_items` は参照用の外部キー（`user_id` / `product_id` / `product_variant_id`）を持つが、表示・金額計算に使う値はすべて自テーブルの列に複製して保存する。そのため注文一覧・詳細・マイページ注文履歴は `products` / `categories` / `shipping_settings` / `ec_settings` を一切 JOIN せずに描画できる。方針の詳細と全列の値の出所は [docs/order-snapshot.md](order-snapshot.md) が正本。
+
+スキーマ側の裏付けとして、商品・バリエーションが削除されても注文明細は残るよう `product_id` / `product_variant_id` を `ON DELETE SET NULL` とし、会員は削除させないため `orders.user_id` を `ON DELETE RESTRICT` とする。
 
 ## MySQL製品制約への対応
 
@@ -331,7 +333,7 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 | Enum | 値 | 用途 |
 |---|---|---|
 | `OrderStatus` | `received` / `awaiting_payment` / `payment_confirmed` / `preparing` / `shipped` / `cancelled` | `label()` で日本語表示名、`color()` でバッジ配色、`allowedTransitions()` / `canTransitionTo()` で遷移規則を提供 |
-| `PaymentMethod` | `bank_transfer` / `cod` | `label()` で日本語表示名 |
+| `PaymentMethod` | `bank_transfer` / `cod` | `label()` で日本語表示名、`initialOrderStatus()` で注文確定時の初期ステータス（銀行振込＝入金待ち／代引き＝注文受付）を提供 |
 | `UserStatus` | `active` / `suspended` | `label()` で日本語表示名 |
 | `SpecOptionType` | `size` / `color` | `label()` で日本語表示名 |
 | `NewsCategory` | `新商品` / `お知らせ` / `商品情報` | `label()` / `color()` |
@@ -343,6 +345,7 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 ## 関連ドキュメント
 
 - [docs/1_system_overview.md](1_system_overview.md) — 技術構成・認証前提・共通業務ルール
+- [docs/order-snapshot.md](order-snapshot.md) — 注文時スナップショットの設計方針と全列の値の出所の正本
 
 ## ソースファイル
 

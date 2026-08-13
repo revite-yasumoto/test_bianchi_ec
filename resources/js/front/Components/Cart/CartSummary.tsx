@@ -21,9 +21,6 @@ export function CartSummary({
     estimatedPrefectureName,
     canCheckout,
 }: CartSummaryProps) {
-    // 購入手続き画面は単位16で実装するため、それまでは非活性で表示する
-    const isCheckoutReady = canCheckout && route().has('checkout.index');
-
     return (
         <aside className="rounded-[20px] bg-bg2 p-6">
             <h2 className="mb-4 text-[15px] font-extrabold">お支払い金額</h2>
@@ -61,7 +58,7 @@ export function CartSummary({
                 </p>
             ) : null}
 
-            {isCheckoutReady ? (
+            {canCheckout ? (
                 <Link
                     href={route('checkout.index')}
                     className="mt-5 block w-full rounded-full bg-coral py-4 text-center text-[15px] font-extrabold text-white"

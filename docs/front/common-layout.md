@@ -81,7 +81,7 @@ type FrontSharedProps = {
     cartItems: CartDrawerItem[];
     freeShippingThreshold: number | null;
     favoriteCount: number;
-    flash: { success: string | null };
+    flash: { success: string | null; error: string | null };
 };
 ```
 
@@ -90,7 +90,7 @@ type FrontSharedProps = {
 - `cartCount` はカート明細の**数量の合計**、`favoriteCount` はお気に入りの**明細数**。未ログイン時はいずれも `0`。
 - `cartItems` はカートドロワーの描画に使う明細で、未ログイン時は空配列。表示に使う項目のみの allowlist とし、商品IDや在庫数は含めない。`line_total` は商品単価 × 数量。
 - `freeShippingThreshold` はドロワーの送料無料案内に使う `ec_settings.free_shipping_threshold`。案内は明細があるときだけ出すため、カートが空（未ログインを含む）のときは `null`。
-- `flash.success` はセッションの `success` キーを渡す。`Toast` が監視して表示する。
+- `flash.success` / `flash.error` はセッションの `success` / `error` キーを渡す。`Toast` が監視して表示する。
 
 ### フォント
 
@@ -268,7 +268,7 @@ type ModalProps = {
 type EmptyStateProps = { message: string; className?: string };
 ```
 
-`Toast`（`resources/js/shared/Components/Toast.tsx`）は Props なし。`flash.success` を監視し、2200ms後に自動で消える。
+`Toast`（`resources/js/shared/Components/Toast.tsx`）は Props なし。`flash.success` / `flash.error` を監視して画面下中央に表示し、自動で消える。成功は `ink` 背景で2200ms、エラーは `coral` 背景・`role="alert"` で5000ms（読み終える前に消えないよう長くする）。両方に値がある場合は成功を優先する。
 
 `yen(amount: number): string`（`resources/js/shared/lib/yen.ts`）は金額を `¥12,345` 形式に整形する。
 
@@ -331,6 +331,6 @@ type EmptyStateProps = { message: string; className?: string };
 - 未実装リンクが非活性表示になり、実装済みリンクが機能する: 自動テストなし。目視確認で担保する
 - SP幅でハンバーガーメニューが開閉し、PC幅でナビが横並びになる: 自動テストなし。目視確認で担保する
 - カートドロワーの開閉（背景クリック・`Escape`キー・閉じるボタン）とフォーカス復帰: 自動テストなし。目視確認で担保する
-- トーストの表示位置・自動消去（2.2秒）: 自動テストなし。目視確認で担保する
+- トーストの表示位置・配色と自動消去（成功2.2秒／エラー5秒）: 自動テストなし。目視確認で担保する
 - 3書体（`Schibsted Grotesk` / `Zen Kaku Gothic New` / `Space Mono`）が適用される: 自動テストなし。目視確認で担保する
 - Props型定義の整合性: `npx tsc --noEmit`

@@ -8,6 +8,13 @@ export const SpecOptionType = {
 export type SpecOptionType =
     (typeof SpecOptionType)[keyof typeof SpecOptionType];
 
+export const PaymentMethod = {
+    BankTransfer: 'bank_transfer',
+    Cod: 'cod',
+} as const;
+
+export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod];
+
 export const UserStatus = {
     Active: 'active',
     Suspended: 'suspended',

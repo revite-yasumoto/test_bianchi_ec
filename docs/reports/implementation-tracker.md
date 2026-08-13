@@ -41,7 +41,7 @@
 | 13 | フロント：商品一覧・商品詳細 | 完了（`docs/front/product-index.md`, `docs/front/product-show.md`, `docs/front/favorite.md`） | 02, 05, 06 | 完了 |
 | 14 | フロント：TOPページ | 完了（`docs/front/top.md`, `docs/ranking.md`） | 13, 11 | 完了 |
 | 15 | フロント：カート | 完了（`docs/front/cart.md`） | 13, 10 | 完了 |
-| 16 | フロント：購入手続き〜注文完了 | `docs/plans/16-front-checkout.md` | 15, 10 | 未着手 |
+| 16 | フロント：購入手続き〜注文完了 | 完了（`docs/front/checkout.md`, `docs/front/order-complete.md`, `docs/order-snapshot.md`） | 15, 10 | 完了 |
 | 17 | フロント：マイページ | `docs/plans/17-front-mypage.md` | 16 | 未着手 |
 | 18 | フロント：サポート・法的ページ・お問い合わせ | `docs/plans/18-front-support.md` | 02, 11 | 未着手 |
 
