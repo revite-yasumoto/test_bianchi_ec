@@ -1,6 +1,6 @@
 # 注文詳細・ステータス更新
 
-本ドキュメントは**ステータス遷移規則**と**キャンセル時の在庫戻し**の正本。[docs/front/checkout.md](../front/checkout.md)・単位17（マイページのキャンセル依頼）の仕様書は、これらの規則を再掲せず本書へリンクする。表示する注文時スナップショットの値の出所は [docs/order-snapshot.md](../order-snapshot.md) が正本。
+本ドキュメントは**ステータス遷移規則**と**キャンセル時の在庫戻し**の正本。[docs/front/checkout.md](../front/checkout.md)・[docs/front/mypage-order.md](../front/mypage-order.md)（マイページの会員によるキャンセル）は、これらの規則を再掲せず本書へリンクする。表示する注文時スナップショットの値の出所は [docs/order-snapshot.md](../order-snapshot.md) が正本。
 
 ## 機能概要
 
@@ -126,7 +126,7 @@ type Props = {
 
 - `order_items` のうち `product_variant_id` が `null` でない行について、対応する `stocks.quantity` に明細の `quantity` を加算する。
 - 商品が削除済みで `product_variant_id` が `null` の行は戻す先が無いためスキップする。
-- 会員のキャンセル依頼（単位17）からも同じ Action を使う。
+- 会員によるキャンセル（[docs/front/mypage-order.md](../front/mypage-order.md)）からも同じ Action を使う。
 
 ## 業務ルール
 
@@ -140,6 +140,7 @@ type Props = {
 - [docs/admin/order-index.md](order-index.md) — 注文一覧の正本
 - [docs/order-snapshot.md](../order-snapshot.md) — 表示する注文時スナップショットの値の出所の正本
 - [docs/front/checkout.md](../front/checkout.md) — 注文とステータス履歴の初期行を作成する購入手続きの正本
+- [docs/front/mypage-order.md](../front/mypage-order.md) — 会員によるキャンセルの正本（本書の遷移規則・在庫戻しを共用する）
 - [docs/admin/stock.md](stock.md) — 在庫マスタの正本。手動調整の画面
 - [docs/admin/auth.md](auth.md) — ログイン後の遷移先が注文一覧になる条件
 - [docs/admin/common-layout.md](common-layout.md) — `AdminLayout`・`ConfirmDialog` の正本

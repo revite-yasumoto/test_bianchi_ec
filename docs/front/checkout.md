@@ -15,8 +15,10 @@
 | POST | `/orders` | `orders.store` | 注文確定 |
 | POST | `/addresses` | `addresses.store` | 配送先の追加（購入手続きのモーダルから。マイページからも使う） |
 
+配送先の更新・削除（`addresses.update` / `addresses.destroy`）は [docs/front/mypage-address.md](mypage-address.md) が正本。
+
 - **アクセス権限・ミドルウェア:** 全ルートを `auth`（`web` ガード）で保護する。未ログインのアクセスはログイン画面へ遷移する。配送先は自分の `user_addresses` に限定して検証する（他人の住所IDを送っても通らない）。
-- **本ドキュメントのスコープ:** 購入手続き・注文確認の2画面と、配送先の追加・注文確定処理。注文完了画面は [docs/front/order-complete.md](order-complete.md)、カートは [docs/front/cart.md](cart.md) が正本。配送先の一覧・編集・削除は単位17が扱う。
+- **本ドキュメントのスコープ:** 購入手続き・注文確認の2画面と、配送先の追加・注文確定処理。注文完了画面は [docs/front/order-complete.md](order-complete.md)、カートは [docs/front/cart.md](cart.md)、配送先の一覧・更新・削除は [docs/front/mypage-address.md](mypage-address.md) が正本。
 
 ## 使用テーブル
 
@@ -64,7 +66,7 @@
 - 進捗インジケータは3ステップ（カート → 購入手続き → 注文確認）で、現在ステップまでをブランド色で塗る。購入手続きは2、注文確認は3。
 - 配送先・支払い方法はラジオボタンで、選択中のカードを枠線と背景で示す。配送先は既定の住所を先頭に並べ、既定の住所には「既定」バッジを付ける。
 - **配送先・支払い方法を切り替えると、送料・代引き手数料・合計・お届け予定日がその場で再計算される。** 配送先が1件も無い場合は「注文内容を確認する」を非活性にする。
-- 「＋ 新しいお届け先を追加」でモーダルを開く。都道府県を選ぶとその場で「送料 ¥500 ／ お届けまで3日」を表示する。保存すると追加した住所が選択済みの状態で購入手続きに戻る。
+- 「＋ 新しいお届け先を追加」でモーダルを開く。都道府県を選ぶとその場で「送料 ¥500 ／ お届けまで3日」を表示する。保存すると追加した住所が選択済みの状態で購入手続きに戻る。モーダルはマイページの配送先住所と共用する（編集モードの仕様は [docs/front/mypage-address.md](mypage-address.md)）。
 
 注文確認:
 
@@ -220,6 +222,7 @@ type Props = {
 - [docs/shipping-calculation.md](../shipping-calculation.md) — 送料・代引き手数料・配達予定日・合計の算出規則の正本
 - [docs/front/cart.md](cart.md) — カート明細・価格方針・購入不可行の扱いの正本
 - [docs/front/order-complete.md](order-complete.md) — 注文完了画面
+- [docs/front/mypage-address.md](mypage-address.md) — 配送先の一覧・更新・削除と、共用モーダルの編集モードの正本
 - [docs/front/common-layout.md](common-layout.md) — `FrontLayout`・トースト・共有プロパティの正本
 - [docs/admin/order-show.md](../admin/order-show.md) — ステータス遷移規則とキャンセル時の在庫戻しの正本
 - [docs/admin/ec-setting.md](../admin/ec-setting.md) — 送料無料しきい値・代引き手数料・振込案内文の設定元

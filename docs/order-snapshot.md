@@ -57,6 +57,9 @@
 
 - [docs/front/checkout.md](front/checkout.md) — スナップショットを書き込む注文確定処理の正本
 - [docs/front/order-complete.md](front/order-complete.md) — 注文完了画面
+- [docs/front/mypage-order.md](front/mypage-order.md) — スナップショットを表示する会員向けの注文履歴・注文詳細
+- [docs/front/mypage-address.md](front/mypage-address.md) — 配送先の削除・変更が確定済み注文に影響しないことを扱う
+- [docs/front/mypage-profile.md](front/mypage-profile.md) — 会員情報の変更が確定済み注文に影響しないことを扱う
 - [docs/shipping-calculation.md](shipping-calculation.md) — 金額・算出根拠の算出規則の正本
 - [docs/admin/order-show.md](admin/order-show.md) — スナップショットを表示する管理画面と、確定後に変更してよい列（ステータス）の正本
 - [docs/admin/order-index.md](admin/order-index.md) — スナップショットを一覧・検索する管理画面

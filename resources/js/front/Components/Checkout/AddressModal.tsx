@@ -1,4 +1,5 @@
 import { useForm } from '@inertiajs/react';
+import type { AddressData } from '@/front/Components/Checkout/AddressSelector';
 import type { ShippingOption } from '@/front/lib/checkoutAmounts';
 import { Checkbox } from '@/shared/Components/Checkbox';
 import { Modal } from '@/shared/Components/Modal';
@@ -9,32 +10,41 @@ import { yen } from '@/shared/lib/yen';
 type AddressModalProps = {
     isOpen: boolean;
     prefectures: { id: number; name: string }[];
-    shippingByPrefecture: Record<number, ShippingOption>;
+    /** 渡した場合のみ都道府県ごとの送料・お届け日数を案内する（購入手続きから開いたとき） */
+    shippingByPrefecture?: Record<number, ShippingOption>;
+    /** 渡すと編集モードになる。未指定なら新規追加 */
+    address?: AddressData;
     onClose: () => void;
 };
 
+/**
+ * 編集対象を切り替えるときは、呼び出し側で `key` を変えて入力欄の初期値を作り直すこと
+ * （`useForm` の初期値は初回マウント時にしか評価されない）。
+ */
 export function AddressModal({
     isOpen,
     prefectures,
     shippingByPrefecture,
+    address,
     onClose,
 }: AddressModalProps) {
-    const { data, setData, post, processing, errors, reset, clearErrors } =
+    const isEditing = address !== undefined;
+    const { data, setData, post, put, processing, errors, reset, clearErrors } =
         useForm({
-            label: '自宅',
-            recipient_name: '',
-            postal_code: '',
-            prefecture_id: prefectures[0]?.id ?? 0,
-            city: '',
-            address_line1: '',
-            address_line2: '',
-            tel: '',
-            is_default: false,
+            label: address?.label ?? '自宅',
+            recipient_name: address?.recipient_name ?? '',
+            postal_code: address?.postal_code ?? '',
+            prefecture_id: address?.prefecture_id ?? prefectures[0]?.id ?? 0,
+            city: address?.city ?? '',
+            address_line1: address?.address_line1 ?? '',
+            address_line2: address?.address_line2 ?? '',
+            tel: address?.tel ?? '',
+            is_default: address?.is_default ?? false,
             // 追加した住所をそのまま配送先として選択済みにする
-            use_for_checkout: true,
+            use_for_checkout: !isEditing,
         });
 
-    const shipping = shippingByPrefecture[data.prefecture_id];
+    const shipping = shippingByPrefecture?.[data.prefecture_id];
 
     const close = () => {
         reset();
@@ -43,16 +53,29 @@ export function AddressModal({
     };
 
     const submit = () => {
-        post(route('addresses.store'), {
+        const options = {
             preserveScroll: true,
-            // 成功時はページを作り直し、追加した住所が選択済みになった状態をサーバーから取り込む。
+            // 成功時はページを作り直し、保存後の一覧・選択状態をサーバーから取り込む。
             // 入力エラー時だけ状態を残して入力値を保持する
-            preserveState: (page) => Object.keys(page.props.errors).length > 0,
-        });
+            preserveState: (page: { props: { errors: object } }) =>
+                Object.keys(page.props.errors).length > 0,
+        };
+
+        if (address) {
+            put(route('addresses.update', [address.id]), options);
+
+            return;
+        }
+
+        post(route('addresses.store'), options);
     };
 
     return (
-        <Modal isOpen={isOpen} title="新しいお届け先" onClose={close}>
+        <Modal
+            isOpen={isOpen}
+            title={isEditing ? 'お届け先の編集' : '新しいお届け先'}
+            onClose={close}
+        >
             <form
                 onSubmit={(event) => {
                     event.preventDefault();
@@ -174,7 +197,7 @@ export function AddressModal({
                     disabled={processing}
                     className="mt-1 rounded-full bg-brand py-3.5 text-sm font-extrabold text-white disabled:opacity-60"
                 >
-                    この住所を使う
+                    {isEditing ? '保存する' : 'この住所を使う'}
                 </button>
             </form>
         </Modal>

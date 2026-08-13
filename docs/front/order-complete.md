@@ -39,7 +39,7 @@
 
 - 完了メッセージは支払い方法で切り替える。代引きは「ご注文を受け付けました。出荷準備が整い次第、発送のご案内をお送りします。」、銀行振込は「ご注文を受け付けました。ステータスは「入金待ち」です。ご入金確認後に発送準備を開始します。」。
 - 「お振込みのご案内」は `orders.bank_transfer_note` がある場合（＝銀行振込の注文）のみ表示し、改行を保持して出す。
-- 「注文履歴を見る」の遷移先（マイページの注文履歴）は単位17で実装する。未実装の間は非活性で表示する。
+- 「注文履歴を見る」はマイページの注文履歴（`mypage.index`）へ遷移する。
 
 ## インターフェース ＆ データロジック
 
@@ -73,6 +73,7 @@ type Props = {
 
 - [docs/front/checkout.md](checkout.md) — 注文確定処理と、この画面へ遷移する導線の正本
 - [docs/order-snapshot.md](../order-snapshot.md) — 表示する値の出所の正本
+- [docs/front/mypage-order.md](mypage-order.md) — 「注文履歴を見る」の遷移先と、`OrderPolicy` のキャンセル認可の正本
 - [docs/front/common-layout.md](common-layout.md) — `FrontLayout` の正本
 - [docs/admin/ec-setting.md](../admin/ec-setting.md) — 銀行振込の案内文の設定元
 - [docs/2_database.md](../2_database.md) — テーブル定義の正本

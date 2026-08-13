@@ -42,7 +42,7 @@
 | 14 | フロント：TOPページ | 完了（`docs/front/top.md`, `docs/ranking.md`） | 13, 11 | 完了 |
 | 15 | フロント：カート | 完了（`docs/front/cart.md`） | 13, 10 | 完了 |
 | 16 | フロント：購入手続き〜注文完了 | 完了（`docs/front/checkout.md`, `docs/front/order-complete.md`, `docs/order-snapshot.md`） | 15, 10 | 完了 |
-| 17 | フロント：マイページ | `docs/plans/17-front-mypage.md` | 16 | 未着手 |
+| 17 | フロント：マイページ | 完了（`docs/front/mypage-order.md`, `docs/front/mypage-address.md`, `docs/front/mypage-profile.md`） | 16 | 完了 |
 | 18 | フロント：サポート・法的ページ・お問い合わせ | `docs/plans/18-front-support.md` | 02, 11 | 未着手 |
 
 ## 実行方法

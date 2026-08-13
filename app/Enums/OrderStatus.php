@@ -62,4 +62,16 @@ enum OrderStatus: string
     {
         return in_array($to, $this->allowedTransitions(), true);
     }
+
+    /**
+     * 会員がマイページからキャンセルできるステータスか。
+     * 入金確認済み以降は返金・出荷手配の判断が要るため、管理画面からの操作に限定する。
+     */
+    public function isCancelableByCustomer(): bool
+    {
+        return match ($this) {
+            self::Received, self::AwaitingPayment => true,
+            default => false,
+        };
+    }
 }

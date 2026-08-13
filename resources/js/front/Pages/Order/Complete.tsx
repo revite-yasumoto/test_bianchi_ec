@@ -65,22 +65,12 @@ export default function Complete({ order }: Props) {
                     ) : null}
 
                     <div className="mt-6.5 flex flex-wrap justify-center gap-2.5">
-                        {/* 注文履歴（マイページ）は単位17で実装するため、それまでは非活性で表示する */}
-                        {route().has('orders.index') ? (
-                            <Link
-                                href={route('orders.index')}
-                                className="rounded-full bg-brand px-6.5 py-3.5 text-sm font-bold text-white"
-                            >
-                                注文履歴を見る
-                            </Link>
-                        ) : (
-                            <span
-                                aria-disabled="true"
-                                className="cursor-not-allowed rounded-full bg-brand px-6.5 py-3.5 text-sm font-bold text-white opacity-40"
-                            >
-                                注文履歴を見る
-                            </span>
-                        )}
+                        <Link
+                            href={route('mypage.index')}
+                            className="rounded-full bg-brand px-6.5 py-3.5 text-sm font-bold text-white"
+                        >
+                            注文履歴を見る
+                        </Link>
                         <Link
                             href={route('top')}
                             className="rounded-full border border-line px-6.5 py-3.5 text-sm font-bold"

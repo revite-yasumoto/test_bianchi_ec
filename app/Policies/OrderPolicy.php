@@ -13,4 +13,12 @@ class OrderPolicy
     {
         return $order->user_id === $user->id;
     }
+
+    /**
+     * ステータスによるキャンセル可否は CancelOrderService が判定する。ここは所有者だけを見る。
+     */
+    public function cancel(User $user, Order $order): bool
+    {
+        return $order->user_id === $user->id;
+    }
 }

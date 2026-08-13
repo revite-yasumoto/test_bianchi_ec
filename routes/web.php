@@ -24,6 +24,12 @@ use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\CartItemController;
 use App\Http\Controllers\Front\CheckoutController;
 use App\Http\Controllers\Front\FavoriteController;
+use App\Http\Controllers\Front\MyPage\AddressListController;
+use App\Http\Controllers\Front\MyPage\FavoriteListController;
+use App\Http\Controllers\Front\MyPage\OrderCancelController;
+use App\Http\Controllers\Front\MyPage\OrderHistoryController;
+use App\Http\Controllers\Front\MyPage\PasswordController;
+use App\Http\Controllers\Front\MyPage\ProfileController;
 use App\Http\Controllers\Front\OrderController as FrontOrderController;
 use App\Http\Controllers\Front\ProductController as FrontProductController;
 use App\Http\Controllers\Front\TopController;
@@ -122,4 +128,24 @@ Route::middleware('auth')->group(function (): void {
         ->can('view', 'order');
 
     Route::post('addresses', [UserAddressController::class, 'store'])->name('addresses.store');
+    Route::put('addresses/{address}', [UserAddressController::class, 'update'])
+        ->name('addresses.update')
+        ->can('update', 'address');
+    Route::delete('addresses/{address}', [UserAddressController::class, 'destroy'])
+        ->name('addresses.destroy')
+        ->can('delete', 'address');
+
+    Route::get('mypage', [OrderHistoryController::class, 'index'])->name('mypage.index');
+    Route::get('mypage/orders/{order}', [OrderHistoryController::class, 'show'])
+        ->name('mypage.orders.show')
+        ->can('view', 'order');
+    Route::post('mypage/orders/{order}/cancel', [OrderCancelController::class, 'store'])
+        ->name('mypage.orders.cancel')
+        ->can('cancel', 'order');
+    Route::get('mypage/favorites', [FavoriteListController::class, 'index'])->name('mypage.favorites');
+    Route::get('mypage/addresses', [AddressListController::class, 'index'])->name('mypage.addresses');
+    Route::get('mypage/profile', [ProfileController::class, 'edit'])->name('mypage.profile');
+    Route::put('mypage/profile', [ProfileController::class, 'update'])->name('mypage.profile.update');
+    Route::get('mypage/password', [PasswordController::class, 'edit'])->name('mypage.password');
+    Route::put('mypage/password', [PasswordController::class, 'update'])->name('mypage.password.update');
 });
