@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { categoryTint } from '@/front/lib/tint';
+import { ProductVisual } from '@/front/Components/Product/ProductVisual';
 import { yen } from '@/shared/lib/yen';
 
 /** 商品一覧・TOP・お気に入りで共用する商品カードの表示データ */
@@ -25,22 +25,12 @@ export function ProductCard({ product, rank }: ProductCardProps) {
             href={route('products.show', [product.id])}
             className="block overflow-hidden rounded-[18px] border border-line bg-white"
         >
-            <div
-                className="relative flex aspect-4/3 items-end p-3"
-                style={{ backgroundImage: categoryTint(product.category_name) }}
-            >
-                {product.main_image_url ? (
-                    <img
-                        src={product.main_image_url}
-                        alt=""
-                        loading="lazy"
-                        className="absolute inset-0 h-full w-full object-cover"
-                    />
-                ) : (
-                    <span className="font-mono text-[10px] tracking-[.1em] text-white/80">
-                        {product.product_code}
-                    </span>
-                )}
+            <div className="relative aspect-4/3">
+                <ProductVisual
+                    imageUrl={product.main_image_url}
+                    categoryName={product.category_name}
+                    productCode={product.product_code}
+                />
                 {rank !== undefined ? (
                     <span className="absolute top-2.5 left-2.5 flex h-6.5 w-6.5 items-center justify-center rounded-full bg-white font-mono text-xs font-bold text-ink">
                         <span className="sr-only">第{rank}位</span>

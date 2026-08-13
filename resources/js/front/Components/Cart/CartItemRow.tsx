@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
+import { ProductVisual } from '@/front/Components/Product/ProductVisual';
 import { useCartItem } from '@/front/hooks/useCartItem';
-import { categoryTint } from '@/front/lib/tint';
 import { yen } from '@/shared/lib/yen';
 import { QuantityStepper } from './QuantityStepper';
 
@@ -49,18 +49,11 @@ export function CartItemRow({ row }: CartItemRowProps) {
 
     return (
         <li className="flex flex-wrap gap-3.5 border-b border-line px-0.5 py-4.5">
-            <div
-                className="h-[86px] w-[86px] shrink-0 overflow-hidden rounded-xl"
-                style={{ backgroundImage: categoryTint(row.category_name) }}
-            >
-                {row.main_image_url ? (
-                    <img
-                        src={row.main_image_url}
-                        alt=""
-                        loading="lazy"
-                        className="h-full w-full object-cover"
-                    />
-                ) : null}
+            <div className="h-[86px] w-[86px] shrink-0 overflow-hidden rounded-xl">
+                <ProductVisual
+                    imageUrl={row.main_image_url}
+                    categoryName={row.category_name}
+                />
             </div>
 
             <div className="min-w-[150px] flex-1">

@@ -1,39 +1,33 @@
 import { useState } from 'react';
+import { ProductVisual } from '@/front/Components/Product/ProductVisual';
 import { cn } from '@/lib/utils';
 
 type ImageGalleryProps = {
     images: { url: string; sort_order: number }[];
     productName: string;
     productCode: string;
-    tint: string;
+    categoryName: string;
 };
 
 export function ImageGallery({
     images,
     productName,
     productCode,
-    tint,
+    categoryName,
 }: ImageGalleryProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const current = images[currentIndex];
 
     return (
         <div>
-            <div
-                className="flex aspect-square items-end overflow-hidden rounded-[20px] p-5"
-                style={{ backgroundImage: tint }}
-            >
-                {current ? (
-                    <img
-                        src={current.url}
-                        alt={`${productName}の商品画像 ${currentIndex + 1}枚目`}
-                        className="h-full w-full object-cover"
-                    />
-                ) : (
-                    <span className="font-mono text-[11px] tracking-[.14em] text-white/80">
-                        {productCode}
-                    </span>
-                )}
+            <div className="aspect-square overflow-hidden rounded-[20px]">
+                <ProductVisual
+                    imageUrl={current?.url ?? null}
+                    categoryName={categoryName}
+                    productCode={productCode}
+                    alt={`${productName}の商品画像 ${currentIndex + 1}枚目`}
+                    loading="eager"
+                />
             </div>
 
             {images.length > 1 ? (

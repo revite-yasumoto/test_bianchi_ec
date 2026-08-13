@@ -7,7 +7,6 @@ import type { ProductDetailData } from '@/front/Components/Product/PurchasePanel
 import { ShippingInfoModal } from '@/front/Components/Product/ShippingInfoModal';
 import type { ShippingTableRow } from '@/front/Components/Product/ShippingInfoModal';
 import { FrontLayout } from '@/front/Layouts/FrontLayout';
-import { categoryTint } from '@/front/lib/tint';
 
 type Props = {
     product: ProductDetailData;
@@ -42,7 +41,7 @@ export default function Show({
                         images={product.images}
                         productName={product.name}
                         productCode={product.product_code}
-                        tint={categoryTint(product.category_name)}
+                        categoryName={product.category_name}
                     />
                     <PurchasePanel
                         product={product}

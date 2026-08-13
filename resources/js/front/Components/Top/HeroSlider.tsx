@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { useState } from 'react';
+import { CategorySilhouette } from '@/front/Components/Product/CategorySilhouette';
 import { useAutoSlide } from '@/front/hooks/useAutoSlide';
 import { cn } from '@/lib/utils';
 
@@ -47,10 +48,16 @@ export function HeroSlider({ banners }: HeroSliderProps) {
             onBlurCapture={() => setIsPaused(false)}
         >
             <div
-                className="flex aspect-[4/5] items-end p-8 lg:aspect-[21/9] lg:p-12"
+                className="relative flex aspect-[4/5] items-end overflow-hidden p-8 lg:aspect-[21/9] lg:p-12"
                 style={{ backgroundImage: current.background }}
             >
-                <div className="max-w-[520px]">
+                {/* バナーごとの図案を持たないため、カテゴリに紐づかない汎用の車体を敷く */}
+                <CategorySilhouette
+                    categoryName=""
+                    className="absolute top-1/2 right-[-6%] w-[70%] -translate-y-1/2 text-white/12 lg:right-[4%] lg:w-[38%]"
+                />
+
+                <div className="relative max-w-[520px]">
                     <p className="mb-3.5 font-mono text-[11px] tracking-[.2em] text-white/75">
                         {current.tag}
                     </p>

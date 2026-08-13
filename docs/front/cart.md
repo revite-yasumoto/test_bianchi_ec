@@ -25,7 +25,7 @@
 | `cart_items` | カート明細（`user_id` + `product_variant_id` で一意） |
 | `product_variants` | 規格名・取扱可否 |
 | `products` | 商品名・単価・公開状態 |
-| `categories` | 画像未登録時のプレースホルダー配色 |
+| `categories` | 画像未登録時のプレースホルダー（配色とシルエット）の判定に使うカテゴリ名 |
 | `product_images` | 明細のサムネイル（メイン画像） |
 | `stocks` | 在庫の二値判定と数量の上限 |
 | `user_addresses` | 概算送料の基準にする既定の配送先 |

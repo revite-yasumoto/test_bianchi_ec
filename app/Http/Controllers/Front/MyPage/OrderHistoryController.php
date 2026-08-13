@@ -89,6 +89,8 @@ class OrderHistoryController extends Controller
                 ->map(fn (OrderItem $item): array => [
                     'id' => $item->id,
                     'product_name' => $item->product_name,
+                    // 画像未登録の明細にカテゴリ別のプレースホルダーを出すために渡す
+                    'category_name' => $item->category_name,
                     'variant_label' => $this->variantLabelOf($item),
                     'product_image_url' => $item->product_image_path
                         ? Storage::disk('public')->url($item->product_image_path)

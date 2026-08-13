@@ -6,7 +6,7 @@ import { OrderSummaryCard } from '@/front/Components/Checkout/OrderSummaryCard';
 import { StepIndicator } from '@/front/Components/Checkout/StepIndicator';
 import { FrontLayout } from '@/front/Layouts/FrontLayout';
 import { japaneseDateLabel } from '@/front/lib/delivery';
-import { categoryTint } from '@/front/lib/tint';
+import { ProductVisual } from '@/front/Components/Product/ProductVisual';
 import { PaymentMethod } from '@/shared/lib/enums';
 import { yen } from '@/shared/lib/yen';
 
@@ -85,23 +85,14 @@ export default function Confirm({
                                         key={item.id}
                                         className="flex gap-3 border-t border-line py-2.5"
                                     >
-                                        <span
-                                            className="h-[52px] w-[52px] shrink-0 overflow-hidden rounded-[9px]"
-                                            style={{
-                                                backgroundImage: categoryTint(
-                                                    item.category_name,
-                                                ),
-                                            }}
-                                        >
-                                            {item.main_image_url ? (
-                                                <img
-                                                    src={item.main_image_url}
-                                                    alt=""
-                                                    loading="lazy"
-                                                    className="h-full w-full object-cover"
-                                                />
-                                            ) : null}
-                                        </span>
+                                        <div className="h-[52px] w-[52px] shrink-0 overflow-hidden rounded-[9px]">
+                                            <ProductVisual
+                                                imageUrl={item.main_image_url}
+                                                categoryName={
+                                                    item.category_name
+                                                }
+                                            />
+                                        </div>
                                         <span className="flex-1">
                                             <span className="block text-[13px] leading-[1.45] font-bold">
                                                 {item.product_name}

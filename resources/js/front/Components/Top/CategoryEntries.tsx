@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import { CategorySilhouette } from '@/front/Components/Product/CategorySilhouette';
 import { categoryTint } from '@/front/lib/tint';
 
 export type CategoryEntryData = {
@@ -32,11 +33,16 @@ export function CategoryEntries({ entries }: CategoryEntriesProps) {
                             className="block overflow-hidden rounded-[18px] border border-line bg-white"
                         >
                             <div
-                                className="h-22"
+                                className="flex h-22 items-center justify-center"
                                 style={{
                                     backgroundImage: categoryTint(entry.name),
                                 }}
-                            />
+                            >
+                                <CategorySilhouette
+                                    categoryName={entry.name}
+                                    className="w-1/2 text-white/35"
+                                />
+                            </div>
                             <div className="px-4 py-3.5">
                                 <p className="text-[14.5px] font-extrabold">
                                     {entry.name}

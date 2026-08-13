@@ -84,6 +84,7 @@ PC（lg以上）                        SP（lg未満）
 ```
 
 - 各カードの見出し（ご注文商品・お届け先・お支払い・配送・お振込みのご案内・ご注文の状況）は `h2` に置く。
+- 明細のサムネイルは、画像が未登録でもカテゴリ相応のシルエットを出す（商品識別コードは添えない）。
 - 金額内訳の「代引き手数料」は `cod_fee > 0` のときだけ出す。
 - キャンセルボタンは確認モーダルを挟む。モーダルには注文番号と「元に戻せない」旨を出す。
 
@@ -121,6 +122,7 @@ type Props = {
         items: {
             id: number;
             product_name: string;
+            category_name: string;       // 画像未登録時のプレースホルダーの判定に使う
             variant_label: string;       // 例: ブラック / M。規格を持たない明細は「規格なし」
             product_image_url: string | null;
             unit_price: number;
@@ -201,7 +203,7 @@ type Props = {
 - [docs/front/mypage-address.md](mypage-address.md) — マイページの配送先住所タブ
 - [docs/front/mypage-profile.md](mypage-profile.md) — マイページの会員情報変更・パスワード変更タブ
 - [docs/front/favorite.md](favorite.md) — マイページのお気に入りタブ
-- [docs/front/common-layout.md](common-layout.md) — ヘッダー・フッターのマイページ導線の正本
+- [docs/front/common-layout.md](common-layout.md) — ヘッダー・フッターのマイページ導線と、商品画像プレースホルダー（`ProductVisual`）の正本
 - [docs/2_database.md](../2_database.md) — テーブル定義の正本
 
 ## ソースファイル

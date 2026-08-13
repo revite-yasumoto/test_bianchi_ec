@@ -1,7 +1,7 @@
 import { usePage } from '@inertiajs/react';
 import { useEffect, useId, useRef } from 'react';
+import { ProductVisual } from '@/front/Components/Product/ProductVisual';
 import { freeShippingMessage } from '@/front/lib/freeShipping';
-import { categoryTint } from '@/front/lib/tint';
 import { EmptyState } from '@/shared/Components/EmptyState';
 import { yen } from '@/shared/lib/yen';
 import { NavLink } from './NavLink';
@@ -87,22 +87,11 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                     key={item.id}
                                     className="flex gap-3 border-b border-line py-3.5"
                                 >
-                                    <div
-                                        className="h-14 w-14 shrink-0 overflow-hidden rounded-[10px]"
-                                        style={{
-                                            backgroundImage: categoryTint(
-                                                item.category_name,
-                                            ),
-                                        }}
-                                    >
-                                        {item.image_url ? (
-                                            <img
-                                                src={item.image_url}
-                                                alt=""
-                                                loading="lazy"
-                                                className="h-full w-full object-cover"
-                                            />
-                                        ) : null}
+                                    <div className="h-14 w-14 shrink-0 overflow-hidden rounded-[10px]">
+                                        <ProductVisual
+                                            imageUrl={item.image_url}
+                                            categoryName={item.category_name}
+                                        />
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-[12.5px] leading-[1.45] font-bold">

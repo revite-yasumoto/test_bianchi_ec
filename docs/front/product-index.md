@@ -42,7 +42,7 @@
 ```
 
 - カードは `minmax(200px,1fr)` の自動折り返しグリッドで、画面幅に応じて列数が変わる（SP幅では1〜2列）。
-- 画像が未登録の商品は、カテゴリごとのグラデーション背景の上に商品識別コードを表示する（[docs/front/common-layout.md](common-layout.md) の `categoryTint` が正本）。
+- 画像が未登録の商品は、カテゴリごとの配色にカテゴリ相応のシルエットを重ね、左下に商品識別コードを添える（[docs/front/common-layout.md](common-layout.md) の `ProductVisual` が正本）。
 - 在庫切れの商品はカード右上に「在庫切れ」バッジを重ねる。カード自体は押せる（詳細へ遷移できる）。
 - 該当0件のときはグリッドの代わりに「該当する商品はありません」を表示する。
 - ページ送りは1ページ以下のときに表示しない。
@@ -96,7 +96,7 @@ type Props = {
 ## 関連ドキュメント
 
 - [docs/front/product-show.md](product-show.md) — 商品詳細。在庫の二値判定・カート投入の正本
-- [docs/front/common-layout.md](common-layout.md) — `FrontLayout`・ページ送り・カテゴリ別グラデーションの正本
+- [docs/front/common-layout.md](common-layout.md) — `FrontLayout`・ページ送り・商品画像プレースホルダー（`ProductVisual`）の正本
 - [docs/admin/product-index.md](../admin/product-index.md) — 商品マスタ（公開状態・カテゴリ・価格の登録元）
 - [docs/2_database.md](../2_database.md) — テーブル定義の正本
 

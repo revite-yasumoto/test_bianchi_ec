@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { cn } from '@/lib/utils';
 import { CancelOrderButton } from '@/front/Components/MyPage/CancelOrderButton';
+import { ProductVisual } from '@/front/Components/Product/ProductVisual';
 import { MyPageLayout } from '@/front/Layouts/MyPageLayout';
 import { dotDateTimeLabel } from '@/front/lib/date';
 import { japaneseDateLabel } from '@/front/lib/delivery';
@@ -11,6 +12,7 @@ import { yen } from '@/shared/lib/yen';
 type OrderDetailItem = {
     id: number;
     product_name: string;
+    category_name: string;
     variant_label: string;
     product_image_url: string | null;
     unit_price: number;
@@ -114,14 +116,12 @@ export default function OrderShow({ order }: Props) {
                                 key={item.id}
                                 className="flex gap-3.5 border-b border-line py-3.5"
                             >
-                                {item.product_image_url ? (
-                                    <img
-                                        src={item.product_image_url}
-                                        alt=""
-                                        loading="lazy"
-                                        className="h-16 w-16 shrink-0 rounded-xl object-cover"
+                                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl">
+                                    <ProductVisual
+                                        imageUrl={item.product_image_url}
+                                        categoryName={item.category_name}
                                     />
-                                ) : null}
+                                </div>
                                 <div className="min-w-0 flex-1">
                                     <p className="text-[13px] leading-[1.5] font-bold">
                                         {item.product_name}

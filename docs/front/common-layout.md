@@ -206,7 +206,7 @@ Props なし。`FOOTER_COLUMNS` を3カラムで描画する。
 type CartDrawerProps = { isOpen: boolean; onClose: () => void };
 ```
 
-共有プロパティの `cartItems` を明細として描画し、`line_total` の合計を「商品合計」に出す。件数表示は `cartCount`。明細が0件のときは `EmptyState` で「カートは空です」を表示する。画像未登録の明細はカテゴリ別のグラデーション（`categoryTint`）を背景にする。商品合計の下には送料無料までの案内文を出す（文言は `resources/js/front/lib/freeShipping.ts` の `freeShippingMessage()` でカートページと共通化する。[docs/front/cart.md](cart.md) 参照）。「カートを見る」はカートページ（`cart.index`）へ遷移する。
+共有プロパティの `cartItems` を明細として描画し、`line_total` の合計を「商品合計」に出す。件数表示は `cartCount`。明細が0件のときは `EmptyState` で「カートは空です」を表示する。明細のサムネイルは `ProductVisual` で描画する。商品合計の下には送料無料までの案内文を出す（文言は `resources/js/front/lib/freeShipping.ts` の `freeShippingMessage()` でカートページと共通化する。[docs/front/cart.md](cart.md) 参照）。「カートを見る」はカートページ（`cart.index`）へ遷移する。
 
 ### `Pagination`（`resources/js/front/Components/Pagination.tsx`）
 
@@ -224,7 +224,50 @@ type PaginationProps = {
 function categoryTint(categoryName: string): string;   // CSS の linear-gradient 文字列
 ```
 
-商品画像が未登録のときのプレースホルダー背景。カテゴリ名に対応するグラデーションを返し、未登録のカテゴリ名にはカテゴリ名から決まる1色を返す（同じカテゴリでは常に同じ配色になる）。商品カード・商品詳細のギャラリー・カートドロワーが使う。
+商品画像が未登録のときのプレースホルダー背景。カテゴリ名に対応するグラデーションを返し、未登録のカテゴリ名にはカテゴリ名から決まる1色を返す（同じカテゴリでは常に同じ配色になる）。
+
+### `CategorySilhouette`（`resources/js/front/Components/Product/CategorySilhouette.tsx`）
+
+```ts
+type CategorySilhouetteProps = {
+    categoryName: string;
+    className?: string;
+};
+```
+
+カテゴリに対応する商材のシルエットを描くインラインSVG。`categoryTint` の背景の上に重ねて、画像未登録のプレースホルダーを商材の分かる見た目にする。図案はカテゴリ名で切り替え、未登録のカテゴリ名には汎用の自転車を返す。
+
+| カテゴリ | 図案 |
+|---|---|
+| ロードバイク | ドロップハンドルの細身フレーム |
+| MTB | 太いブロックタイヤとサスペンション |
+| シティ | カゴと泥除けを備えたアップライトな車体 |
+| eバイク | ダウンチューブにバッテリーを備えた車体 |
+| パーツ | ボトルとボトルケージ |
+| アパレル | 半袖ジャージ |
+
+- 色は単色で、背景のグラデーションに対して白の低い不透明度で重ねる。装飾のため `aria-hidden="true"` を付け、読み上げの対象にしない。
+- ラスター画像を持たないため、追加のHTTPリクエストが発生せず、拡大しても劣化しない。
+
+### `ProductVisual`（`resources/js/front/Components/Product/ProductVisual.tsx`）
+
+```ts
+type ProductVisualProps = {
+    imageUrl: string | null;
+    categoryName: string;
+    /** 画像が無いときに左下へ出す商品識別コード。省略すると出さない */
+    productCode?: string;
+    /** 画像の代替テキスト。周囲に商品名がある文脈では省略し、装飾扱いにする */
+    alt?: string;
+    /** 既定は `lazy`。ファーストビューに入る画像には `eager` を渡す */
+    loading?: 'lazy' | 'eager';
+    className?: string;
+};
+```
+
+商品画像の表示とプレースホルダーの出し分けを1箇所に集約したコンポーネント。`imageUrl` があれば `<img>` を、無ければ `categoryTint` の背景に `CategorySilhouette` を重ね、`productCode` を渡した場合は左下に小さく併記する。商品カード・商品詳細のギャラリー・カート明細・カートドロワー・注文確認・注文詳細・TOPの閲覧履歴が使う。
+
+商品詳細のメイン画像はファーストビューに入るため `eager` を渡す。それ以外の呼び出し元は既定の `lazy` を使う。
 
 ### 共通UIコンポーネント（`resources/js/shared/Components/`）
 
@@ -304,6 +347,8 @@ type EmptyStateProps = { message: string; className?: string };
 | Component | `resources/js/front/Components/NavMenu.ts` |
 | Component | `resources/js/front/Components/NavLink.tsx` |
 | Component | `resources/js/front/Components/Pagination.tsx` |
+| Component | `resources/js/front/Components/Product/ProductVisual.tsx` |
+| Component | `resources/js/front/Components/Product/CategorySilhouette.tsx` |
 | ユーティリティ | `resources/js/front/lib/tint.ts` |
 | 共通UI | `resources/js/shared/Components/Button.tsx` |
 | 共通UI | `resources/js/shared/Components/FormField.tsx` |
@@ -330,6 +375,7 @@ type EmptyStateProps = { message: string; className?: string };
 - カートが空のときは送料無料しきい値が `null` になる: 同上（`カートが空のときは送料無料のしきい値を共有しない`）
 - `auth.admin` はフロントのパスに共有されない: 同上（`管理画面の共有データはフロントのパスに現れない`）
 - ヘッダー・フッターのリンク先ルートがすべて定義され、表示できる（リンク切れの検出）: `tests/Feature/Front/NavigationLinkTest.php`（未ログインで開ける8ルートと、ログインが必要な3ルート）
+- 画像未登録の商品にカテゴリ別のシルエットと商品識別コードが出て、画像登録済みの商品には画像が出る: 自動テストなし。目視確認で担保する
 - 未実装リンクが非活性表示になる（現在、該当する項目はない）: 自動テストなし。目視確認で担保する
 - SP幅でハンバーガーメニューが開閉し、PC幅でナビが横並びになる: 自動テストなし。目視確認で担保する
 - カートドロワーの開閉（背景クリック・`Escape`キー・閉じるボタン）とフォーカス復帰: 自動テストなし。目視確認で担保する

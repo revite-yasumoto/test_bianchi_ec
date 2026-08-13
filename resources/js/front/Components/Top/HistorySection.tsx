@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
 import type { ProductCardData } from '@/front/Components/Product/ProductCard';
-import { categoryTint } from '@/front/lib/tint';
+import { ProductVisual } from '@/front/Components/Product/ProductVisual';
 import { yen } from '@/shared/lib/yen';
 
 type HistorySectionProps = {
@@ -23,22 +23,11 @@ export function HistorySection({ products }: HistorySectionProps) {
                             href={route('products.show', [product.id])}
                             className="block w-[148px] overflow-hidden rounded-[14px] border border-line bg-white"
                         >
-                            <div
-                                className="h-20"
-                                style={{
-                                    backgroundImage: categoryTint(
-                                        product.category_name,
-                                    ),
-                                }}
-                            >
-                                {product.main_image_url ? (
-                                    <img
-                                        src={product.main_image_url}
-                                        alt=""
-                                        loading="lazy"
-                                        className="h-full w-full object-cover"
-                                    />
-                                ) : null}
+                            <div className="h-20">
+                                <ProductVisual
+                                    imageUrl={product.main_image_url}
+                                    categoryName={product.category_name}
+                                />
                             </div>
                             <div className="px-3 pt-2.5 pb-3">
                                 <p className="text-xs leading-[1.4] font-bold">
