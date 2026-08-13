@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Services\Ranking\RankingAggregator;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -14,7 +16,7 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database. 依存順に呼び出す。
      */
-    public function run(): void
+    public function run(RankingAggregator $rankingAggregator): void
     {
         $this->call([
             PrefectureSeeder::class,
@@ -30,5 +32,8 @@ class DatabaseSeeder extends Seeder
             NoticeSeeder::class,
             BannerSeeder::class,
         ]);
+
+        // ランキングは注文の集計結果のため、注文の投入後にしか作れない
+        $rankingAggregator->aggregate(CarbonImmutable::parse(OrderSeeder::RANKING_BASE_DATE));
     }
 }

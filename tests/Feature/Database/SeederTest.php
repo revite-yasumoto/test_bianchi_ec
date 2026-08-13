@@ -10,6 +10,7 @@ use App\Models\EcSetting;
 use App\Models\Order;
 use App\Models\Prefecture;
 use App\Models\Product;
+use App\Models\ProductRanking;
 use App\Models\ShippingSetting;
 use App\Models\User;
 use Database\Seeders\AdminSeeder;
@@ -23,6 +24,9 @@ use Tests\TestCase;
 class SeederTest extends TestCase
 {
     use RefreshDatabase;
+
+    /** `OrderSeeder::RANKING_BASE_DATE` の前月。集計側と同じ式で導くと対象月の誤りを検出できないため直値で持つ */
+    private const RANKING_MONTH = '2026-07';
 
     #[Test]
     public function prefecture_seeder_creates_47_prefectures(): void
@@ -96,5 +100,58 @@ class SeederTest extends TestCase
         $this->seed(PrefectureSeeder::class);
 
         $this->assertDatabaseCount('prefectures', 47);
+    }
+
+    #[Test]
+    public function シード実行後に前月のランキングが全体とカテゴリ別で作られる(): void
+    {
+        $this->seed();
+
+        $rankings = ProductRanking::query()->where('target_year_month', self::RANKING_MONTH)->get();
+
+        // TOPのランキングはタブごとに4件まで出すため、全体は最低4件が埋まっている必要がある
+        $this->assertGreaterThanOrEqual(4, $rankings->whereNull('category_id')->count());
+        $this->assertGreaterThan(0, $rankings->whereNotNull('category_id')->count());
+    }
+
+    #[Test]
+    public function ランキングの順位は一位から連番で付く(): void
+    {
+        $this->seed();
+
+        $positions = ProductRanking::query()
+            ->where('target_year_month', self::RANKING_MONTH)
+            ->whereNull('category_id')
+            ->orderBy('rank_position')
+            ->pluck('rank_position')
+            ->all();
+
+        $this->assertSame(range(1, count($positions)), $positions);
+    }
+
+    #[Test]
+    public function 販売数の最も多い商品が全体ランキングの一位になる(): void
+    {
+        $this->seed();
+
+        $this->assertDatabaseHas('product_rankings', [
+            'target_year_month' => self::RANKING_MONTH,
+            'category_id' => null,
+            'rank_position' => 1,
+            'product_id' => Product::query()->where('product_code', 'AP-JRS26')->value('id'),
+        ]);
+    }
+
+    #[Test]
+    public function シードを二回実行しても注文とランキングが重複しない(): void
+    {
+        $this->seed();
+        $orders = Order::query()->count();
+        $rankings = ProductRanking::query()->count();
+
+        $this->seed();
+
+        $this->assertSame($orders, Order::query()->count());
+        $this->assertSame($rankings, ProductRanking::query()->count());
     }
 }

@@ -20,7 +20,14 @@ use Illuminate\Support\Carbon;
 class OrderSeeder extends Seeder
 {
     /**
-     * 全6ステータスを網羅する注文7件を、注文時点のスナップショットを埋めて投入する。
+     * ランキング集計の基準日。母数として投入した7月の注文が集計対象になるよう、その翌月初とする。
+     * `DatabaseSeeder` が集計を呼ぶときに参照する。
+     */
+    public const RANKING_BASE_DATE = '2026-08-01';
+
+    /**
+     * 全6ステータスを網羅する注文と、ランキングの母数になる前月の注文を、
+     * 注文時点のスナップショットを埋めて投入する。
      */
     public function run(): void
     {
@@ -70,6 +77,65 @@ class OrderSeeder extends Seeder
                 'no' => 'BNC-2607-0981', 'user' => '高橋 健', 'date' => '2026-07-27',
                 'pay' => PaymentMethod::Cod, 'status' => OrderStatus::Cancelled,
                 'shipping' => $tokyoShipping, 'items' => [['PT-BTL6', '600ml', 'アクア', 3200, 1]],
+            ],
+
+            // ここから下は前月ランキングの母数。全商品に販売実績を持たせ、数量差で順位を作る
+            [
+                'no' => 'BNC-2607-0902', 'user' => '伊藤 彩', 'date' => '2026-07-05',
+                'pay' => PaymentMethod::BankTransfer, 'status' => OrderStatus::Shipped,
+                'shipping' => $tokyoShipping, 'items' => [
+                    ['AP-JRS26', 'M', 'アクア', 14800, 4],
+                    ['PT-BTL6', '600ml', 'アクア', 3200, 3],
+                ],
+            ],
+            [
+                'no' => 'BNC-2607-0915', 'user' => '山田 太郎', 'date' => '2026-07-08',
+                'pay' => PaymentMethod::Cod, 'status' => OrderStatus::Shipped,
+                'shipping' => $tokyoShipping, 'items' => [
+                    ['AP-JRS26', 'L', 'ブラック', 14800, 5],
+                    ['AP-GLV', 'M', 'ブラック', 6800, 2],
+                ],
+            ],
+            [
+                'no' => 'BNC-2607-0928', 'user' => '佐藤 花子', 'date' => '2026-07-12',
+                'pay' => PaymentMethod::BankTransfer, 'status' => OrderStatus::Shipped,
+                'shipping' => $tokyoShipping, 'items' => [
+                    ['RC7-105', null, null, 398000, 1],
+                    ['PT-CGE', null, null, 5800, 2],
+                ],
+            ],
+            [
+                'no' => 'BNC-2607-0937', 'user' => '鈴木 一郎', 'date' => '2026-07-16',
+                'pay' => PaymentMethod::Cod, 'status' => OrderStatus::Shipped,
+                'shipping' => $hokkaidoShipping, 'items' => [
+                    ['PT-BTL6', '600ml', 'ブラック', 3200, 6],
+                    ['AP-GLV', 'L', 'ホワイト', 6800, 3],
+                ],
+            ],
+            [
+                'no' => 'BNC-2607-0949', 'user' => '高橋 健', 'date' => '2026-07-19',
+                'pay' => PaymentMethod::BankTransfer, 'status' => OrderStatus::Shipped,
+                'shipping' => $tokyoShipping, 'items' => [
+                    ['RC7-105', null, null, 398000, 1],
+                    ['C1-CTY', null, null, 98000, 2],
+                ],
+            ],
+            [
+                'no' => 'BNC-2607-0958', 'user' => '伊藤 彩', 'date' => '2026-07-22',
+                'pay' => PaymentMethod::Cod, 'status' => OrderStatus::Shipped,
+                'shipping' => $tokyoShipping, 'items' => [
+                    ['AP-JRS26', 'M', 'ホワイト', 14800, 3],
+                    ['EV-URB', null, null, 328000, 2],
+                ],
+            ],
+            [
+                'no' => 'BNC-2607-0966', 'user' => '山田 太郎', 'date' => '2026-07-25',
+                'pay' => PaymentMethod::BankTransfer, 'status' => OrderStatus::Shipped,
+                'shipping' => $tokyoShipping, 'items' => [
+                    ['MT3-STD', null, null, 198000, 2],
+                    ['RC5-TGR', null, null, 268000, 1],
+                    ['PT-CGE', null, null, 5800, 2],
+                ],
             ],
         ];
 

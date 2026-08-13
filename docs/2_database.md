@@ -341,6 +341,7 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 ## 業務ルール
 
 - Seeder投入の管理者パスワードは環境変数 `ADMIN_SEED_PASSWORD`（`config('app.admin_seed_password')`）から読み、コードに直書きしない。未設定時のフォールバックは `password`（開発用）。
+- `DatabaseSeeder` は各テーブルの投入後に商品ランキングの集計を実行する。ランキングは注文の集計結果であり、注文の初期データだけでは `product_rankings` が空のままTOPのランキングが出ないため、`db:seed` だけでデモに必要なデータが揃うようにする。集計対象月は投入した注文の月に合わせて基準日を明示的に渡す（規則は [docs/ranking.md](ranking.md) が正本）。
 
 ## 関連ドキュメント
 
@@ -453,5 +454,7 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 - 全24テーブルが作成され、主要な一意制約・外部キーが機能する: `tests/Feature/Database/SchemaTest.php` で担保（テーブル存在・一意制約違反・カスケード削除・削除制限を検証）
 - 注文確定後に商品価格・商品名・カテゴリ名・会員情報・送料設定・EC基本設定を変更しても `orders` / `order_items` のスナップショット列が変わらない。商品を削除しても注文明細が残り `product_id` が `null` になる: `tests/Feature/Database/OrderSnapshotTest.php` で担保
 - Seeder実行後に都道府県47件・送料設定47件・EC基本設定1件が存在し、初期値が正しい。`DatabaseSeeder` が全ステータスを網羅する注文を投入する。Seederは再実行しても行が重複しない（冪等）: `tests/Feature/Database/SeederTest.php` で担保
+- Seeder実行後に前月のランキングが全体・カテゴリ別の双方で作られ、順位が1から連番で付き、販売数の最も多い商品が1位になる: 同上（`シード実行後に前月のランキングが全体とカテゴリ別で作られる`・`ランキングの順位は一位から連番で付く`・`販売数の最も多い商品が全体ランキングの一位になる`）
+- 全体のSeederを2回実行しても注文とランキングが重複しない: 同上（`シードを二回実行しても注文とランキングが重複しない`）
 - `OrderStatus` の `label()` が各ステータスの日本語表示名を返し、`allowedTransitions()` / `canTransitionTo()` が終端ステータス（出荷済み・キャンセル）からの遷移を許可しない: `tests/Unit/Enums/OrderStatusTest.php` で担保
 - 未確定: `php artisan migrate` の実行（本番相当のMySQLへのスキーマ反映）はユーザー承認前のため未実施。現状の実装はテスト用SQLite in-memory上でのみ検証済み。
