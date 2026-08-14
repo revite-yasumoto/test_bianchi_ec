@@ -115,4 +115,19 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Administrator Notification Addresses
+    |--------------------------------------------------------------------------
+    |
+    | 注文・お問い合わせを管理者へ知らせる宛先。受注担当と店舗で分けられるよう、
+    | カンマ区切りで複数指定できる。未設定の環境では管理者宛の通知を送らない。
+    |
+    */
+
+    'admin_addresses' => array_values(array_filter(array_map(
+        trim(...),
+        explode(',', (string) env('MAIL_ADMIN_ADDRESS', '')),
+    ))),
+
 ];

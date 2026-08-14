@@ -4,39 +4,45 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Front\Auth;
 
-use App\Actions\Front\Auth\GenerateMemberCode;
-use App\Enums\UserStatus;
+use App\Actions\Front\Auth\RegisterUser;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Front\Auth\RegisterRequest;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class RegisteredUserController extends Controller
 {
+    /** 完了画面を登録直後の一度だけ開けるようにするための印 */
+    private const SESSION_REGISTERED = 'auth.registered';
+
     public function create(): Response
     {
         return Inertia::render('front/Auth/Register');
     }
 
-    public function store(RegisterRequest $request, GenerateMemberCode $generateMemberCode): RedirectResponse
+    public function store(RegisterRequest $request, RegisterUser $registerUser): RedirectResponse
     {
-        $user = User::query()->create([
-            'member_code' => $generateMemberCode(),
+        $registerUser([
             'name' => $request->string('name')->toString(),
             'name_kana' => $request->input('name_kana'),
             'email' => $request->string('email')->toString(),
             'password' => $request->string('password')->toString(),
-            'status' => UserStatus::Active,
         ]);
 
-        Auth::guard('web')->login($user);
+        $request->session()->put(self::SESSION_REGISTERED, true);
 
-        $request->session()->regenerate();
+        // intended() を呼ばないことで、購入手続きから来た場合の遷移先を後続のログインまで残す
+        return redirect()->route('register.complete');
+    }
 
-        return redirect()->intended(route('top'))
-            ->with('success', '会員登録が完了しました。');
+    public function complete(Request $request): Response|RedirectResponse
+    {
+        if (! $request->session()->pull(self::SESSION_REGISTERED, false)) {
+            return redirect()->route('login');
+        }
+
+        return Inertia::render('front/Auth/RegisterComplete');
     }
 }

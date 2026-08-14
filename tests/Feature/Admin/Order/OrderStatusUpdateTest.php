@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Tests\Feature\Admin\Order;
 
 use App\Enums\OrderStatus;
+use App\Mail\Front\OrderShipped;
 use App\Models\Admin;
 use App\Models\Order;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -25,11 +27,14 @@ class OrderStatusUpdateTest extends TestCase
         $this->admin = Admin::factory()->create();
     }
 
-    private function putStatus(Order $order, OrderStatus $to): TestResponse
+    /**
+     * @param  array<string, mixed>  $extra
+     */
+    private function putStatus(Order $order, OrderStatus $to, array $extra = []): TestResponse
     {
         return $this->actingAs($this->admin, 'admin')->put(
             route('admin.orders.status.update', $order),
-            ['status' => $to->value],
+            ['status' => $to->value, ...$extra],
         );
     }
 
@@ -143,5 +148,88 @@ class OrderStatusUpdateTest extends TestCase
         ])->assertRedirect(route('admin.login'));
 
         $this->assertSame(OrderStatus::Received, $order->refresh()->status);
+    }
+
+    #[Test]
+    public function 出荷済みへの変更で送り状番号が保存される(): void
+    {
+        Mail::fake();
+        $order = Order::factory()->create(['status' => OrderStatus::Preparing]);
+
+        $this->putStatus($order, OrderStatus::Shipped, [
+            'tracking_number' => '1234-5678-9012',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame('1234-5678-9012', $order->refresh()->tracking_number);
+    }
+
+    #[Test]
+    public function 送り状番号は未入力でも出荷済みにできる(): void
+    {
+        Mail::fake();
+        $order = Order::factory()->create(['status' => OrderStatus::Preparing]);
+
+        $this->putStatus($order, OrderStatus::Shipped)->assertSessionHasNoErrors();
+
+        $order->refresh();
+        $this->assertSame(OrderStatus::Shipped, $order->status);
+        $this->assertNull($order->tracking_number);
+    }
+
+    #[Test]
+    public function 出荷済み以外への変更では送り状番号が設定されない(): void
+    {
+        Mail::fake();
+        $order = Order::factory()->create(['status' => OrderStatus::Received]);
+
+        $this->putStatus($order, OrderStatus::PaymentConfirmed, [
+            'tracking_number' => '1234-5678-9012',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertNull($order->refresh()->tracking_number);
+    }
+
+    #[Test]
+    public function 送信を選ぶと会員へ出荷完了メールが送られる(): void
+    {
+        Mail::fake();
+        $order = Order::factory()->create([
+            'status' => OrderStatus::Preparing,
+            'customer_email' => 'taro@example.test',
+        ]);
+
+        $this->putStatus($order, OrderStatus::Shipped, [
+            'tracking_number' => '1234-5678-9012',
+            'notifies_customer' => true,
+        ]);
+
+        Mail::assertSent(
+            OrderShipped::class,
+            fn (OrderShipped $mail): bool => $mail->hasTo('taro@example.test'),
+        );
+    }
+
+    #[Test]
+    public function 送信を選ばなければメールは送られない(): void
+    {
+        Mail::fake();
+        $order = Order::factory()->create(['status' => OrderStatus::Preparing]);
+
+        $this->putStatus($order, OrderStatus::Shipped, ['notifies_customer' => false]);
+
+        Mail::assertNothingSent();
+    }
+
+    #[Test]
+    public function 出荷済み以外への変更ではメールが送られない(): void
+    {
+        Mail::fake();
+        $order = Order::factory()->create(['status' => OrderStatus::Received]);
+
+        $this->putStatus($order, OrderStatus::PaymentConfirmed, [
+            'notifies_customer' => true,
+        ]);
+
+        Mail::assertNothingSent();
     }
 }

@@ -6,6 +6,8 @@ namespace Tests\Feature\Front\Order;
 
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
+use App\Mail\Admin\OrderPlaced;
+use App\Mail\Front\OrderReceived;
 use App\Models\EcSetting;
 use App\Models\Order;
 use App\Models\Prefecture;
@@ -13,8 +15,11 @@ use App\Models\User;
 use App\Models\UserAddress;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\Test;
+use RuntimeException;
 use Tests\Concerns\CreatesCheckoutScenario;
 use Tests\TestCase;
 
@@ -217,5 +222,51 @@ class PlaceOrderTest extends TestCase
         $this->placeOrder()->assertRedirect(route('checkout.index'));
 
         $this->assertDatabaseCount('orders', 0);
+    }
+
+    #[Test]
+    public function 注文を確定すると会員と管理者にメールが送られる(): void
+    {
+        Mail::fake();
+        $this->addToCart($this->user, $this->createVariantWithStock());
+
+        $this->placeOrder();
+
+        // 会員宛に管理者が混ざらないこと・管理者宛に会員が混ざらないことも併せて確認する
+        Mail::assertSent(
+            OrderReceived::class,
+            fn (OrderReceived $mail): bool => $mail->hasTo($this->user->email) && count($mail->to) === 1,
+        );
+        Mail::assertSent(
+            OrderPlaced::class,
+            fn (OrderPlaced $mail): bool => $mail->hasTo('admin@example.test')
+                && $mail->hasTo('uketsuke@example.test')
+                && ! $mail->hasTo($this->user->email),
+        );
+    }
+
+    #[Test]
+    public function メールの送信に失敗しても注文は成立する(): void
+    {
+        Log::spy();
+        // 会員宛・管理者宛の2通とも失敗させ、握り潰したうえで注文完了画面へ進むことを確認する
+        Mail::shouldReceive('to->send')->twice()->andThrow(new RuntimeException('接続できません'));
+        $this->addToCart($this->user, $this->createVariantWithStock());
+
+        $this->placeOrder()->assertRedirect(route('orders.complete', Order::query()->sole()));
+
+        Log::shouldHaveReceived('error')->twice();
+    }
+
+    #[Test]
+    public function 注文が失敗したときはメールが送られない(): void
+    {
+        Mail::fake();
+        $this->addToCart($this->user, $this->createVariantWithStock(stock: 0));
+
+        $this->placeOrder();
+
+        $this->assertDatabaseCount('orders', 0);
+        Mail::assertNothingSent();
     }
 }

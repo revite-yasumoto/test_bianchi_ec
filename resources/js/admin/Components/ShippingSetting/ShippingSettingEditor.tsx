@@ -10,6 +10,7 @@ import { useAdminToast } from '@/admin/Layouts/AdminLayout';
 
 export type ShippingSettingEditorProps = {
     settings: ShippingSettingRowData[];
+    regions: { value: string; label: string }[];
 };
 
 type SettingInput = {
@@ -32,6 +33,7 @@ function toInputs(settings: ShippingSettingRowData[]): SettingInput[] {
 
 export function ShippingSettingEditor({
     settings,
+    regions,
 }: ShippingSettingEditorProps) {
     const { showToast } = useAdminToast();
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -48,6 +50,17 @@ export function ShippingSettingEditor({
             delivery_days: Number(setting.delivery_days),
         })),
     }));
+
+    // フォームは47件フラットのまま保つ必要があるため、表示だけを地方へ振り分ける。
+    // エラーのキーが `settings.{index}` の形で返るので、元の位置も一緒に持ち回る。
+    const groups = regions
+        .map((region) => ({
+            region,
+            items: settings
+                .map((setting, index) => ({ setting, index }))
+                .filter(({ setting }) => setting.region === region.value),
+        }))
+        .filter((group) => group.items.length > 0);
 
     const updateInput = (index: number, changes: Partial<SettingInput>) => {
         setData(
@@ -97,29 +110,43 @@ export function ShippingSettingEditor({
                 </p>
             ) : null}
 
-            <div className="mt-3.5 rounded-xl border border-admin-line bg-white px-5 py-4">
-                <ul className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-2.5">
-                    {settings.map((setting, index) => (
-                        <ShippingSettingRow
-                            key={setting.id}
-                            row={setting}
-                            fee={data.settings[index]?.fee ?? ''}
-                            deliveryDays={
-                                data.settings[index]?.delivery_days ?? ''
-                            }
-                            feeError={fieldErrors[`settings.${index}.fee`]}
-                            deliveryDaysError={
-                                fieldErrors[`settings.${index}.delivery_days`]
-                            }
-                            onChangeFee={(value) =>
-                                updateInput(index, { fee: value })
-                            }
-                            onChangeDeliveryDays={(value) =>
-                                updateInput(index, { delivery_days: value })
-                            }
-                        />
-                    ))}
-                </ul>
+            <div className="mt-3.5 flex flex-col gap-5 rounded-xl border border-admin-line bg-white px-5 py-4">
+                {groups.map((group) => (
+                    <section key={group.region.value}>
+                        <h2 className="mb-2 text-[12.5px] font-extrabold text-admin-ink">
+                            {group.region.label}
+                        </h2>
+                        <ul className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-2.5">
+                            {group.items.map(({ setting, index }) => (
+                                <ShippingSettingRow
+                                    key={setting.id}
+                                    row={setting}
+                                    fee={data.settings[index]?.fee ?? ''}
+                                    deliveryDays={
+                                        data.settings[index]?.delivery_days ??
+                                        ''
+                                    }
+                                    feeError={
+                                        fieldErrors[`settings.${index}.fee`]
+                                    }
+                                    deliveryDaysError={
+                                        fieldErrors[
+                                            `settings.${index}.delivery_days`
+                                        ]
+                                    }
+                                    onChangeFee={(value) =>
+                                        updateInput(index, { fee: value })
+                                    }
+                                    onChangeDeliveryDays={(value) =>
+                                        updateInput(index, {
+                                            delivery_days: value,
+                                        })
+                                    }
+                                />
+                            ))}
+                        </ul>
+                    </section>
+                ))}
             </div>
 
             <ConfirmDialog

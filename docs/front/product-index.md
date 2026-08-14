@@ -27,6 +27,7 @@
 | 商品一覧                                                           |
 | 24件の商品 / 全58件（絞り込み時のみ「/ 全N件」を付ける）              |
 | (すべて) (ロードバイク) (MTB) (シティ) (eバイク) (パーツ) (アパレル)  |
+| 価格帯: (すべて) (〜1万円) (1万〜5万円) (5万〜15万円) (15万円〜)      |
 |                                                                   |
 | +-----------+ +-----------+ +-----------+ +-----------+           |
 | |         [在庫切れ]|      | |           | |           |           |
@@ -67,10 +68,13 @@ type ProductCardData = {
 type Props = {
     products: Paginated<ProductCardData>;
     categories: { id: number; name: string }[];
-    filters: { category_id: number | null };
+    priceRanges: { value: string; label: string }[];
+    filters: { category_id: number | null; price_range: string | null };
     totalCount: number;
 };
 ```
+
+価格帯の区分は `App\Enums\PriceRange` が単一情報源で、フロントの値は `resources/js/shared/lib/enums.ts` に同じ文字列で持つ。境界は「下限以上・上限未満」で、上限のない区分は下限以上のみを見る。
 
 - `main_image_url` は `asset('storage/'.$path)` で生成した公開URL。画像未登録は `null`。`Storage::disk('public')->url()` は `APP_URL` を基準にした固定値を返すため使わない。ポートやホストが環境ごとに違っても解決できるよう、リクエストを基準にする。画像URLを組み立てる箇所はすべてこの方法に揃える。
 - `ASSET_URL`（`config('app.asset_url')`）を設定した環境では、`asset()` がそちらを基準にする。CDN等から配信する場合に使う。未設定のときが上記のリクエスト基準。
@@ -79,14 +83,15 @@ type Props = {
 
 ### 入力値バリデーションルール
 
-クエリパラメータ `category_id` のみ。存在しないカテゴリの値が来た場合は該当0件になる（エラーにはしない）。
+クエリパラメータは `category_id` と `price_range`。存在しないカテゴリの値が来た場合は該当0件になる（エラーにはしない）。`price_range` が `PriceRange` に無い値のときは絞り込みを適用しない（誤ったURLで0件になるより、全件を出すほうが利用者の意図に近い）。
 
 ### 主要な処理フロー
 
 1. `is_published = true` の商品を対象にする。
 2. `BuildProductCard` が `category` と `mainImage` の eager load と、取扱対象かつ在庫が1以上のバリエーション数のサブクエリ（`withCount`）を付与する。商品件数が増えてもクエリ数は変わらない。同じ組み立てをTOPのランキング・おすすめ・閲覧履歴でも使う。
 3. `category_id` の指定があれば絞り込む。
-4. `id` の降順で1ページ24件のページネーションを行い、クエリ文字列を保持する。
+4. `price_range` の指定があれば `products.price` で絞り込む。カテゴリと併用した場合は両方を満たす商品だけが残る。
+5. `id` の降順で1ページ24件のページネーションを行い、クエリ文字列を保持する。
 5. カテゴリの選択肢は `sort_order` 昇順・`id` 昇順で返す。
 
 ## 業務ルール
@@ -111,6 +116,9 @@ type Props = {
 | Page | `resources/js/front/Pages/Product/Index.tsx` |
 | Component | `resources/js/front/Components/Product/ProductCard.tsx` |
 | Component | `resources/js/front/Components/Product/CategoryChips.tsx` |
+| Component | `resources/js/front/Components/Product/PriceRangeChips.tsx` |
+| Enum | `app/Enums/PriceRange.php` |
+| 型定義 | `resources/js/shared/lib/enums.ts` |
 | Test | `tests/Feature/Front/Product/ProductIndexTest.php` |
 | Test | `tests/Feature/Front/Product/ProductStockDisplayTest.php` |
 
@@ -119,6 +127,10 @@ type Props = {
 - 未ログインでも公開商品の一覧が表示され、カテゴリ名・価格・在庫状態が渡る: `tests/Feature/Front/Product/ProductIndexTest.php`（`未ログインでも公開商品の一覧が表示される`）
 - 非公開商品が一覧に出ない: 同上（`非公開商品は一覧に表示されない`）
 - カテゴリで絞り込め、`totalCount` は絞り込み前の件数になる: 同上（`カテゴリで絞り込める`）
+- 価格帯で絞り込め、境界値が下限以上・上限未満で判定される: 同上（`価格帯で絞り込める`・`価格帯の境界は下限を含み上限を含まない`）
+- 上限のない価格帯は下限以上のみで絞り込む: 同上（`上限のない価格帯は下限以上の商品が残る`）
+- カテゴリと価格帯を併用すると両方を満たす商品だけが残る: 同上（`カテゴリと価格帯を併用できる`）
+- 不正な価格帯の値では絞り込まれない: 同上（`存在しない価格帯の値は絞り込みに使われない`）
 - 在庫0の商品に `is_sold_out` が立つ: 同上（`在庫が0の商品は在庫切れとして返る`）
 - カテゴリの選択肢が並び順で返る: 同上（`カテゴリの選択肢が並び順で返る`）
 - 商品件数が増えてもクエリ数が増えない（N+1が発生しない）: 同上（`商品件数が増えてもクエリ数が増えない`）

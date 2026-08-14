@@ -18,6 +18,27 @@ export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod];
 export const UserStatus = {
     Active: 'active',
     Suspended: 'suspended',
+    Withdrawn: 'withdrawn',
 } as const;
 
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus];
+
+export const PriceRange = {
+    Under10000: 'under_10000',
+    From10000: 'from_10000',
+    From50000: 'from_50000',
+    From150000: 'from_150000',
+} as const;
+
+export type PriceRange = (typeof PriceRange)[keyof typeof PriceRange];
+
+export const OrderStatus = {
+    Received: 'received',
+    AwaitingPayment: 'awaiting_payment',
+    PaymentConfirmed: 'payment_confirmed',
+    Preparing: 'preparing',
+    Shipped: 'shipped',
+    Cancelled: 'cancelled',
+} as const;
+
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];

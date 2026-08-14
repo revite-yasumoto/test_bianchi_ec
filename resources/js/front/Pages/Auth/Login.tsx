@@ -88,6 +88,13 @@ export default function Login() {
                         </Button>
 
                         <Link
+                            href={route('password.request')}
+                            className="text-center text-[13px] text-ink2 underline"
+                        >
+                            パスワードをお忘れの方
+                        </Link>
+
+                        <Link
                             href={route('register')}
                             className="text-center text-[13px] font-bold text-brand"
                         >

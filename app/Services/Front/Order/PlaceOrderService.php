@@ -9,11 +9,14 @@ use App\Actions\Front\Order\BuildOrderSnapshot;
 use App\Actions\Front\Order\GenerateOrderNumber;
 use App\Enums\PaymentMethod;
 use App\Exceptions\OrderNotPlaceableException;
+use App\Mail\Admin\OrderPlaced;
+use App\Mail\Front\OrderReceived;
 use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\Stock;
 use App\Models\User;
 use App\Models\UserAddress;
+use App\Services\Mail\NotificationMailer;
 use App\Services\Shipping\ShippingCalculator;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
@@ -31,6 +34,7 @@ class PlaceOrderService
         private readonly GenerateOrderNumber $generateOrderNumber,
         private readonly BuildOrderSnapshot $buildOrderSnapshot,
         private readonly BuildOrderItemSnapshots $buildOrderItemSnapshots,
+        private readonly NotificationMailer $notificationMailer,
     ) {}
 
     /**
@@ -38,7 +42,7 @@ class PlaceOrderService
      */
     public function place(User $user, int $addressId, PaymentMethod $paymentMethod): Order
     {
-        return DB::transaction(function () use ($user, $addressId, $paymentMethod): Order {
+        $order = DB::transaction(function () use ($user, $addressId, $paymentMethod): Order {
             $cartItems = $this->cartItems($user);
             $stocks = $this->lockStocks($cartItems);
             $this->assertPurchasable($cartItems, $stocks);
@@ -82,6 +86,14 @@ class PlaceOrderService
 
             return $order;
         });
+
+        // 送信に失敗しても確定済みの注文が巻き戻らないよう、トランザクションの外で送る
+        $order->load('items');
+
+        $this->notificationMailer->send($order->customer_email, new OrderReceived($order));
+        $this->notificationMailer->sendToAdmin(new OrderPlaced($order));
+
+        return $order;
     }
 
     /**

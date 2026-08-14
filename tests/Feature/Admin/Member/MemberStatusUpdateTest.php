@@ -89,6 +89,34 @@ class MemberStatusUpdateTest extends TestCase
     }
 
     #[Test]
+    public function 退会済みの会員はステータスを更新できない(): void
+    {
+        $user = User::factory()->create(['status' => UserStatus::Withdrawn]);
+
+        $this->actingAs($this->admin, 'admin')
+            ->put(route('admin.members.status.update', $user), [
+                'status' => UserStatus::Active->value,
+            ])
+            ->assertSessionHasErrors('status');
+
+        $this->assertSame(UserStatus::Withdrawn, $user->refresh()->status);
+    }
+
+    #[Test]
+    public function 退会へのステータス変更は受け付けない(): void
+    {
+        $user = User::factory()->create(['status' => UserStatus::Active]);
+
+        $this->actingAs($this->admin, 'admin')
+            ->put(route('admin.members.status.update', $user), [
+                'status' => UserStatus::Withdrawn->value,
+            ])
+            ->assertSessionHasErrors('status');
+
+        $this->assertSame(UserStatus::Active, $user->refresh()->status);
+    }
+
+    #[Test]
     public function 未認証は会員ステータスを更新できない(): void
     {
         $user = User::factory()->create(['status' => UserStatus::Active]);

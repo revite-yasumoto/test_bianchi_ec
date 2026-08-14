@@ -30,6 +30,8 @@
         <env name="DB_DATABASE" value=":memory:"/>
         <env name="DB_URL" value=""/>
         <env name="MAIL_MAILER" value="array"/>
+        <!-- 管理者宛の通知と、カンマ区切りの解析を検証するため、.env の値に左右されないよう固定する -->
+        <env name="MAIL_ADMIN_ADDRESS" value="admin@example.test, uketsuke@example.test"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>

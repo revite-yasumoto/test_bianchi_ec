@@ -102,6 +102,13 @@ class MemberCsvImporter
         ]);
 
         $validator->after(function ($validator) use ($row, $existing, $seenEmails): void {
+            // 退会は会員自身の操作でのみ付き、管理側から戻せない扱いのため取込の対象外とする
+            if ($existing?->status === UserStatus::Withdrawn) {
+                $validator->errors()->add('status', '退会済みの会員は取り込めません。');
+
+                return;
+            }
+
             if (in_array($row['email'], $seenEmails, true)) {
                 $validator->errors()->add('email', 'メールアドレスがファイル内で重複しています。');
 

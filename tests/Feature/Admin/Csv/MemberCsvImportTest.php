@@ -154,6 +154,27 @@ class MemberCsvImportTest extends TestCase
     }
 
     #[Test]
+    public function 退会済みの会員は取り込みで更新されない(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'taro@example.test',
+            'name' => '架空 太郎',
+            'status' => UserStatus::Withdrawn,
+        ]);
+
+        $header = '会員ID,氏名,氏名カナ,メールアドレス,電話番号,ステータス,初期パスワード';
+        $content = $header."\r\n".',架空 次郎,,taro@example.test,,有効,'."\r\n";
+
+        $this->actingAs($this->admin, 'admin')->post(route('admin.members.csv.import'), [
+            'file' => UploadedFile::fake()->createWithContent('members.csv', $content),
+        ]);
+
+        $user->refresh();
+        $this->assertSame(UserStatus::Withdrawn, $user->status);
+        $this->assertSame('架空 太郎', $user->name);
+    }
+
+    #[Test]
     public function 未認証は取り込めない(): void
     {
         $header = '会員ID,氏名,氏名カナ,メールアドレス,電話番号,ステータス,初期パスワード';

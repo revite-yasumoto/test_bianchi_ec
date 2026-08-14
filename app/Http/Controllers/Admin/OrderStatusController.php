@@ -22,7 +22,13 @@ class OrderStatusController extends Controller
         /** @var Admin|null $admin */
         $admin = $request->user('admin');
 
-        $service->update($order, $request->enum('status', OrderStatus::class), $admin);
+        $service->update(
+            $order,
+            $request->enum('status', OrderStatus::class),
+            $admin,
+            $request->filled('tracking_number') ? $request->string('tracking_number')->toString() : null,
+            $request->boolean('notifies_customer'),
+        );
 
         return redirect()->route('admin.orders.show', $order);
     }

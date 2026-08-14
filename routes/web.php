@@ -19,6 +19,8 @@ use App\Http\Controllers\Admin\ShippingSettingController;
 use App\Http\Controllers\Admin\SpecOptionController;
 use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Front\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Front\Auth\NewPasswordController;
+use App\Http\Controllers\Front\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Front\Auth\RegisteredUserController;
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\CartItemController;
@@ -31,6 +33,7 @@ use App\Http\Controllers\Front\MyPage\OrderCancelController;
 use App\Http\Controllers\Front\MyPage\OrderHistoryController;
 use App\Http\Controllers\Front\MyPage\PasswordController;
 use App\Http\Controllers\Front\MyPage\ProfileController;
+use App\Http\Controllers\Front\MyPage\WithdrawalController;
 use App\Http\Controllers\Front\NewsController as FrontNewsController;
 use App\Http\Controllers\Front\NoticeController as FrontNoticeController;
 use App\Http\Controllers\Front\OrderController as FrontOrderController;
@@ -116,9 +119,18 @@ Route::post('contact', [ContactController::class, 'store'])
 
 Route::middleware('guest')->group(function (): void {
     Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
-    Route::post('register', [RegisteredUserController::class, 'store'])->name('register.store');
+    // 1リクエストで会員の作成とメール送信が起きるため、連投を抑える
+    Route::post('register', [RegisteredUserController::class, 'store'])
+        ->name('register.store')
+        ->middleware('throttle:5,60');
+    Route::get('register/complete', [RegisteredUserController::class, 'complete'])->name('register.complete');
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
+
+    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
+    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+    Route::post('reset-password', [NewPasswordController::class, 'store'])->name('password.update');
 });
 
 Route::middleware('auth')->group(function (): void {
@@ -164,6 +176,8 @@ Route::middleware('auth')->group(function (): void {
     Route::get('mypage/addresses', [AddressListController::class, 'index'])->name('mypage.addresses');
     Route::get('mypage/profile', [ProfileController::class, 'edit'])->name('mypage.profile');
     Route::put('mypage/profile', [ProfileController::class, 'update'])->name('mypage.profile.update');
+    Route::get('mypage/withdrawal', [WithdrawalController::class, 'create'])->name('mypage.withdrawal');
+    Route::post('mypage/withdrawal', [WithdrawalController::class, 'store'])->name('mypage.withdrawal.store');
     Route::get('mypage/password', [PasswordController::class, 'edit'])->name('mypage.password');
     Route::put('mypage/password', [PasswordController::class, 'update'])->name('mypage.password.update');
 });

@@ -47,7 +47,8 @@ class OrderHistoryController extends Controller
 
     public function show(Order $order): Response
     {
-        $order->load(['items', 'statusHistories']);
+        // リンクの可否は現在の公開状態に依存するため、判定に要る2列だけを明細と一緒に読む
+        $order->load(['items.product:id,is_published', 'statusHistories']);
 
         return Inertia::render('front/MyPage/OrderShow', [
             'order' => $this->detailOf($order),
@@ -69,7 +70,8 @@ class OrderHistoryController extends Controller
     }
 
     /**
-     * 注文詳細はスナップショット列だけで組み立てる（products / users を参照しない）。
+     * 表示する値はスナップショット列だけで組み立てる（users を参照しない）。
+     * 例外は明細のリンク先で、今も公開中の商品にだけ遷移先を持たせる。
      *
      * @return array<string, mixed>
      */
@@ -91,6 +93,9 @@ class OrderHistoryController extends Controller
                     // 画像未登録の明細にカテゴリ別のプレースホルダーを出すために渡す
                     'category_name' => $item->category_name,
                     'variant_label' => $this->variantLabelOf($item),
+                    'product_url' => $item->product?->is_published
+                        ? route('products.show', $item->product)
+                        : null,
                     'product_image_url' => $item->product_image_path
                         ? asset('storage/'.$item->product_image_path)
                         : null,

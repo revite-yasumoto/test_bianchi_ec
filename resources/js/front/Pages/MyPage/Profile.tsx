@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import { MyPageLayout } from '@/front/Layouts/MyPageLayout';
 import { TextInput } from '@/shared/Components/TextInput';
 
@@ -82,6 +82,16 @@ export default function Profile({ profile }: Props) {
                     保存する
                 </button>
             </form>
+
+            <p className="mt-10 border-t border-line pt-5 text-[12.5px] text-ink2">
+                退会をご希望の方は{' '}
+                <Link
+                    href={route('mypage.withdrawal')}
+                    className="font-bold text-ink2 underline"
+                >
+                    こちら
+                </Link>
+            </p>
         </MyPageLayout>
     );
 }

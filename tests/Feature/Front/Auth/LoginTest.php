@@ -142,4 +142,113 @@ class LoginTest extends TestCase
             ->get(route('login'))
             ->assertRedirect(route('top'));
     }
+
+    private function attemptWithWrongPassword(User $user, int $times): void
+    {
+        foreach (range(1, $times) as $ignored) {
+            $this->post(route('login.store'), [
+                'email' => $user->email,
+                'password' => 'wrong-password',
+            ]);
+        }
+    }
+
+    #[Test]
+    public function パスワードを三回間違えるとアカウントがロックされる(): void
+    {
+        $user = User::factory()->create();
+
+        $this->attemptWithWrongPassword($user, 3);
+
+        $user->refresh();
+        $this->assertNotNull($user->locked_until);
+        $this->assertTrue($user->locked_until->isFuture());
+        $this->assertSame(0, $user->failed_login_attempts);
+    }
+
+    #[Test]
+    public function 二回の失敗ではロックされない(): void
+    {
+        $user = User::factory()->create();
+
+        $this->attemptWithWrongPassword($user, 2);
+
+        $user->refresh();
+        $this->assertNull($user->locked_until);
+        $this->assertSame(2, $user->failed_login_attempts);
+    }
+
+    #[Test]
+    public function ロック中は正しいパスワードでもログインできない(): void
+    {
+        $user = User::factory()->create(['locked_until' => now()->addHour()]);
+
+        $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'password',
+        ])->assertSessionHasErrors('email');
+
+        $this->assertGuest();
+    }
+
+    #[Test]
+    public function ロックは一時間後に解除される(): void
+    {
+        $user = User::factory()->create(['locked_until' => now()->addHour()]);
+
+        $this->travel(61)->minutes();
+
+        $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'password',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertAuthenticatedAs($user);
+    }
+
+    #[Test]
+    public function ログインに成功すると失敗回数がリセットされる(): void
+    {
+        $user = User::factory()->create(['failed_login_attempts' => 2]);
+
+        $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'password',
+        ])->assertSessionHasNoErrors();
+
+        $user->refresh();
+        $this->assertSame(0, $user->failed_login_attempts);
+        $this->assertNull($user->locked_until);
+    }
+
+    #[Test]
+    public function 休会中の会員が正しいパスワードで試すと失敗回数が戻る(): void
+    {
+        $user = User::factory()->create([
+            'status' => UserStatus::Suspended,
+            'failed_login_attempts' => 2,
+        ]);
+
+        $this->post(route('login.store'), [
+            'email' => $user->email,
+            'password' => 'password',
+        ])->assertSessionHasErrors('email');
+
+        $user->refresh();
+        $this->assertSame(0, $user->failed_login_attempts);
+        $this->assertNull($user->locked_until);
+    }
+
+    #[Test]
+    public function 存在しないアドレスへの連続した失敗ではロックの記録が残らない(): void
+    {
+        foreach (range(1, 3) as $ignored) {
+            $this->post(route('login.store'), [
+                'email' => 'unknown@example.test',
+                'password' => 'wrong-password',
+            ]);
+        }
+
+        $this->assertDatabaseCount('users', 0);
+    }
 }

@@ -19,6 +19,12 @@
 
 `orders` / `order_items` / `order_status_histories`（＋履歴の `admins`）を参照し、`orders` と `order_status_histories` に書き込む。キャンセル時のみ `stocks` を更新する。定義は [docs/2_database.md](../2_database.md) が正本。
 
+出荷時に控える送り状番号を保持する列を本機能で追加する。
+
+| カラム | 型 | 用途 |
+|---|---|---|
+| `orders.tracking_number` | `string(50)`・nullable | 出荷済みへ変更したときに入力された送り状番号。配送業者は保持しない |
+
 ## ユーザーインターフェース仕様（ワイヤーフレーム）
 
 ```
@@ -48,7 +54,20 @@
 
 - 代引き手数料は 0 円のときは行を表示しない。
 - ステータスの選択肢は現在のステータスから遷移可能なものだけを出す。遷移先が無い（最終ステータス）場合は select とボタンを出さず、その旨の案内文を表示する。
-- 更新は確認モーダル（`ConfirmDialog`）を経て実行し、完了後にトーストを表示する。
+- 更新は確認モーダル（`ConfirmDialog`）を経て実行し、完了後にトーストを表示する。ただし「出荷済み」を選んだときだけは専用のモーダルを開き、送り状番号と通知メールの送信可否を受け取る。
+
+```
+出荷済みへの変更（専用モーダル）:
++------------------------------+
+|  出荷済みへの変更              |
+|  送り状番号（任意）            |
+|  [                        ]   |
+|  [x] 出荷完了メールを送る      |
+|  [ キャンセル ]  [ 更新する ]  |
++------------------------------+
+```
+
+- 送信のチェックは既定でオンにする。番号が未入力でも更新できる。
 - 変更履歴は新しい順に並べ、管理者名が無い履歴（会員のキャンセル依頼）は「会員による操作」と表示する。
 
 ## インターフェース ＆ データロジック
@@ -117,10 +136,11 @@ type Props = {
 
 **詳細（`show()`）:** `orders` と `order_items`・`order_status_histories`（＋履歴の管理者）を取得し、商品名・カテゴリ名・単価・SKUコードはすべて `order_items` のスナップショット列から組み立てる。`products` は参照しない。
 
-**ステータス更新（`UpdateOrderStatusService`。全体を1トランザクションで囲む）:**
-1. `orders.status` を更新する。`cancelled` へ遷移する場合は `cancelled_at` に現在時刻を設定する。
+**ステータス更新（`UpdateOrderStatusService`。1〜3を1トランザクションで囲む）:**
+1. `orders.status` を更新する。`cancelled` へ遷移する場合は `cancelled_at` に現在時刻を設定する。`shipped` へ遷移する場合は、入力された送り状番号を `tracking_number` に保存する。
 2. `order_status_histories` に1行追加する（`from_status` / `to_status` / `admin_id` / `changed_at`）。
 3. `cancelled` へ遷移する場合、`RestoreStockFromOrder` で在庫を戻す。
+4. トランザクションを抜けたあとで、`shipped` への遷移かつ送信が選ばれている場合に限り、会員へ出荷完了メールを送る。送信の仕様は [docs/mail-notification.md](../mail-notification.md) が正本。
 
 ### キャンセル時の在庫戻し（`RestoreStockFromOrder`）
 
@@ -132,7 +152,8 @@ type Props = {
 
 - 注文詳細は `orders` / `order_items` / `order_status_histories` のみを参照する。商品価格・商品名・カテゴリ名・会員情報・送料設定・EC基本設定が後から変更・削除されても表示は変わらない。
 - 在庫を戻すのはキャンセルへの遷移時のみ。それ以外の遷移では在庫を操作しない。
-- ステータス変更の通知メールは送信しない（要件のスコープ外）。
+- 会員へ通知を送るのは出荷済みへの遷移時のみで、送るかどうかは操作のたびに選ぶ。他の遷移では通知しない。
+- 送り状番号は出荷済みへの遷移時にのみ記録する。他のステータスへ変更しても既存の値は消さない。配送業者は保持しないため、追跡URLは組み立てない。
 - 注文の編集・削除は実装しない。
 
 ## 関連ドキュメント
@@ -150,6 +171,7 @@ type Props = {
 
 | 種別 | パス |
 |---|---|
+| Migration | `database/migrations/2026_08_14_000002_add_tracking_number_to_orders_table.php` |
 | Controller | `app/Http/Controllers/Admin/OrderController.php` |
 | Controller | `app/Http/Controllers/Admin/OrderStatusController.php` |
 | FormRequest | `app/Http/Requests/Admin/Order/UpdateOrderStatusRequest.php` |
@@ -160,6 +182,11 @@ type Props = {
 | Page | `resources/js/admin/Pages/Order/Show.tsx` |
 | Component | `resources/js/admin/Components/Order/StatusBadge.tsx` |
 | Component | `resources/js/admin/Components/Order/StatusUpdateCard.tsx` |
+| Component | `resources/js/admin/Components/Order/ShipmentDialog.tsx` |
+| Component | `resources/js/shared/Components/Modal.tsx` |
+| 型定義 | `resources/js/shared/lib/enums.ts` |
+| Mailable | `app/Mail/Front/OrderShipped.php` |
+| View | `resources/views/emails/front/order-shipped.blade.php` |
 | Test | `tests/Feature/Admin/Order/OrderShowTest.php` |
 | Test | `tests/Feature/Admin/Order/OrderStatusUpdateTest.php` |
 | Test | `tests/Feature/Admin/Order/OrderCancelStockTest.php` |
@@ -182,5 +209,8 @@ type Props = {
 - 商品削除済みの明細はスキップされる: 同上（`商品が削除済みの明細は在庫を戻さずスキップされる`）
 - キャンセル以外の遷移では在庫が変わらない: 同上（`キャンセル以外の遷移では在庫が変わらない`）
 - 遷移が拒否された場合は在庫も履歴も変わらない: 同上（`遷移が拒否された場合は在庫もステータスも変わらない`）
-- 確認モーダルとトースト表示: 自動テストなし。目視確認で担保する
+- 出荷済みへの変更で送り状番号が保存される: `tests/Feature/Admin/Order/OrderStatusUpdateTest.php`（`出荷済みへの変更で送り状番号が保存される`・`送り状番号は未入力でも出荷済みにできる`）
+- 送信を選んだときだけ出荷完了メールが送られる: 同上（`送信を選ぶと会員へ出荷完了メールが送られる`・`送信を選ばなければメールは送られない`・`出荷済み以外への変更ではメールが送られない`）
+- 送り状番号は出荷済み以外への変更では設定されない: 同上（`出荷済み以外への変更では送り状番号が設定されない`）
+- 確認モーダル・出荷モーダル・トースト表示: 自動テストなし。目視確認で担保する
 - 2カラムのレスポンシブ表示: 自動テストなし。目視確認で担保する

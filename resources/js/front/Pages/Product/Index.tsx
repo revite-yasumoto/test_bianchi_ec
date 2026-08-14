@@ -1,25 +1,30 @@
 import { Link } from '@inertiajs/react';
 import { Pagination } from '@/front/Components/Pagination';
 import { CategoryChips } from '@/front/Components/Product/CategoryChips';
+import { PriceRangeChips } from '@/front/Components/Product/PriceRangeChips';
 import { ProductCard } from '@/front/Components/Product/ProductCard';
 import type { ProductCardData } from '@/front/Components/Product/ProductCard';
 import { FrontLayout } from '@/front/Layouts/FrontLayout';
 import { EmptyState } from '@/shared/Components/EmptyState';
+import type { PriceRange } from '@/shared/lib/enums';
 
 type Props = {
     products: Paginated<ProductCardData>;
     categories: { id: number; name: string }[];
-    filters: { category_id: number | null };
+    priceRanges: { value: PriceRange; label: string }[];
+    filters: { category_id: number | null; price_range: PriceRange | null };
     totalCount: number;
 };
 
 export default function Index({
     products,
     categories,
+    priceRanges,
     filters,
     totalCount,
 }: Props) {
-    const isFiltered = filters.category_id !== null;
+    const isFiltered =
+        filters.category_id !== null || filters.price_range !== null;
 
     return (
         <FrontLayout
@@ -43,10 +48,16 @@ export default function Index({
                     {isFiltered ? ` / 全${totalCount}件` : ''}
                 </p>
 
-                <div className="mb-5">
+                <div className="mb-5 flex flex-col gap-2.5">
                     <CategoryChips
                         categories={categories}
                         selectedId={filters.category_id}
+                        priceRange={filters.price_range}
+                    />
+                    <PriceRangeChips
+                        ranges={priceRanges}
+                        selectedValue={filters.price_range}
+                        categoryId={filters.category_id}
                     />
                 </div>
 

@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Front;
 use App\Actions\Front\Product\BuildProductCard;
 use App\Actions\Front\Product\BuildProductDetail;
 use App\Actions\Front\Product\RecordBrowsingHistory;
+use App\Enums\PriceRange;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
@@ -26,9 +27,14 @@ class ProductController extends Controller
     {
         $categoryId = $request->filled('category_id') ? $request->integer('category_id') : null;
 
+        // 任意の値・配列が渡りうるため、区分に無い値は絞り込みに使わない
+        $rawPriceRange = $request->query('price_range');
+        $priceRange = is_string($rawPriceRange) ? PriceRange::tryFrom($rawPriceRange) : null;
+
         $products = $buildCard
             ->scope(Product::query()->where('is_published', true))
             ->when($categoryId, fn (Builder $query, int $id) => $query->where('category_id', $id))
+            ->when($priceRange, fn (Builder $query, PriceRange $range) => $this->applyPriceRange($query, $range))
             ->orderByDesc('id')
             ->paginate(self::PER_PAGE)
             ->withQueryString()
@@ -37,12 +43,27 @@ class ProductController extends Controller
         return Inertia::render('front/Product/Index', [
             'products' => $products,
             'categories' => $this->categoryOptions(),
-            'filters' => ['category_id' => $categoryId],
+            'priceRanges' => PriceRange::options(),
+            'filters' => [
+                'category_id' => $categoryId,
+                'price_range' => $priceRange?->value,
+            ],
             // 絞り込みが無ければページャの総件数と一致するため、追加のCOUNTを発行しない
-            'totalCount' => $categoryId === null
+            'totalCount' => $categoryId === null && $priceRange === null
                 ? $products->total()
                 : Product::query()->where('is_published', true)->count(),
         ]);
+    }
+
+    /**
+     * 下限は含み、上限は含まない。上限のない区分は下限のみで絞り込む。
+     */
+    private function applyPriceRange(Builder $query, PriceRange $range): Builder
+    {
+        [$min, $max] = $range->bounds();
+
+        return $query->where('price', '>=', $min)
+            ->when($max !== null, fn (Builder $inner) => $inner->where('price', '<', $max));
     }
 
     public function show(
