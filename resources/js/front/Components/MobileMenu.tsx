@@ -15,28 +15,36 @@ export function MobileMenu({ isOpen, onNavigate }: MobileMenuProps) {
     }
 
     return (
-        <nav
-            aria-label="メインメニュー（モバイル）"
-            className="flex flex-col border-t border-line bg-white px-5 py-3 lg:hidden"
-            onClick={onNavigate}
-        >
-            {NAV_MENU.map((item) => (
-                <NavLink
-                    key={item.key}
-                    item={item}
-                    className="border-b border-line py-3 text-base font-bold"
-                    currentClassName="text-brand"
-                />
-            ))}
+        <div className="border-t border-line bg-white px-5 py-3 lg:hidden">
             {auth.user ? (
-                <button
-                    type="button"
-                    onClick={() => router.post(route('logout'))}
-                    className="py-3 text-left text-base font-bold"
-                >
-                    ログアウト
-                </button>
+                <p className="truncate border-b border-line pb-3 text-base font-bold text-ink2">
+                    {auth.user.name} 様
+                </p>
             ) : null}
-        </nav>
+
+            <nav
+                aria-label="メインメニュー（モバイル）"
+                className="flex flex-col"
+                onClick={onNavigate}
+            >
+                {NAV_MENU.map((item) => (
+                    <NavLink
+                        key={item.key}
+                        item={item}
+                        className="border-b border-line py-3 text-base font-bold"
+                        currentClassName="text-brand"
+                    />
+                ))}
+                {auth.user ? (
+                    <button
+                        type="button"
+                        onClick={() => router.post(route('logout'))}
+                        className="py-3 text-left text-base font-bold"
+                    >
+                        ログアウト
+                    </button>
+                ) : null}
+            </nav>
+        </div>
     );
 }
