@@ -1,0 +1,7 @@
+{
+  "enabledPlugins": {
+    "laravel-set@revite-skills": true,
+    "inertia-react@revite-skills": true,
+    "db-mysql@revite-skills": true
+  }
+}

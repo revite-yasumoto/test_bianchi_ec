@@ -11,8 +11,15 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],
             refresh: true,
             fonts: [
-                bunny('Noto Sans JP', {
-                    weights: [400, 500, 700],
+                // モックのデザインシステム（zip内 _ds/.../site.css）の3書体
+                bunny('Zen Kaku Gothic New', {
+                    weights: [400, 500, 700, 900],
+                }),
+                bunny('Schibsted Grotesk', {
+                    weights: [400, 700, 800],
+                }),
+                bunny('Space Mono', {
+                    weights: [400, 700],
                 }),
             ],
         }),
@@ -25,6 +32,12 @@ export default defineConfig({
         },
     },
     server: {
+        // 既定の localhost ではコンテナ内の 127.0.0.1 にしか listen せず、
+        // ホストのブラウザからポートフォワード経由で接続できない
+        host: '0.0.0.0',
+        hmr: {
+            host: 'localhost',
+        },
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },

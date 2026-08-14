@@ -4,27 +4,43 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Noto Sans JP', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    /* フォント。モックのデザインシステム（zip内 _ds/.../site.css）の3書体に合わせる */
+    --font-sans: 'Schibsted Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --font-jp: 'Zen Kaku Gothic New', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono: 'Space Mono', ui-monospace, monospace;
 
-    /* ブランドカラー（チェレステ）。design_reference/Admin Panel.dc.html の実値に合わせて確定。管理画面のアクティブ表示等に最小限使用する */
-    --color-celeste: #4dc5bc;
-    --color-celeste-dark: #41a7a0;
+    /* フロント共通トークン。zip内 EC Demo Front.dc.html および _ds/.../site.css の実値 */
+    --color-bg2: #f5f1ea;
+    --color-ink: #232323;
+    --color-ink2: #5e6b77;
+    --color-line: #e7dfd2;
+    --color-brand: #2f6f86;
+    --color-brand-deep: #274f60;
+    --color-amber: #e7a93a;
+    --color-coral: #e1664b;
+    --color-rose: #c25e86;
+    --color-teal: #3e9e8f;
 
-    /* 管理画面共通トークン（design_reference/Admin Panel.dc.html より抽出） */
-    --color-admin-ink: #1c2126;
-    --color-admin-bg: #f5f6f7;
-    --color-admin-surface-alt: #fafbfb;
-    --color-admin-border: #e5e7ea;
-    --color-admin-border-light: #f0f1f2;
-    --color-admin-input-border: #d8dadd;
-    --color-admin-muted: #8a8f98;
-    --color-admin-danger: #d64545;
-    --color-admin-success: #2e9b6f;
-    --color-admin-warning: #e0a020;
-    --color-admin-info: #4a90d9;
-    --color-admin-neutral: #c4c7cb;
+    /* 重要なお知らせバーの配色（同モックの notice バー） */
+    --color-notice-bg: #fdf3e3;
+    --color-notice-line: #f0dfbe;
+    --color-notice-ink: #7a5a1e;
+    --color-notice-ink-muted: #9a7c3e;
 
-    --width-admin-sidebar: 216px;
-    --height-admin-header: 58px;
+    /* 管理画面ブランドカラー。docs/Markdown file UI mockups.zip 内 EC Demo Admin.dc.html の実値に合わせる */
+    --color-admin-brand: #2f6f86;
+    --color-admin-brand-deep: #274f60;
+    --color-admin-brand-darkest: #1b3844;
+
+    /* 管理画面共通トークン（同モックより抽出） */
+    --color-admin-ink: #232323;
+    --color-admin-ink-muted: #5e6b77;
+    --color-admin-bg: #ede8e0;
+    --color-admin-sidebar-bg: #f7f6f3;
+    --color-admin-surface: #fcfbf9;
+    --color-admin-line: #e7dfd2;
+    --color-admin-danger: #e1664b;
+
+    --width-admin-sidebar: 236px;
 }

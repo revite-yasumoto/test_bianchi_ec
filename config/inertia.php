@@ -104,7 +104,10 @@ return [
 
     'testing' => [
 
-        'ensure_pages_exist' => true,
+        // 'front/Xxx'・'admin/Xxx' のようにエリア名を含むページ名を
+        // 'resources/js/{area}/Pages/...' へ解決するカスタムresolve（resources/js/app.tsx）を
+        // 使っているため、単純な path+component の連結を前提にするこのチェックは機能しない
+        'ensure_pages_exist' => false,
 
     ],
 

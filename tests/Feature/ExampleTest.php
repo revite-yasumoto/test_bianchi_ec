@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
-// use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
+    // TOPページがランキング等のテーブルを参照するため、スキーマの適用が要る
+    use RefreshDatabase;
+
     /**
      * A basic test example.
      */

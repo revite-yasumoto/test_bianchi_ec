@@ -1,7 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
+use App\Models\Admin;
+use App\Models\CartItem;
+use App\Models\User;
+use App\Services\Setting\EcSettingProvider;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -15,6 +21,15 @@ class HandleInertiaRequests extends Middleware
      * @var string
      */
     protected $rootView = 'app';
+
+    /**
+     * カート明細は件数表示とドロワーの双方が参照するため、リクエスト内で1度だけ問い合わせる。
+     *
+     * @var array<int, array<string, mixed>>|null
+     */
+    private ?array $cartItems = null;
+
+    public function __construct(private readonly EcSettingProvider $ecSettingProvider) {}
 
     /**
      * Determines the current asset version.
@@ -35,8 +50,138 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        if ($request->is('admin/*') || $request->is('admin')) {
+            return [
+                ...parent::share($request),
+                'auth' => [
+                    'admin' => $this->adminAuthProps($request),
+                ],
+                'flash' => [
+                    'importResult' => $request->session()->get('importResult'),
+                ],
+            ];
+        }
+
         return [
             ...parent::share($request),
+            'auth' => [
+                'user' => $this->userAuthProps($request),
+            ],
+            'cartCount' => fn (): int => $this->cartCount($request),
+            'cartItems' => fn (): array => $this->cartItems($request),
+            'freeShippingThreshold' => fn (): ?int => $this->freeShippingThreshold($request),
+            'favoriteCount' => fn (): int => $this->favoriteCount($request),
+            'flash' => [
+                'success' => $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
+            ],
+        ];
+    }
+
+    /**
+     * ヘッダーの会員名表示とマイページ導線にのみ使うため、この3カラムのみをallowlistとして共有する。
+     *
+     * @return array{id: int, member_code: string, name: string}|null
+     */
+    private function userAuthProps(Request $request): ?array
+    {
+        /** @var User|null $user */
+        $user = $request->user('web');
+
+        if (! $user) {
+            return null;
+        }
+
+        return [
+            'id' => $user->id,
+            'member_code' => $user->member_code,
+            'name' => $user->name,
+        ];
+    }
+
+    /**
+     * ヘッダーのカートボタンに出す点数。モックに合わせて明細数ではなく数量の合計を返す。
+     */
+    private function cartCount(Request $request): int
+    {
+        return array_sum(array_column($this->cartItems($request), 'quantity'));
+    }
+
+    /**
+     * ヘッダーから開くカートドロワーの明細。表示に使う項目のみをallowlistとして共有する。
+     *
+     * @return array<int, array{id: int, name: string, variant_label: string, quantity: int, line_total: int, image_url: string|null, category_name: string}>
+     */
+    private function cartItems(Request $request): array
+    {
+        if ($this->cartItems !== null) {
+            return $this->cartItems;
+        }
+
+        /** @var User|null $user */
+        $user = $request->user('web');
+
+        if (! $user) {
+            return $this->cartItems = [];
+        }
+
+        return $this->cartItems = $user->cartItems()
+            ->with(['variant.product.category', 'variant.product.mainImage'])
+            ->orderBy('id')
+            ->get()
+            ->map(function (CartItem $item): array {
+                $product = $item->variant->product;
+
+                return [
+                    'id' => $item->id,
+                    'name' => $product->name,
+                    'variant_label' => $item->variant->displayName(),
+                    'quantity' => $item->quantity,
+                    'line_total' => $product->price * $item->quantity,
+                    'image_url' => $product->mainImage
+                        ? asset('storage/'.$product->mainImage->path)
+                        : null,
+                    'category_name' => $product->category->name,
+                ];
+            })
+            ->all();
+    }
+
+    /**
+     * カートドロワーの送料無料案内に使う。案内は明細があるときだけ出すため、空カートでは引かない。
+     */
+    private function freeShippingThreshold(Request $request): ?int
+    {
+        return $this->cartItems($request) === []
+            ? null
+            : $this->ecSettingProvider->get()->free_shipping_threshold;
+    }
+
+    private function favoriteCount(Request $request): int
+    {
+        /** @var User|null $user */
+        $user = $request->user('web');
+
+        return $user ? $user->favorites()->count() : 0;
+    }
+
+    /**
+     * サイドバーの管理者名・メール表示にのみ使うため、この2カラムのみをallowlistとして共有する。
+     *
+     * @return array{name: string, email: string}|null
+     */
+    private function adminAuthProps(Request $request): ?array
+    {
+        /** @var Admin|null $admin */
+        $admin = $request->user('admin');
+
+        if (! $admin) {
+            return null;
+        }
+
+        return [
+            'name' => $admin->name,
+            'email' => $admin->email,
         ];
     }
 }
