@@ -45,6 +45,12 @@ export function Header({ onOpenCart }: HeaderProps) {
                 <div className="ml-auto flex shrink-0 items-center gap-2">
                     {auth.user ? (
                         <>
+                            <span
+                                title={auth.user.name}
+                                className="hidden max-w-40 truncate text-xs font-bold text-ink lg:block"
+                            >
+                                {auth.user.name} 様
+                            </span>
                             <NavLink
                                 item={{
                                     key: 'favorites',

@@ -37,6 +37,7 @@ use App\Http\Controllers\Front\MyPage\WithdrawalController;
 use App\Http\Controllers\Front\NewsController as FrontNewsController;
 use App\Http\Controllers\Front\NoticeController as FrontNoticeController;
 use App\Http\Controllers\Front\OrderController as FrontOrderController;
+use App\Http\Controllers\Front\PostalCodeController;
 use App\Http\Controllers\Front\ProductController as FrontProductController;
 use App\Http\Controllers\Front\StaticPageController;
 use App\Http\Controllers\Front\TopController;
@@ -164,6 +165,11 @@ Route::middleware('auth')->group(function (): void {
     Route::delete('addresses/{address}', [UserAddressController::class, 'destroy'])
         ->name('addresses.destroy')
         ->can('delete', 'address');
+
+    Route::get('postal-codes/{postalCode}', PostalCodeController::class)
+        ->name('postal-codes.show')
+        ->where('postalCode', '[0-9]{7}')
+        ->middleware('throttle:60,1');
 
     Route::get('mypage', [OrderHistoryController::class, 'index'])->name('mypage.index');
     Route::get('mypage/orders/{order}', [OrderHistoryController::class, 'show'])

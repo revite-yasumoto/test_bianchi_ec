@@ -1,5 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import type { AddressData } from '@/front/Components/Checkout/AddressSelector';
+import { PostalCodeField } from '@/front/Components/Checkout/PostalCodeField';
 import type { ShippingOption } from '@/front/lib/checkoutAmounts';
 import { Checkbox } from '@/shared/Components/Checkbox';
 import { Modal } from '@/shared/Components/Modal';
@@ -103,16 +104,25 @@ export function AddressModal({
                         setData('recipient_name', event.target.value)
                     }
                 />
-                <TextInput
+                <PostalCodeField
                     id="address-postal-code"
-                    label="郵便番号"
-                    required
-                    inputMode="numeric"
                     value={data.postal_code}
                     error={errors.postal_code}
-                    placeholder="150-0041"
-                    onChange={(event) =>
-                        setData('postal_code', event.target.value)
+                    onChange={(postalCode) =>
+                        setData('postal_code', postalCode)
+                    }
+                    onResolved={(result) =>
+                        setData((current) => ({
+                            ...current,
+                            prefecture_id:
+                                result.prefecture_id ?? current.prefecture_id,
+                            city: result.city,
+                            // 入力済みの番地を町域名で消さない
+                            address_line1:
+                                current.address_line1 === ''
+                                    ? result.town
+                                    : current.address_line1,
+                        }))
                     }
                 />
 
