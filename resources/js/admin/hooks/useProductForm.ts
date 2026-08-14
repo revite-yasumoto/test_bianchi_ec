@@ -192,6 +192,16 @@ export function useProductForm(product: ProductFormData | null) {
     /** `variants.0.branch_code` のようなネストしたキーも受け取るため、キー名を限定しない形で公開する */
     const fieldErrors = errors as Record<string, string>;
 
+    /**
+     * 画像は枚数のルールが `images`、1枚ごとのルールが `images.0` のように別のキーで返る。
+     * 後者だけが出たときに画面上どこにもエラーが出ないことがないよう、最初の1件を拾って併せて扱う。
+     */
+    const imageError =
+        fieldErrors.images ??
+        Object.entries(fieldErrors).find(([key]) =>
+            key.startsWith('images.'),
+        )?.[1];
+
     const setField = (field: keyof BasicFields, value: string | boolean) => {
         setData((previous) => ({ ...previous, [field]: value }));
     };
@@ -200,6 +210,7 @@ export function useProductForm(product: ProductFormData | null) {
         data,
         setField,
         errors: fieldErrors,
+        imageError,
         processing,
         submit,
         colors,

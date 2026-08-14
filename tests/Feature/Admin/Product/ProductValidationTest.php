@@ -180,6 +180,18 @@ class ProductValidationTest extends TestCase
     }
 
     #[Test]
+    public function 一枚ごとの画像エラーは日本語で返る(): void
+    {
+        Storage::fake('public');
+
+        // 画面はこのキーのエラーを拾って表示するため、既定の英語メッセージのままにしない
+        $this->postWith(['images' => [UploadedFile::fake()->create('doc.pdf', 100)]])
+            ->assertSessionHasErrors([
+                'images.0' => '商品画像は画像ファイルを選択してください。',
+            ]);
+    }
+
+    #[Test]
     public function スペックの項目名が未入力では登録できない(): void
     {
         $this->postWith(['specs' => [['label' => '', 'value' => 'カーボン']]])

@@ -47,7 +47,7 @@ export default function Form({
                     <ImageUploader
                         existingImages={form.existingImages}
                         newImages={form.newImages}
-                        error={errors.images}
+                        error={form.imageError}
                         onAddFiles={form.addFiles}
                         onRemoveExisting={form.removeExistingImage}
                         onRemoveNew={form.removeNewImage}

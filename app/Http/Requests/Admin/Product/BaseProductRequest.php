@@ -163,6 +163,11 @@ abstract class BaseProductRequest extends FormRequest
     {
         return [
             'images.max' => '商品画像は最大10枚までです。',
+            // 1枚ごとのルールは `images.0` のようなキーで返るため、既定の英語メッセージにならないよう個別に指定する
+            'images.*.image' => '商品画像は画像ファイルを選択してください。',
+            'images.*.mimes' => '商品画像は jpg・jpeg・png・webp のいずれかを選択してください。',
+            'images.*.max' => '商品画像は1枚あたり5MBまでです。',
+            'images.*.dimensions' => '商品画像は幅・高さとも4000ピクセル以内にしてください。',
             'product_code.regex' => '商品IDは半角英数とハイフンのみ使用できます。',
             'variants.*.branch_code.regex' => '枝番は半角英数のみ使用できます。',
         ];
