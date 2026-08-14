@@ -20,6 +20,11 @@ export function Modal({
     const titleId = useId();
     const dialogRef = useRef<HTMLDivElement>(null);
     const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+    // 呼び出し側が毎レンダー新しい onClose を渡してもフォーカス制御を作り直させないため、
+    // 依存配列には入れず ref 経由で最新の関数を参照する
+    // （作り直すと cleanup の focus() が走り、入力1文字ごとにフォーカスが奪われる）
+    const onCloseRef = useRef(onClose);
+    onCloseRef.current = onClose;
 
     useEffect(() => {
         if (!isOpen) {
@@ -32,7 +37,7 @@ export function Modal({
 
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
-                onClose();
+                onCloseRef.current();
             }
         };
 
@@ -42,7 +47,7 @@ export function Modal({
             document.removeEventListener('keydown', handleKeyDown);
             previouslyFocusedRef.current?.focus();
         };
-    }, [isOpen, onClose]);
+    }, [isOpen]);
 
     if (!isOpen) {
         return null;
