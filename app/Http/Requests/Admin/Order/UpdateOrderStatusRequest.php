@@ -24,6 +24,8 @@ class UpdateOrderStatusRequest extends FormRequest
     {
         return [
             'status' => ['required', Rule::enum(OrderStatus::class)],
+            'tracking_number' => ['nullable', 'string', 'max:50'],
+            'notifies_customer' => ['nullable', 'boolean'],
         ];
     }
 
@@ -78,6 +80,7 @@ class UpdateOrderStatusRequest extends FormRequest
     {
         return [
             'status' => 'ステータス',
+            'tracking_number' => '送り状番号',
         ];
     }
 }

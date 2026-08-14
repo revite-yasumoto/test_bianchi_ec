@@ -9,6 +9,8 @@ use App\Mail\Admin\ContactReceived;
 use App\Mail\Admin\OrderPlaced;
 use App\Mail\Front\ContactAcknowledgement;
 use App\Mail\Front\OrderReceived;
+use App\Mail\Front\OrderShipped;
+use App\Mail\Front\PasswordResetLink;
 use App\Mail\Front\RegistrationCompleted;
 use App\Models\Contact;
 use App\Models\Order;
@@ -143,5 +145,43 @@ class MailRenderingTest extends TestCase
         // 第2引数の false は、検索文字列自体をエスケープせず生のHTMLとして照合させる指定
         $mailable->assertDontSeeInHtml('href="https://example.test/elsewhere"', false);
         $mailable->assertSeeInHtml('<br>', false);
+    }
+
+    #[Test]
+    public function パスワード再設定メールに再設定リンクと有効期限が載る(): void
+    {
+        $user = User::factory()->create(['name' => '架空 太郎']);
+
+        $mailable = new PasswordResetLink($user, 'test-token-value');
+
+        $mailable->assertSeeInHtml('架空 太郎');
+        $mailable->assertSeeInHtml('test-token-value');
+        $mailable->assertSeeInHtml('60 分間のみ有効');
+    }
+
+    #[Test]
+    public function 出荷完了メールに送り状番号とお届け先が載る(): void
+    {
+        $order = Order::factory()->create([
+            'tracking_number' => '1234-5678-9012',
+            'shipping_recipient_name' => '架空 太郎',
+        ]);
+
+        $mailable = new OrderShipped($order);
+
+        $mailable->assertSeeInHtml($order->order_number);
+        $mailable->assertSeeInHtml('1234-5678-9012');
+        $mailable->assertSeeInHtml('架空 太郎');
+    }
+
+    #[Test]
+    public function 送り状番号が無くても出荷完了メールを描画できる(): void
+    {
+        $order = Order::factory()->create(['tracking_number' => null]);
+
+        $mailable = new OrderShipped($order);
+
+        $mailable->assertSeeInHtml($order->order_number);
+        $mailable->assertDontSeeInHtml('送り状番号');
     }
 }

@@ -1,44 +1,50 @@
-import { Link, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import type { FormEventHandler } from 'react';
 import { FrontLayout } from '@/front/Layouts/FrontLayout';
 import { Button } from '@/shared/Components/Button';
-import { Checkbox } from '@/shared/Components/Checkbox';
 import { TextInput } from '@/shared/Components/TextInput';
 
-type LoginForm = {
+type ResetPasswordProps = {
+    token: string;
     email: string;
-    password: string;
-    remember: boolean;
 };
 
-export default function Login() {
+type ResetPasswordForm = {
+    token: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+};
+
+export default function ResetPassword({ token, email }: ResetPasswordProps) {
     const { data, setData, post, processing, errors, reset } =
-        useForm<LoginForm>({
-            email: '',
+        useForm<ResetPasswordForm>({
+            token,
+            email,
             password: '',
-            remember: false,
+            password_confirmation: '',
         });
 
     const handleSubmit: FormEventHandler = (event) => {
         event.preventDefault();
 
-        post(route('login.store'), {
-            onFinish: () => reset('password'),
+        post(route('password.update'), {
+            onFinish: () => reset('password', 'password_confirmation'),
         });
     };
 
     return (
         <FrontLayout
-            title="ログイン"
-            description="Bianchi オンラインストアのログインページです。"
+            title="パスワードの再設定"
+            description="Bianchi オンラインストアのパスワード再設定ページです。"
         >
             <div className="flex justify-center px-5 py-11 pb-16">
                 <form onSubmit={handleSubmit} className="w-full max-w-[420px]">
                     <h1 className="text-center text-2xl font-black">
-                        ログイン
+                        パスワードの再設定
                     </h1>
-                    <p className="mt-2 text-center text-[13px] text-ink2">
-                        ご購入には会員登録・ログインが必要です
+                    <p className="mt-2 text-center text-[13px] leading-[1.9] text-ink2">
+                        新しいパスワードを入力してください。
                     </p>
 
                     <div className="mt-7 flex flex-col gap-4">
@@ -50,16 +56,15 @@ export default function Login() {
                             required
                             value={data.email}
                             error={errors.email}
-                            placeholder="you@example.com"
                             onChange={(event) =>
                                 setData('email', event.target.value)
                             }
                         />
                         <TextInput
                             id="password"
-                            label="パスワード"
+                            label="新しいパスワード"
                             type="password"
-                            autoComplete="current-password"
+                            autoComplete="new-password"
                             required
                             value={data.password}
                             error={errors.password}
@@ -68,38 +73,29 @@ export default function Login() {
                                 setData('password', event.target.value)
                             }
                         />
-
-                        <Checkbox
-                            id="remember"
-                            checked={data.remember}
+                        <TextInput
+                            id="password_confirmation"
+                            label="新しいパスワード（確認）"
+                            type="password"
+                            autoComplete="new-password"
+                            required
+                            value={data.password_confirmation}
+                            error={errors.password_confirmation}
                             onChange={(event) =>
-                                setData('remember', event.target.checked)
+                                setData(
+                                    'password_confirmation',
+                                    event.target.value,
+                                )
                             }
-                        >
-                            この端末でログイン状態を保持する
-                        </Checkbox>
+                        />
 
                         <Button
                             type="submit"
                             disabled={processing}
                             className="mt-1.5 py-4 text-[15px]"
                         >
-                            ログイン
+                            パスワードを変更する
                         </Button>
-
-                        <Link
-                            href={route('password.request')}
-                            className="text-center text-[13px] text-ink2 underline"
-                        >
-                            パスワードをお忘れの方
-                        </Link>
-
-                        <Link
-                            href={route('register')}
-                            className="text-center text-[13px] font-bold text-brand"
-                        >
-                            新規会員登録はこちら →
-                        </Link>
                     </div>
                 </form>
             </div>

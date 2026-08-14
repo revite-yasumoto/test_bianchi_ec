@@ -1,7 +1,9 @@
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { ConfirmDialog } from '@/admin/Components/ConfirmDialog';
+import { ShipmentDialog } from '@/admin/Components/Order/ShipmentDialog';
 import { useAdminToast } from '@/admin/Layouts/AdminLayout';
+import { OrderStatus } from '@/shared/lib/enums';
 
 type StatusOption = { value: string; label: string };
 
@@ -21,16 +23,23 @@ export function StatusUpdateCard({
     const { showToast } = useAdminToast();
     const [selected, setSelected] = useState(statusOptions[0]?.value ?? '');
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [isShipmentOpen, setIsShipmentOpen] = useState(false);
 
     const selectedLabel =
         statusOptions.find((option) => option.value === selected)?.label ?? '';
+    const isShipping = selected === OrderStatus.Shipped;
 
-    const submit = () => {
+    const submit = (trackingNumber = '', notifiesCustomer = false) => {
         setIsConfirmOpen(false);
+        setIsShipmentOpen(false);
 
         router.put(
             route('admin.orders.status.update', [orderId]),
-            { status: selected },
+            {
+                status: selected,
+                tracking_number: trackingNumber,
+                notifies_customer: notifiesCustomer,
+            },
             {
                 preserveScroll: true,
                 onSuccess: () => showToast('ステータスを更新しました'),
@@ -70,7 +79,11 @@ export function StatusUpdateCard({
                     <button
                         type="button"
                         className="mt-3 w-full rounded-lg bg-admin-brand py-3 text-[13px] font-extrabold text-white"
-                        onClick={() => setIsConfirmOpen(true)}
+                        onClick={() =>
+                            isShipping
+                                ? setIsShipmentOpen(true)
+                                : setIsConfirmOpen(true)
+                        }
                     >
                         ステータスを更新
                     </button>
@@ -82,7 +95,9 @@ export function StatusUpdateCard({
                     ) : null}
 
                     <p className="mt-2.5 text-[11.5px] leading-relaxed text-admin-ink-muted">
-                        更新時は確認ダイアログが表示されます。
+                        {isShipping
+                            ? '更新時に送り状番号の入力とメール送信の確認が表示されます。'
+                            : '更新時は確認ダイアログが表示されます。'}
                     </p>
                 </>
             )}
@@ -92,8 +107,14 @@ export function StatusUpdateCard({
                 title="ステータスの更新"
                 message={`ステータスを「${currentStatusLabel}」から「${selectedLabel}」に変更します。この操作は取り消せません。`}
                 confirmLabel="更新する"
-                onConfirm={submit}
+                onConfirm={() => submit()}
                 onCancel={() => setIsConfirmOpen(false)}
+            />
+
+            <ShipmentDialog
+                isOpen={isShipmentOpen}
+                onConfirm={submit}
+                onCancel={() => setIsShipmentOpen(false)}
             />
         </div>
     );

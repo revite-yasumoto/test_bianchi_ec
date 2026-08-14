@@ -5,7 +5,7 @@
 - **対象画面・機能の目的:** 会員登録・お問い合わせ・注文の各操作を、会員および管理者へメールで通知する。
 - **URL / メソッド:** なし（画面を持たない。各操作の処理中に送信される）。
 - **アクセス権限・ミドルウェア:** なし（送信の契機となる各画面の権限に従う）。
-- **本ドキュメントのスコープ:** 送信基盤（送信元・宛先・失敗時の扱い・レイアウト）と、会員登録・お問い合わせ・注文の5通。出荷通知・パスワードリセットは対象外とし、それぞれの実装時に本ドキュメントへ追記する。
+- **本ドキュメントのスコープ:** 送信基盤（送信元・宛先・失敗時の扱い・レイアウト）と、会員登録・お問い合わせ・注文・パスワード再設定・出荷完了の7通。
 
 **本ドキュメントはメール送信の共通仕様の正本である。** 送信元・管理者の宛先・送信失敗時の扱い・レイアウトの記述はここに置き、各画面の仕様書からは本ドキュメントへリンクする。
 
@@ -31,6 +31,8 @@
 | 3 | お問い合わせ控え | フォームに入力されたアドレス | 同上 |
 | 4 | 注文受付 | 注文した会員 | 注文の確定時 |
 | 5 | 注文通知 | 管理者 | 同上 |
+| 6 | パスワード再設定 | 申請したアドレスの会員 | パスワード再設定の申請時 |
+| 7 | 出荷完了 | 注文した会員 | 管理者が出荷済みへ変更し、送信を選んだとき |
 
 ## インターフェース ＆ データロジック
 
@@ -86,6 +88,18 @@ Laravel の Markdown メール（`<x-mail::message>`）を使い、標準レイ�
 
 明細は載せない（商品の確認は管理画面で行う）。
 
+**6. パスワード再設定（会員宛）**
+
+- 件名: `【<サイト名>】パスワード再設定のご案内`
+- 本文: 再設定画面へのボタン、有効期限（60分）、心当たりが無ければ破棄してよい旨
+
+**7. 出荷完了（会員宛）**
+
+- 件名: `【<サイト名>】商品を発送しました（<注文番号>）`
+- 本文: 注文番号・出荷日時・お届け先・送り状番号（入力されている場合のみ）、マイページの注文詳細へのリンク
+
+配送業者を保持しないため、追跡サイトへのリンクは載せない。
+
 ### 主要な処理フロー
 
 **送信の共通処理（`NotificationMailer`）**
@@ -120,7 +134,8 @@ Laravel の Markdown メール（`<x-mail::message>`）を使い、標準レイ�
 - お問い合わせの控えは、検証していないアドレス（フォームの入力値）へ送る。踏み台にされないよう、送信自体のレート制限（`throttle:10,60`）で担保する。追加の対策（アドレスの到達確認・CAPTCHA）は行わない。
 - 利用者・管理者が入力した自由記述（お問い合わせの氏名・対象商品・本文、銀行振込の案内文）は Markdown 記法として解釈させず、入力どおりに表示する。解釈させると、控えメールの受け取り手に対して本文中のリンク記法で誘導先を偽装できる。
 - 管理者の通知先は `.env` で管理し、管理画面からは変更できない。
-- 注文のステータス変更に伴う通知は本スコープでは送らない。
+- 注文のステータス変更で通知を送るのは出荷済みへの遷移時のみで、送るかどうかは管理者が操作のたびに選ぶ（[docs/admin/order-show.md](admin/order-show.md) が正本）。
+- パスワード再設定メールは、申請されたアドレスの会員が存在するときだけ送る。存在しない場合も画面の応答は変えない（[docs/front/password-reset.md](front/password-reset.md) が正本）。
 
 ## 関連ドキュメント
 
@@ -143,16 +158,22 @@ Laravel の Markdown メール（`<x-mail::message>`）を使い、標準レイ�
 | Mailable | `app/Mail/Front/OrderReceived.php` |
 | Mailable | `app/Mail/Admin/ContactReceived.php` |
 | Mailable | `app/Mail/Admin/OrderPlaced.php` |
+| Mailable | `app/Mail/Front/PasswordResetLink.php` |
+| Mailable | `app/Mail/Front/OrderShipped.php` |
 | View | `resources/views/emails/front/registration-completed.blade.php` |
 | View | `resources/views/emails/front/contact-acknowledgement.blade.php` |
 | View | `resources/views/emails/front/order-received.blade.php` |
 | View | `resources/views/emails/admin/contact-received.blade.php` |
 | View | `resources/views/emails/admin/order-placed.blade.php` |
+| View | `resources/views/emails/front/password-reset-link.blade.php` |
+| View | `resources/views/emails/front/order-shipped.blade.php` |
+| Model | `app/Models/User.php` |
 | Action | `app/Actions/Front/Auth/RegisterUser.php` |
 | Action | `app/Actions/Front/Contact/SubmitContact.php` |
 | Controller | `app/Http/Controllers/Front/Auth/RegisteredUserController.php` |
 | Controller | `app/Http/Controllers/Front/ContactController.php` |
 | Service | `app/Services/Front/Order/PlaceOrderService.php` |
+| Service | `app/Services/Admin/Order/UpdateOrderStatusService.php` |
 | Test | `tests/Unit/Services/Mail/NotificationMailerTest.php` |
 | Test | `tests/Feature/Mail/MailRenderingTest.php` |
 | Test | `tests/Feature/Front/Auth/RegisterTest.php` |
@@ -170,4 +191,6 @@ Laravel の Markdown メール（`<x-mail::message>`）を使い、標準レイ�
 - 会員登録で登録完了メールが会員宛に送られる: `tests/Feature/Front/Auth/RegisterTest.php`（`会員登録すると登録完了メールが送られる`・`登録に失敗したときはメールが送られない`）
 - お問い合わせで管理者への通知と送信者への控えが送られる: `tests/Feature/Front/Contact/ContactStoreTest.php`（`送信すると管理者への通知と送信者への控えが送られる`・`管理者の宛先が未設定でも送信者への控えは送られる`）
 - 注文の確定で会員への受付メールと管理者への通知が送られ、送信に失敗しても注文が成立する: `tests/Feature/Front/Order/PlaceOrderTest.php`（`注文を確定すると会員と管理者にメールが送られる`・`メールの送信に失敗しても注文は成立する`・`注文が失敗したときはメールが送られない`）
+- パスワード再設定メールが申請者へ送られる: `tests/Feature/Front/Auth/PasswordResetTest.php`（`登録済みのアドレスに再設定メールが送られる`）
+- 出荷完了メールが送信を選んだときだけ送られる: `tests/Feature/Admin/Order/OrderStatusUpdateTest.php`（`送信を選ぶと会員へ出荷完了メールが送られる`・`送信を選ばなければメールは送られない`）
 - メールクライアントでの実際の見た目（改行位置・表の折り返し・ボタンの表示）: 自動テストなし。`MAIL_MAILER=log` でログに出力された本文を目視確認して担保する

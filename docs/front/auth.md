@@ -15,14 +15,19 @@
 | POST | `/login` | `login.store` | `guest` |
 | POST | `/logout` | `logout` | `auth` |
 
-- **アクセス権限・ミドルウェア:** 上表の通り。フロント側のルート名は `admin.` のような prefix を付けない。
+- **アクセス権限・ミドルウェア:** 上表の通り。フロント側のルート名は `admin.` のような prefix を付けない。`POST /register` には `throttle:5,60`（同一の送信元から1時間に5回まで）を適用する。1リクエストで会員の作成とメール送信が起きるため。パスワード再設定のルートは [docs/front/password-reset.md](password-reset.md) が正本。
 - **本ドキュメントのスコープ:** 会員登録・ログイン・ログアウトのバックエンド処理、会員登録画面（`Register.tsx`）・会員登録完了画面（`RegisterComplete.tsx`）・ログイン画面（`Login.tsx`）。遷移先のTOPページは [docs/front/top.md](top.md) が正本。各画面が使う共通レイアウト・共通UIコンポーネント・デザイントークンは [docs/front/common-layout.md](common-layout.md) が正本。
 
 ## 使用テーブル
 
-`users` テーブルを使用する。定義は [docs/2_database.md](../2_database.md) が正本。
+`users` テーブルを使用する。定義は [docs/2_database.md](../2_database.md) が正本。ログイン失敗の連続回数とロックの期限を持つ次の2列を本機能で追加する。
 
-`email_verified_at`（メール認証）・`password_reset_tokens` テーブル（パスワードリセット）は Laravel 標準として存在するが、本システムでは使用しない。
+| カラム | 型 | 用途 |
+|---|---|---|
+| `failed_login_attempts` | `unsignedTinyInteger`・NOT NULL・既定 `0` | ロックに至るまでの連続失敗回数。成功・ロック成立のいずれでも `0` に戻す |
+| `locked_until` | `datetime`・nullable | ロックの解除時刻。`null` はロックされていない状態 |
+
+`email_verified_at`（メール認証）は Laravel 標準として存在するが、本システムでは使用しない。`password_reset_tokens` は [docs/front/password-reset.md](password-reset.md) が使用する。
 
 ## ユーザーインターフェース仕様（ワイヤーフレーム）
 
@@ -55,7 +60,7 @@
 
 会員登録完了（GET /register/complete） 最大幅520px・中央寄せ:
 +--------------------------------------+
-|               (✓)                    |
+|         (チェックアイコン)             |
 |       会員登録が完了しました            |
 |  ご登録のメールアドレスへ完了メールを     |
 |  お送りしました。ログインしてお買い物を   |
@@ -124,10 +129,13 @@ type RegisterForm = {
 
 **ログイン（`AuthenticatedSessionController::store()`）:**
 1. レート制限を確認する（超過時は `email` にエラーを返す）。
-2. `Auth::guard('web')->attempt()` で認証する。
-3. 失敗時はレート制限のカウントを加算し、「メールアドレスまたはパスワードが誤っています。」を `email` に返す（アカウントの存在有無を区別しない）。
-4. 認証に成功しても `status` が `suspended` の会員はログアウトさせ、「アカウントが利用停止中です。お問い合わせください。」を `email` に返す。
-5. 成功時はレート制限をクリアし、セッションを再生成（`session()->regenerate()`）した上で intended URL（無ければ `top`）へリダイレクトする。
+2. 入力されたアドレスの会員がロック中（`locked_until` が現在時刻より後）なら、認証を試みずに「アカウントを一時的にロックしています。約N分後に再度お試しください。」を `email` に返す。
+3. `Auth::guard('web')->attempt()` で認証する。
+4. 失敗時はレート制限のカウントを加算し、あわせて `failed_login_attempts` を1つ増やす。3回に達したら `locked_until` に1時間後を設定して回数を `0` に戻す。この読み取りと書き込みは対象行の排他ロックで挟む（挟まないと、同時に届いた試行がどれも同じ回数を読み、上限に達するまでのラウンド数だけ試行できてしまう）。返すメッセージは、ロックが成立した場合は 2. と同じ文面、それ以外は「メールアドレスまたはパスワードが誤っています。」（アカウントの存在有無を区別しない）。
+5. 認証に成功しても `status` が `suspended` の会員はログアウトさせ、「アカウントが利用停止中です。お問い合わせください。」を `email` に返す。このとき資格情報自体は正しいため、`failed_login_attempts` と `locked_until` は戻す。
+6. 成功時はレート制限をクリアし、`failed_login_attempts` を `0`・`locked_until` を `null` に戻す。セッションを再生成（`session()->regenerate()`）した上で intended URL（無ければ `top`）へリダイレクトする。
+
+ロックの解除は `locked_until` の経過のみで行う。管理画面からの手動解除は設けない。
 
 **ログアウト（`AuthenticatedSessionController::destroy()`）:** `web` ガードからログアウト → セッション無効化（`invalidate()`） → CSRFトークン再生成（`regenerateToken()`） → `top` へリダイレクトし、`success` フラッシュに「ログアウトしました。」を渡す。
 
@@ -135,7 +143,9 @@ type RegisterForm = {
 
 - ログイン失敗時のメッセージは、メールアドレスの登録有無を区別できる内容にしない（アカウント列挙攻撃対策）。休会中のメッセージのみ、利用者が問い合わせ先を判断できるよう区別して返す。
 - 会員登録の完了時に自動ログインはしない。完了画面からログイン画面へ案内し、会員自身にログインしてもらう。購入手続きの途中で登録した場合も同じで、ログイン後に元の手続きへ戻る。
-- メール認証・パスワードリセットは実装しない（要件の画面一覧に含まれないため）。
+- ログイン失敗の抑止は2層で行う。レート制限（メールアドレス＋IP）は同一の送信元からの連投を、アカウントロック（アカウント単位）は送信元を変えた総当たりを抑える。ロックの回数はレート制限より少ないため、同じアカウントを狙う限りロックが先に成立する。
+- ロック中であることは利用者へ伝える。ロックは3回の試行を要するため列挙の手段としては割に合わず、伝えないと本人が理由を判断できないまま問い合わせに至る。休会中のメッセージと同じ扱いとする。
+- メール認証（`email_verified_at`）は実装しない（要件の画面一覧に含まれないため）。パスワードリセットは [docs/front/password-reset.md](password-reset.md) が正本。
 - 会員IDの採番は登録時点の最大値 + 1 で行うため、同時登録が競合した場合は `users.member_code` の一意制約で弾かれる。
 - 未ログインで要認証ルートへアクセスした場合、Laravel 標準の `Authenticate` ミドルウェアが intended URL をセッションに保存し、ログイン成功後に元の手続きへ戻す。フロント向けの遷移先は `bootstrap/app.php` の `redirectGuestsTo`（`login`）／`redirectUsersTo`（`top`）で決まる。管理画面向けの分岐は [docs/admin/auth.md](../admin/auth.md) が正本。
 
@@ -145,6 +155,7 @@ type RegisterForm = {
 - [docs/front/top.md](top.md) — ログイン後・ログアウト後の遷移先であるTOPページの正本
 - [docs/front/static-pages.md](static-pages.md) — 同意チェックからリンクする利用規約・プライバシーポリシーの正本
 - [docs/admin/auth.md](../admin/auth.md) — 管理者認証の正本。`bootstrap/app.php` のパス分岐・`config/inertia.php` の設定はこちらが正本
+- [docs/front/password-reset.md](password-reset.md) — パスワード再設定の正本。ログイン画面から導線を持つ
 - [docs/mail-notification.md](../mail-notification.md) — 登録完了メールの正本
 - [docs/1_system_overview.md](../1_system_overview.md) — 2ガード構成の前提
 - [docs/2_database.md](../2_database.md) — `users` テーブル定義の正本
@@ -157,6 +168,7 @@ type RegisterForm = {
 | Controller | `app/Http/Controllers/Front/Auth/RegisteredUserController.php` |
 | FormRequest | `app/Http/Requests/Front/Auth/LoginRequest.php` |
 | FormRequest | `app/Http/Requests/Front/Auth/RegisterRequest.php` |
+| Migration | `database/migrations/2026_08_14_000001_add_login_lock_columns_to_users_table.php` |
 | Action | `app/Actions/Front/Auth/GenerateMemberCode.php` |
 | Action | `app/Actions/Front/Auth/RegisterUser.php` |
 | ルート | `routes/web.php` |
@@ -186,6 +198,14 @@ type RegisterForm = {
 - 誤パスワード・未登録メールではログインできない: 同上（`パスワードが誤っている場合はログインできない`・`未登録のメールアドレスではログインできない`）
 - 休会中の会員はログインできない: 同上（`休会中の会員はログインできない`）
 - 5回失敗するとレート制限される: 同上（`ログイン失敗が5回続くとレート制限がかかる`）
+- 3回失敗するとアカウントがロックされ、正しいパスワードでも入れない: 同上（`パスワードを三回間違えるとアカウントがロックされる`・`ロック中は正しいパスワードでもログインできない`）
+- 2回の失敗ではロックされない: 同上（`二回の失敗ではロックされない`）
+- 存在しないアドレスへの連続失敗では記録が残らない: 同上（`存在しないアドレスへの連続した失敗ではロックの記録が残らない`）
+- 休会中の会員が正しいパスワードで試すと失敗回数が戻る: 同上（`休会中の会員が正しいパスワードで試すと失敗回数が戻る`）
+- 失敗回数の加算が同時アクセスで取りこぼされないこと: SQLite（テスト用DB）は行ロック構文を解釈しないため自動テストで担保できない。本番と同じ MySQL の環境での確認が必要
+- ロックは1時間の経過で解除される: 同上（`ロックは一時間後に解除される`）
+- ログインに成功すると失敗回数が戻る: 同上（`ログインに成功すると失敗回数がリセットされる`）
+- 会員登録の連投がレート制限で拒否される: `tests/Feature/Front/Auth/RegisterTest.php`（`同一の送信元からの連続した会員登録は制限される`）
 - ログイン成功時にセッションIDが再生成される: 同上（`ログイン成功時にセッション識別子が再生成される`）
 - ログイン後に認証前のURLへ復帰する: 同上（`ログイン後は認証前にアクセスしようとしたページへ戻る`）
 - 未ログインで要認証ルートへアクセスするとログイン画面へリダイレクトされる: 同上（`未ログインで要認証ルートへアクセスするとログイン画面へ送られる`）

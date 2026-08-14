@@ -219,6 +219,22 @@ class RegisterTest extends TestCase
     }
 
     #[Test]
+    public function 同一の送信元からの連続した会員登録は制限される(): void
+    {
+        foreach (range(1, 5) as $index) {
+            $this->post(route('register.store'), $this->validPayload([
+                'email' => "taro{$index}@example.test",
+            ]))->assertSessionHasNoErrors();
+        }
+
+        $this->post(route('register.store'), $this->validPayload([
+            'email' => 'taro6@example.test',
+        ]))->assertTooManyRequests();
+
+        $this->assertDatabaseCount('users', 5);
+    }
+
+    #[Test]
     public function 登録に失敗したときはメールが送られない(): void
     {
         Mail::fake();

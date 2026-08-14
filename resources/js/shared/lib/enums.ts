@@ -21,3 +21,14 @@ export const UserStatus = {
 } as const;
 
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus];
+
+export const OrderStatus = {
+    Received: 'received',
+    AwaitingPayment: 'awaiting_payment',
+    PaymentConfirmed: 'payment_confirmed',
+    Preparing: 'preparing',
+    Shipped: 'shipped',
+    Cancelled: 'cancelled',
+} as const;
+
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];

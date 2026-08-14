@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'order_number', 'user_id', 'status', 'payment_method', 'ordered_at', 'cancelled_at',
+    'order_number', 'user_id', 'status', 'payment_method', 'tracking_number', 'ordered_at', 'cancelled_at',
     'member_code_snapshot', 'customer_name', 'customer_name_kana', 'customer_email', 'customer_tel',
     'shipping_recipient_name', 'shipping_postal_code', 'shipping_prefecture_name', 'shipping_city',
     'shipping_address_line1', 'shipping_address_line2', 'shipping_tel',
