@@ -76,13 +76,13 @@ type Props = {
 **送信**
 
 1. 入力を検証する。
-2. `contacts` に1件保存する。ログイン中なら `user_id` を記録し、未ログインなら `null` にする。
-3. 元の画面へ戻して `送信しました。3営業日以内にご返信いたします。` を表示する。
+2. `SubmitContact` が `contacts` に1件保存する。ログイン中なら `user_id` を記録し、未ログインなら `null` にする。
+3. 続けて管理者へ受付通知を、フォームに入力されたアドレスへ控えを送る。送信の仕様は [docs/mail-notification.md](../mail-notification.md) が正本。
+4. 元の画面へ戻して `送信しました。3営業日以内にご返信いたします。` を表示する。
 
 ## 業務ルール
 
-- 送信内容はデータベースに保存するのみで、メール送信（管理者への通知・お客様への自動返信）は行わない。
-- 管理画面での閲覧機能は実装しない。内容の確認はデータベースを直接参照する運用とする。
+- 管理画面での閲覧機能は実装しない。内容の確認は管理者へ送る通知メール、またはデータベースの直接参照で行う。
 - スパム対策はレート制限のみとし、CAPTCHA は導入しない。
 
 ## 関連ドキュメント
@@ -90,6 +90,7 @@ type Props = {
 - [docs/front/product-show.md](product-show.md) — 商品詳細の「この商品について問い合わせる」（商品名を付けて本画面へ遷移する）
 - [docs/front/static-pages.md](static-pages.md) — 買い物ガイド（返品・交換の連絡先として本画面を案内する）
 - [docs/front/common-layout.md](common-layout.md) — ヘッダー・フッターのナビゲーションの正本
+- [docs/mail-notification.md](../mail-notification.md) — 受付通知・控えメールの正本
 - [docs/2_database.md](../2_database.md) — テーブル定義の正本
 
 ## ソースファイル
@@ -98,6 +99,7 @@ type Props = {
 |---|---|
 | Route | `routes/web.php` |
 | Controller | `app/Http/Controllers/Front/ContactController.php` |
+| Action | `app/Actions/Front/Contact/SubmitContact.php` |
 | FormRequest | `app/Http/Requests/Front/Contact/StoreContactRequest.php` |
 | Model | `app/Models/Contact.php` |
 | Page | `resources/js/front/Pages/Contact/Create.tsx` |
@@ -114,4 +116,5 @@ type Props = {
 - 対象商品を省略できる: 同上（`対象商品は省略できる`）
 - 必須・メール形式・本文の文字数を検証する: 同上（`必須項目が未入力なら送信されない`・`メールアドレスの形式が誤っていれば送信されない`・`本文が九文字なら送信されない`・`本文が十文字なら送信できる`・`本文が上限を超えると送信されない`）
 - 連投がレート制限で拒否される: 同上（`同一の送信元からの連投は制限される`）
+- 管理者への通知と送信者への控えが送られる: 同上（`送信すると管理者への通知と送信者への控えが送られる`・`管理者の宛先が未設定でも送信者への控えは送られる`）
 - 送信後に本文だけが空に戻ること・トーストの表示: 自動テストなし。目視確認で担保する

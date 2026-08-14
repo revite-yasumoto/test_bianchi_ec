@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature\Front\Auth;
 
 use App\Enums\UserStatus;
+use App\Mail\Front\RegistrationCompleted;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -147,5 +149,29 @@ class RegisterTest extends TestCase
         $this->actingAs($user)
             ->get(route('register'))
             ->assertRedirect(route('top'));
+    }
+
+    #[Test]
+    public function 会員登録すると登録完了メールが送られる(): void
+    {
+        Mail::fake();
+
+        $this->post(route('register.store'), $this->validPayload());
+
+        Mail::assertSent(
+            RegistrationCompleted::class,
+            fn (RegistrationCompleted $mail): bool => $mail->hasTo('taro@example.test'),
+        );
+    }
+
+    #[Test]
+    public function 登録に失敗したときはメールが送られない(): void
+    {
+        Mail::fake();
+
+        $this->post(route('register.store'), $this->validPayload(['email' => 'invalid']))
+            ->assertSessionHasErrors('email');
+
+        Mail::assertNothingSent();
     }
 }

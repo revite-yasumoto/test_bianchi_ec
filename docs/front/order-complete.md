@@ -67,7 +67,7 @@ type Props = {
 
 ## 業務ルール
 
-- 注文完了メールは送信しない（メール送信は要件のスコープ外）。振込先の案内はこの画面と注文詳細の表示のみで行う。
+- 振込先の案内はこの画面と注文詳細に表示するほか、注文の確定時に送る受付メールにも載せる（[docs/mail-notification.md](../mail-notification.md) が正本）。
 
 ## 関連ドキュメント
 
@@ -76,6 +76,7 @@ type Props = {
 - [docs/front/mypage-order.md](mypage-order.md) — 「注文履歴を見る」の遷移先と、`OrderPolicy` のキャンセル認可の正本
 - [docs/front/common-layout.md](common-layout.md) — `FrontLayout` の正本
 - [docs/admin/ec-setting.md](../admin/ec-setting.md) — 銀行振込の案内文の設定元
+- [docs/mail-notification.md](../mail-notification.md) — 注文受付メールの正本
 - [docs/2_database.md](../2_database.md) — テーブル定義の正本
 
 ## ソースファイル

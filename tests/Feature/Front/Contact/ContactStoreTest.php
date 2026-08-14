@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Front\Contact;
 
+use App\Mail\Admin\ContactReceived;
+use App\Mail\Front\ContactAcknowledgement;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -119,5 +122,39 @@ class ContactStoreTest extends TestCase
             ->assertTooManyRequests();
 
         $this->assertDatabaseCount('contacts', 10);
+    }
+
+    #[Test]
+    public function 送信すると管理者への通知と送信者への控えが送られる(): void
+    {
+        Mail::fake();
+
+        $this->post(route('contact.store'), $this->payload());
+
+        // 送信者宛に管理者が混ざらないこと・管理者宛に送信者が混ざらないことも併せて確認する
+        Mail::assertSent(
+            ContactReceived::class,
+            fn (ContactReceived $mail): bool => $mail->hasTo('admin@example.test')
+                && $mail->hasTo('uketsuke@example.test')
+                && ! $mail->hasTo('taro@example.test'),
+        );
+        Mail::assertSent(
+            ContactAcknowledgement::class,
+            fn (ContactAcknowledgement $mail): bool => $mail->hasTo('taro@example.test')
+                && count($mail->to) === 1,
+        );
+    }
+
+    #[Test]
+    public function 管理者の宛先が未設定でも送信者への控えは送られる(): void
+    {
+        Mail::fake();
+        config(['mail.admin_addresses' => []]);
+
+        $this->post(route('contact.store'), $this->payload())
+            ->assertSessionHas('success');
+
+        Mail::assertNotSent(ContactReceived::class);
+        Mail::assertSent(ContactAcknowledgement::class);
     }
 }

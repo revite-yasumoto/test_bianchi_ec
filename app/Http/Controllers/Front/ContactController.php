@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Front;
 
+use App\Actions\Front\Contact\SubmitContact;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Front\Contact\StoreContactRequest;
-use App\Models\Contact;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,12 +34,9 @@ class ContactController extends Controller
         ]);
     }
 
-    public function store(StoreContactRequest $request): RedirectResponse
+    public function store(StoreContactRequest $request, SubmitContact $submitContact): RedirectResponse
     {
-        Contact::query()->create([
-            ...$request->safe()->all(),
-            'user_id' => $request->user('web')?->id,
-        ]);
+        $submitContact($request->safe()->all(), $request->user('web')?->id);
 
         return back()->with('success', '送信しました。3営業日以内にご返信いたします。');
     }

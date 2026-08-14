@@ -104,8 +104,8 @@ type RegisterForm = {
 
 **会員登録（`RegisteredUserController::store()`）:**
 1. `RegisterRequest` でバリデーションする。
-2. `GenerateMemberCode` で会員IDを採番する（`users.member_code` の最大値の数値部分 + 1、`M-` + 6桁ゼロ埋め。会員が1件も無い場合は `M-100001`）。
-3. `users` に `status = active` で作成する。
+2. `RegisterUser` が `GenerateMemberCode` で会員IDを採番し（`users.member_code` の最大値の数値部分 + 1、`M-` + 6桁ゼロ埋め。会員が1件も無い場合は `M-100001`）、`users` に `status = active` で作成する。
+3. 続けて登録完了メールを会員へ送る。送信の仕様は [docs/mail-notification.md](../mail-notification.md) が正本。
 4. `web` ガードでログインし、セッションを再生成する。
 5. intended URL（無ければ `top`）へリダイレクトし、`success` フラッシュに「会員登録が完了しました。」を渡す。
 
@@ -131,6 +131,7 @@ type RegisterForm = {
 - [docs/front/top.md](top.md) — ログイン後・ログアウト後の遷移先であるTOPページの正本
 - [docs/front/static-pages.md](static-pages.md) — 同意チェックからリンクする利用規約・プライバシーポリシーの正本
 - [docs/admin/auth.md](../admin/auth.md) — 管理者認証の正本。`bootstrap/app.php` のパス分岐・`config/inertia.php` の設定はこちらが正本
+- [docs/mail-notification.md](../mail-notification.md) — 登録完了メールの正本
 - [docs/1_system_overview.md](../1_system_overview.md) — 2ガード構成の前提
 - [docs/2_database.md](../2_database.md) — `users` テーブル定義の正本
 
@@ -143,6 +144,7 @@ type RegisterForm = {
 | FormRequest | `app/Http/Requests/Front/Auth/LoginRequest.php` |
 | FormRequest | `app/Http/Requests/Front/Auth/RegisterRequest.php` |
 | Action | `app/Actions/Front/Auth/GenerateMemberCode.php` |
+| Action | `app/Actions/Front/Auth/RegisterUser.php` |
 | ルート | `routes/web.php` |
 | Page | `resources/js/front/Pages/Auth/Login.tsx` |
 | Page | `resources/js/front/Pages/Auth/Register.tsx` |
@@ -161,6 +163,7 @@ type RegisterForm = {
 - 同意チェックなしでは登録できない: 同上（`利用規約に同意しないと登録できない`）
 - 氏名カナは全角カタカナのみ受け付け、未入力は許可される: 同上（`氏名カナが全角カタカナ以外では登録できない`・`氏名カナは未入力でも登録できる`）
 - ログイン済みは会員登録画面を開けない: 同上（`ログイン済みの会員は会員登録画面を開けない`）
+- 登録の成否に応じて登録完了メールが送られる: 同上（`会員登録すると登録完了メールが送られる`・`登録に失敗したときはメールが送られない`）
 - ログイン画面が正しいInertiaコンポーネントで表示される: `tests/Feature/Front/Auth/LoginTest.php`（`ログイン画面が表示される`）
 - 正しい認証情報でログインできる: 同上（`正しいメールアドレスとパスワードでログインできる`）
 - 誤パスワード・未登録メールではログインできない: 同上（`パスワードが誤っている場合はログインできない`・`未登録のメールアドレスではログインできない`）
