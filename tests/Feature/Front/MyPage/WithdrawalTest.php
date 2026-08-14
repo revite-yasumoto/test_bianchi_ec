@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Tests\Feature\Front\MyPage;
 
 use App\Enums\UserStatus;
+use App\Mail\Front\WithdrawalCompleted;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -98,6 +100,32 @@ class WithdrawalTest extends TestCase
         ])->assertSessionHasErrors('email');
 
         $this->assertGuest();
+    }
+
+    #[Test]
+    public function 退会すると完了メールが送られる(): void
+    {
+        Mail::fake();
+
+        $this->actingAs($this->user)->post(route('mypage.withdrawal.store'), $this->payload());
+
+        Mail::assertSent(
+            WithdrawalCompleted::class,
+            fn (WithdrawalCompleted $mail): bool => $mail->hasTo('taro@example.test')
+                && count($mail->to) === 1,
+        );
+    }
+
+    #[Test]
+    public function 退会に失敗したときはメールが送られない(): void
+    {
+        Mail::fake();
+
+        $this->actingAs($this->user)
+            ->post(route('mypage.withdrawal.store'), $this->payload(['password' => 'wrong-password']))
+            ->assertSessionHasErrors('password');
+
+        Mail::assertNothingSent();
     }
 
     #[Test]

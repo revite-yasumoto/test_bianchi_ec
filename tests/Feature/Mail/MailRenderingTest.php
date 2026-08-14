@@ -12,6 +12,7 @@ use App\Mail\Front\OrderReceived;
 use App\Mail\Front\OrderShipped;
 use App\Mail\Front\PasswordResetLink;
 use App\Mail\Front\RegistrationCompleted;
+use App\Mail\Front\WithdrawalCompleted;
 use App\Models\Contact;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -172,6 +173,18 @@ class MailRenderingTest extends TestCase
         $mailable->assertSeeInHtml($order->order_number);
         $mailable->assertSeeInHtml('1234-5678-9012');
         $mailable->assertSeeInHtml('架空 太郎');
+    }
+
+    #[Test]
+    public function 退会完了メールに氏名と感謝の文言が載る(): void
+    {
+        $user = User::factory()->create(['name' => '架空 太郎']);
+
+        $mailable = new WithdrawalCompleted($user);
+
+        $mailable->assertSeeInHtml('架空 太郎');
+        $mailable->assertSeeInHtml('ありがとうございました');
+        $mailable->assertSeeInHtml('再登録はできません');
     }
 
     #[Test]

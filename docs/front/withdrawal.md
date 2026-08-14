@@ -62,8 +62,8 @@ props は受け取らない。表示する文言はすべて画面に固定で�
 **退会の実行（`WithdrawalController::store()`）**
 
 1. 入力を検証する。パスワードが違えば `password` にエラーを返す。
-2. `users.status` を `withdrawn` に更新し、あわせて `remember_token` を作り直す。
-3. ログアウトし、セッションを無効化してCSRFトークンを再生成する。
+2. `WithdrawUser` が `users.status` を `withdrawn` に更新し、続けて退会完了メールを会員へ送る。送信の失敗は退会の成立を妨げない。
+3. ログアウトし、セッションを無効化してCSRFトークンを再生成する。ログアウトは記憶トークンも作り直すため、他端末の「ログイン状態を保持」による再ログインもここで断たれる。
 4. TOPへリダイレクトし、`success` フラッシュに退会完了の文言を渡す。
 
 ## 業務ルール
@@ -72,13 +72,14 @@ props は受け取らない。表示する文言はすべて画面に固定で�
 - 退会後も `users` の行は残るため、同じメールアドレスでの再登録はできない（`users.email` の一意制約による）。
 - 注文・配送先・お気に入り・カートのデータは削除しない。ログインできなくなるため会員自身からは参照されず、管理画面からは従来どおり注文を追える。
 - 退会した会員のステータスを管理画面から戻すことはできない（[docs/admin/member.md](../admin/member.md) が正本）。
-- 退会時に確認メールは送らない。
+- 退会の完了を会員へメールで知らせる。送信の仕様は [docs/mail-notification.md](../mail-notification.md) が正本。管理者への通知は送らない（退会は管理画面の会員一覧から把握できるため）。
 - 退会で断てるのは、操作した端末のセッションと「ログイン状態を保持」による再ログインまで。**別の端末でログイン中のセッションはそのまま残り、その有効期限が切れるまで操作できる。** ステータスを毎リクエスト検証する仕組みは持たないため（同じことは休会にした会員にも当てはまる）。
 
 ## 関連ドキュメント
 
 - [docs/front/mypage-profile.md](mypage-profile.md) — 退会画面への導線を持つ会員情報変更
 - [docs/front/auth.md](auth.md) — ログイン時のステータス判定の正本
+- [docs/mail-notification.md](../mail-notification.md) — 退会完了メールの正本
 - [docs/admin/member.md](../admin/member.md) — 管理画面での退会会員の表示・操作制限の正本
 - [docs/front/common-layout.md](common-layout.md) — `FrontLayout`・マイページのタブの正本
 - [docs/2_database.md](../2_database.md) — テーブル定義の正本
@@ -89,8 +90,11 @@ props は受け取らない。表示する文言はすべて画面に固定で�
 |---|---|
 | Route | `routes/web.php` |
 | Controller | `app/Http/Controllers/Front/MyPage/WithdrawalController.php` |
+| Action | `app/Actions/Front/MyPage/WithdrawUser.php` |
 | FormRequest | `app/Http/Requests/Front/MyPage/WithdrawRequest.php` |
 | Enum | `app/Enums/UserStatus.php` |
+| Mailable | `app/Mail/Front/WithdrawalCompleted.php` |
+| View | `resources/views/emails/front/withdrawal-completed.blade.php` |
 | Page | `resources/js/front/Pages/MyPage/Withdrawal.tsx` |
 | 型定義 | `resources/js/shared/lib/enums.ts` |
 | Test | `tests/Feature/Front/MyPage/WithdrawalTest.php` |
@@ -104,7 +108,8 @@ props は受け取らない。表示する文言はすべて画面に固定で�
 - 同意チェックが無ければ退会されない: 同上（`同意していなければ退会されない`）
 - 退会した会員はログインできない: 同上（`退会した会員はログインできない`）
 - 退会しても注文が残る: 同上（`退会しても注文は残る`）
-- 退会で記憶トークンが作り直される: 同上（`退会すると記憶トークンが作り直される`）
+- 退会で記憶トークンが作り直される（ログアウトによる）: 同上（`退会すると記憶トークンが作り直される`）
+- 退会の完了で会員へメールが送られる: 同上（`退会すると完了メールが送られる`・`退会に失敗したときはメールが送られない`）
 - 別端末の既存セッションが退会後も生きること: 自動テストなし。仕様として受け入れている挙動で、塞ぐにはステータスを毎リクエスト検証するミドルウェアの追加が要る
 - 退会後に同じメールアドレスで登録できない: 同上（`退会したメールアドレスでは再登録できない`）
 - 画面のレイアウト・同意チェックによるボタンの活性: 自動テストなし。目視確認で担保する

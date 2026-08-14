@@ -5,7 +5,7 @@
 - **対象画面・機能の目的:** 会員登録・お問い合わせ・注文の各操作を、会員および管理者へメールで通知する。
 - **URL / メソッド:** なし（画面を持たない。各操作の処理中に送信される）。
 - **アクセス権限・ミドルウェア:** なし（送信の契機となる各画面の権限に従う）。
-- **本ドキュメントのスコープ:** 送信基盤（送信元・宛先・失敗時の扱い・レイアウト）と、会員登録・お問い合わせ・注文・パスワード再設定・出荷完了の7通。
+- **本ドキュメントのスコープ:** 送信基盤（送信元・宛先・失敗時の扱い・レイアウト）と、会員登録・お問い合わせ・注文・パスワード再設定・出荷完了・退会完了の8通。
 
 **本ドキュメントはメール送信の共通仕様の正本である。** 送信元・管理者の宛先・送信失敗時の扱い・レイアウトの記述はここに置き、各画面の仕様書からは本ドキュメントへリンクする。
 
@@ -33,6 +33,7 @@
 | 5 | 注文通知 | 管理者 | 同上 |
 | 6 | パスワード再設定 | 申請したアドレスの会員 | パスワード再設定の申請時 |
 | 7 | 出荷完了 | 注文した会員 | 管理者が出荷済みへ変更し、送信を選んだとき |
+| 8 | 退会完了 | 退会した会員 | 退会手続きの完了時 |
 
 ## インターフェース ＆ データロジック
 
@@ -100,6 +101,13 @@ Laravel の Markdown メール（`<x-mail::message>`）を使い、標準レイ�
 
 配送業者を保持しないため、追跡サイトへのリンクは載せない。
 
+**8. 退会完了（会員宛）**
+
+- 件名: `【<サイト名>】退会手続きが完了しました`
+- 本文: 氏名・退会が完了した旨・利用への感謝、同じメールアドレスでは再登録できないこと、注文の履歴は保持していること
+
+退会後はログインできないため、マイページ等へのボタンは置かない。
+
 ### 主要な処理フロー
 
 **送信の共通処理（`NotificationMailer`）**
@@ -160,6 +168,7 @@ Laravel の Markdown メール（`<x-mail::message>`）を使い、標準レイ�
 | Mailable | `app/Mail/Admin/OrderPlaced.php` |
 | Mailable | `app/Mail/Front/PasswordResetLink.php` |
 | Mailable | `app/Mail/Front/OrderShipped.php` |
+| Mailable | `app/Mail/Front/WithdrawalCompleted.php` |
 | View | `resources/views/emails/front/registration-completed.blade.php` |
 | View | `resources/views/emails/front/contact-acknowledgement.blade.php` |
 | View | `resources/views/emails/front/order-received.blade.php` |
@@ -167,6 +176,8 @@ Laravel の Markdown メール（`<x-mail::message>`）を使い、標準レイ�
 | View | `resources/views/emails/admin/order-placed.blade.php` |
 | View | `resources/views/emails/front/password-reset-link.blade.php` |
 | View | `resources/views/emails/front/order-shipped.blade.php` |
+| View | `resources/views/emails/front/withdrawal-completed.blade.php` |
+| Action | `app/Actions/Front/MyPage/WithdrawUser.php` |
 | Model | `app/Models/User.php` |
 | Action | `app/Actions/Front/Auth/RegisterUser.php` |
 | Action | `app/Actions/Front/Contact/SubmitContact.php` |
@@ -186,11 +197,13 @@ Laravel の Markdown メール（`<x-mail::message>`）を使い、標準レイ�
 - 管理者の宛先が未設定なら送らず、複数指定すれば全てが宛先になる: 同上（`管理者の宛先が未設定なら送信されない`・`管理者の宛先を複数指定すると全てが宛先になる`）
 - `MAIL_ADMIN_ADDRESS` のカンマ区切りが宛先の配列に解析される: 同上（`環境変数のカンマ区切りが宛先の配列に解析される`）
 - 送信に失敗しても例外が伝播せずログに残る: 同上（`送信に失敗しても例外は伝播せずログに残る`）
-- 5通すべてが例外なく描画でき、記載項目とリンクが揃う: `tests/Feature/Mail/MailRenderingTest.php`（各メールの描画。支払方法による振込案内・代引き手数料の出し分けを含む）
+- 8通すべてが例外なく描画でき、記載項目とリンクが揃う: `tests/Feature/Mail/MailRenderingTest.php`（各メールの描画。支払方法による振込案内・代引き手数料の出し分け、送り状番号の有無を含む）
 - 自由記述が Markdown 記法として解釈されず、改行が保たれる: 同上（`問い合わせ本文のリンク記法は装飾に変換されず改行が保たれる`）
 - 会員登録で登録完了メールが会員宛に送られる: `tests/Feature/Front/Auth/RegisterTest.php`（`会員登録すると登録完了メールが送られる`・`登録に失敗したときはメールが送られない`）
 - お問い合わせで管理者への通知と送信者への控えが送られる: `tests/Feature/Front/Contact/ContactStoreTest.php`（`送信すると管理者への通知と送信者への控えが送られる`・`管理者の宛先が未設定でも送信者への控えは送られる`）
 - 注文の確定で会員への受付メールと管理者への通知が送られ、送信に失敗しても注文が成立する: `tests/Feature/Front/Order/PlaceOrderTest.php`（`注文を確定すると会員と管理者にメールが送られる`・`メールの送信に失敗しても注文は成立する`・`注文が失敗したときはメールが送られない`）
 - パスワード再設定メールが申請者へ送られる: `tests/Feature/Front/Auth/PasswordResetTest.php`（`登録済みのアドレスに再設定メールが送られる`）
 - 出荷完了メールが送信を選んだときだけ送られる: `tests/Feature/Admin/Order/OrderStatusUpdateTest.php`（`送信を選ぶと会員へ出荷完了メールが送られる`・`送信を選ばなければメールは送られない`）
+- 退会の完了で会員へメールが送られる: `tests/Feature/Front/MyPage/WithdrawalTest.php`（`退会すると完了メールが送られる`・`退会に失敗したときはメールが送られない`）
+- 退会完了メールに氏名と感謝の文言が載る: `tests/Feature/Mail/MailRenderingTest.php`（`退会完了メールに氏名と感謝の文言が載る`）
 - メールクライアントでの実際の見た目（改行位置・表の折り返し・ボタンの表示）: 自動テストなし。`MAIL_MAILER=log` でログに出力された本文を目視確認して担保する
