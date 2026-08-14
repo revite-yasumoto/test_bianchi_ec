@@ -10,12 +10,13 @@
 | GET | `/` | `top` | なし |
 | GET | `/register` | `register` | `guest` |
 | POST | `/register` | `register.store` | `guest` |
+| GET | `/register/complete` | `register.complete` | `guest` |
 | GET | `/login` | `login` | `guest` |
 | POST | `/login` | `login.store` | `guest` |
 | POST | `/logout` | `logout` | `auth` |
 
 - **アクセス権限・ミドルウェア:** 上表の通り。フロント側のルート名は `admin.` のような prefix を付けない。
-- **本ドキュメントのスコープ:** 会員登録・ログイン・ログアウトのバックエンド処理、会員登録画面（`Register.tsx`）・ログイン画面（`Login.tsx`）。遷移先のTOPページは [docs/front/top.md](top.md) が正本。各画面が使う共通レイアウト・共通UIコンポーネント・デザイントークンは [docs/front/common-layout.md](common-layout.md) が正本。
+- **本ドキュメントのスコープ:** 会員登録・ログイン・ログアウトのバックエンド処理、会員登録画面（`Register.tsx`）・会員登録完了画面（`RegisterComplete.tsx`）・ログイン画面（`Login.tsx`）。遷移先のTOPページは [docs/front/top.md](top.md) が正本。各画面が使う共通レイアウト・共通UIコンポーネント・デザイントークンは [docs/front/common-layout.md](common-layout.md) が正本。
 
 ## 使用テーブル
 
@@ -50,6 +51,16 @@
 |      に同意します                      |
 |  [        登録する        ]           |
 |  すでにアカウントをお持ちの方は ログイン  |
++--------------------------------------+
+
+会員登録完了（GET /register/complete） 最大幅520px・中央寄せ:
++--------------------------------------+
+|               (✓)                    |
+|       会員登録が完了しました            |
+|  ご登録のメールアドレスへ完了メールを     |
+|  お送りしました。ログインしてお買い物を   |
+|  お楽しみください。                     |
+|  [ ログインする ] [ TOPへ戻る ]        |
 +--------------------------------------+
 ```
 
@@ -106,8 +117,10 @@ type RegisterForm = {
 1. `RegisterRequest` でバリデーションする。
 2. `RegisterUser` が `GenerateMemberCode` で会員IDを採番し（`users.member_code` の最大値の数値部分 + 1、`M-` + 6桁ゼロ埋め。会員が1件も無い場合は `M-100001`）、`users` に `status = active` で作成する。
 3. 続けて登録完了メールを会員へ送る。送信の仕様は [docs/mail-notification.md](../mail-notification.md) が正本。
-4. `web` ガードでログインし、セッションを再生成する。
-5. intended URL（無ければ `top`）へリダイレクトし、`success` フラッシュに「会員登録が完了しました。」を渡す。
+4. ログインはせず、セッションに完了画面の表示許可を入れて `register.complete` へリダイレクトする。
+5. 未ログインで要認証ページから来た場合の遷移先（intended URL）はここで消費せず、後続のログインまで持ち越す。
+
+**会員登録完了（`RegisteredUserController::complete()`）:** セッションの表示許可を取り出して消し、完了画面を返す。許可が無ければ `login` へリダイレクトする（登録していない訪問者に完了画面を見せないため）。
 
 **ログイン（`AuthenticatedSessionController::store()`）:**
 1. レート制限を確認する（超過時は `email` にエラーを返す）。
@@ -121,6 +134,7 @@ type RegisterForm = {
 ## 業務ルール
 
 - ログイン失敗時のメッセージは、メールアドレスの登録有無を区別できる内容にしない（アカウント列挙攻撃対策）。休会中のメッセージのみ、利用者が問い合わせ先を判断できるよう区別して返す。
+- 会員登録の完了時に自動ログインはしない。完了画面からログイン画面へ案内し、会員自身にログインしてもらう。購入手続きの途中で登録した場合も同じで、ログイン後に元の手続きへ戻る。
 - メール認証・パスワードリセットは実装しない（要件の画面一覧に含まれないため）。
 - 会員IDの採番は登録時点の最大値 + 1 で行うため、同時登録が競合した場合は `users.member_code` の一意制約で弾かれる。
 - 未ログインで要認証ルートへアクセスした場合、Laravel 標準の `Authenticate` ミドルウェアが intended URL をセッションに保存し、ログイン成功後に元の手続きへ戻す。フロント向けの遷移先は `bootstrap/app.php` の `redirectGuestsTo`（`login`）／`redirectUsersTo`（`top`）で決まる。管理画面向けの分岐は [docs/admin/auth.md](../admin/auth.md) が正本。
@@ -148,6 +162,7 @@ type RegisterForm = {
 | ルート | `routes/web.php` |
 | Page | `resources/js/front/Pages/Auth/Login.tsx` |
 | Page | `resources/js/front/Pages/Auth/Register.tsx` |
+| Page | `resources/js/front/Pages/Auth/RegisterComplete.tsx` |
 | Test | `tests/Feature/Front/Auth/LoginTest.php` |
 | Test | `tests/Feature/Front/Auth/LogoutTest.php` |
 | Test | `tests/Feature/Front/Auth/RegisterTest.php` |
@@ -155,7 +170,9 @@ type RegisterForm = {
 ## 受け入れ条件
 
 - 会員登録画面が正しいInertiaコンポーネントで表示される: `tests/Feature/Front/Auth/RegisterTest.php`（`会員登録画面が表示される`）
-- 会員登録するとユーザーが作成されログイン状態になる: 同上（`会員登録するとユーザーが作成されログイン状態になる`）
+- 会員登録するとユーザーが作成され、ログインしないまま完了画面へ遷移する: 同上（`会員登録するとユーザーが作成され完了画面へ遷移する`・`会員登録してもログイン状態にはならない`）
+- 完了画面は登録直後の一度だけ開ける: 同上（`登録直後は会員登録完了画面を開ける`・`登録を経ずに会員登録完了画面を開くとログイン画面へ戻される`・`会員登録完了画面は再読み込みすると開けない`）
+- 購入手続きから登録した場合、ログイン後に購入手続きへ戻る: 同上（`購入手続きから登録するとログイン後に購入手続きへ戻る`）
 - 会員が1件も無いとき会員IDが `M-100001` で採番される: 同上（`会員が1件も無いとき会員番号は開始番号で採番される`）
 - 会員IDが既存の最大連番 + 1 で採番される: 同上（`会員番号は既存の最大連番の次の番号で採番される`）
 - 登録済みメールアドレスでは登録できない: 同上（`登録済みのメールアドレスでは登録できない`）

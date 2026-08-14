@@ -40,16 +40,70 @@ class RegisterTest extends TestCase
     }
 
     #[Test]
-    public function 会員登録するとユーザーが作成されログイン状態になる(): void
+    public function 会員登録するとユーザーが作成され完了画面へ遷移する(): void
     {
-        $response = $this->post(route('register.store'), $this->validPayload());
+        $this->post(route('register.store'), $this->validPayload())
+            ->assertRedirect(route('register.complete'));
 
-        $response->assertRedirect(route('top'));
         $this->assertDatabaseHas('users', [
             'email' => 'taro@example.test',
             'name' => '山田 太郎',
             'status' => UserStatus::Active->value,
         ]);
+    }
+
+    #[Test]
+    public function 会員登録してもログイン状態にはならない(): void
+    {
+        $this->post(route('register.store'), $this->validPayload());
+
+        $this->assertGuest();
+    }
+
+    #[Test]
+    public function 登録直後は会員登録完了画面を開ける(): void
+    {
+        $this->post(route('register.store'), $this->validPayload());
+
+        $this->get(route('register.complete'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('front/Auth/RegisterComplete'));
+    }
+
+    #[Test]
+    public function 登録を経ずに会員登録完了画面を開くとログイン画面へ戻される(): void
+    {
+        $this->get(route('register.complete'))->assertRedirect(route('login'));
+    }
+
+    #[Test]
+    public function 会員登録完了画面は再読み込みすると開けない(): void
+    {
+        $this->post(route('register.store'), $this->validPayload());
+        $this->get(route('register.complete'))->assertOk();
+
+        $this->get(route('register.complete'))->assertRedirect(route('login'));
+    }
+
+    #[Test]
+    public function 購入手続きから登録するとログイン後に購入手続きへ戻る(): void
+    {
+        // 未ログインで要認証ページへ入ろうとした時点で、戻り先がセッションに記録される
+        $this->get(route('checkout.index'))->assertRedirect(route('login'));
+
+        // 完了画面への遷移で戻り先を消費していないことを、ログインより前に直接確かめる
+        $this->post(route('register.store'), $this->validPayload())
+            ->assertRedirect(route('register.complete'))
+            ->assertSessionHas('url.intended', route('checkout.index'));
+
+        // ログイン失敗時も直前のGETと同じ URL へ戻るため、成功したことを別途確定させる
+        $this->post(route('login.store'), [
+            'email' => 'taro@example.test',
+            'password' => 'password123',
+        ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('checkout.index'));
+
         $this->assertAuthenticatedAs(User::query()->where('email', 'taro@example.test')->sole());
     }
 
@@ -82,7 +136,7 @@ class RegisterTest extends TestCase
         $response = $this->post(route('register.store'), $this->validPayload());
 
         $response->assertSessionHasErrors('email');
-        $this->assertGuest();
+        $this->assertDatabaseCount('users', 1);
     }
 
     #[Test]
@@ -94,7 +148,7 @@ class RegisterTest extends TestCase
         ]));
 
         $response->assertSessionHasErrors('password');
-        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['email' => 'taro@example.test']);
     }
 
     #[Test]
@@ -105,7 +159,7 @@ class RegisterTest extends TestCase
         ]));
 
         $response->assertSessionHasErrors('password');
-        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['email' => 'taro@example.test']);
     }
 
     #[Test]
@@ -116,7 +170,7 @@ class RegisterTest extends TestCase
         ]));
 
         $response->assertSessionHasErrors('agree');
-        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['email' => 'taro@example.test']);
     }
 
     #[Test]
@@ -127,7 +181,7 @@ class RegisterTest extends TestCase
         ]));
 
         $response->assertSessionHasErrors('name_kana');
-        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['email' => 'taro@example.test']);
     }
 
     #[Test]

@@ -98,7 +98,8 @@ Laravel の Markdown メール（`<x-mail::message>`）を使い、標準レイ�
 
 1. 会員を作成する。
 2. 会員登録完了メールを送る。
-3. 自動ログインし、TOPへ遷移する。
+
+送信後の画面遷移は [docs/front/auth.md](front/auth.md) が正本。
 
 **お問い合わせ**
 
