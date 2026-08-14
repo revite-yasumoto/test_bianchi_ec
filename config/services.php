@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'postal_code_lookup' => [
+        'base_url' => env('POSTAL_CODE_LOOKUP_URL', 'https://zipcloud.ibsnet.co.jp/api/search'),
+        'timeout' => 5,
+        'connect_timeout' => 3,
+        'cache_days' => 30,
+    ],
+
 ];

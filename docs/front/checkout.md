@@ -67,6 +67,7 @@
 - 配送先・支払い方法はラジオボタンで、選択中のカードを枠線と背景で示す。配送先は既定の住所を先頭に並べ、既定の住所には「既定」バッジを付ける。
 - **配送先・支払い方法を切り替えると、送料・代引き手数料・合計・お届け予定日がその場で再計算される。** 配送先が1件も無い場合は「注文内容を確認する」を非活性にする。
 - 「＋ 新しいお届け先を追加」でモーダルを開く。都道府県を選ぶとその場で「送料 ¥500 ／ お届けまで3日」を表示する。保存すると追加した住所が選択済みの状態で購入手続きに戻る。モーダルはマイページの配送先住所と共用する（編集モードの仕様は [docs/front/mypage-address.md](mypage-address.md)）。
+- モーダルの郵便番号欄は前半3桁・後半4桁の2欄に分かれ、7桁が揃うと都道府県・市区町村・番地を自動でセットする（仕様は [docs/front/postal-code-lookup.md](postal-code-lookup.md) が正本）。保存する `postal_code` の形式は下のバリデーションルールのとおりで、自動セットの有無で変わらない。
 
 注文確認:
 
@@ -224,6 +225,7 @@ type Props = {
 - [docs/front/order-complete.md](order-complete.md) — 注文完了画面
 - [docs/mail-notification.md](../mail-notification.md) — 注文受付メール・管理者への注文通知の正本
 - [docs/front/mypage-address.md](mypage-address.md) — 配送先の一覧・更新・削除と、共用モーダルの編集モードの正本
+- [docs/front/postal-code-lookup.md](postal-code-lookup.md) — 郵便番号入力欄と住所の自動セットの正本
 - [docs/front/common-layout.md](common-layout.md) — `FrontLayout`・トースト・共有プロパティの正本
 - [docs/admin/order-show.md](../admin/order-show.md) — ステータス遷移規則とキャンセル時の在庫戻しの正本
 - [docs/admin/ec-setting.md](../admin/ec-setting.md) — 送料無料しきい値・代引き手数料・振込案内文の設定元

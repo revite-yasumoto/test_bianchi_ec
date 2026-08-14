@@ -37,7 +37,7 @@
 ```
 
 - 既定の住所を先頭に並べ、以降はID順にする。既定の住所には「既定」バッジを付ける。
-- 「編集」「＋ 配送先を追加」は同じモーダルを開く（編集時は既存の値を初期値に入れ、タイトルを「お届け先の編集」、送信ボタンを「保存する」にする）。
+- 「編集」「＋ 配送先を追加」は同じモーダルを開く（編集時は既存の値を初期値に入れ、タイトルを「お届け先の編集」、送信ボタンを「保存する」にする）。編集時は既存の郵便番号を前半3桁・後半4桁に分けて初期表示する（郵便番号欄と住所の自動セットは [docs/front/postal-code-lookup.md](postal-code-lookup.md) が正本）。
 - 「削除」は確認モーダルを挟む。モーダルには宛名・表示名と、確定済み注文の表示が変わらない旨を出す。
 - 登録が0件のときは「登録済みの配送先はありません。」を出す（追加ボタンは常に出す）。
 
@@ -96,6 +96,7 @@ type AddressModalProps = {
 ## 関連ドキュメント
 
 - [docs/front/checkout.md](checkout.md) — 配送先の追加処理・入力欄の定義・`AddressData` の正本
+- [docs/front/postal-code-lookup.md](postal-code-lookup.md) — 郵便番号入力欄と住所の自動セットの正本
 - [docs/front/mypage-order.md](mypage-order.md) — マイページ共通レイアウトの正本
 - [docs/order-snapshot.md](../order-snapshot.md) — 確定済み注文が配送先を値で保持する規則の正本
 - [docs/2_database.md](../2_database.md) — テーブル定義の正本
