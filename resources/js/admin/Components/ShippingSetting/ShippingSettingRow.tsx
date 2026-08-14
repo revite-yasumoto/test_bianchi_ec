@@ -18,8 +18,16 @@ type ShippingSettingRowProps = {
     onChangeDeliveryDays: (value: string) => void;
 };
 
+/**
+ * 数値のスピナーは入力欄が狭いと右寄せした数値に重なって読めなくなるため隠す。
+ * 増減はキーボードの上下キーで従来どおり行える。
+ *
+ * スピナーの消し方はブラウザで異なり標準の手段が無いため、`appearance: textfield`（Firefox）と
+ * WebKit 専用の擬似要素（Chrome・Safari）を併記する。ネイティブ外観を落とすとフォーカスリングも
+ * 消えるため、代替のフォーカススタイルを併せて指定する。
+ */
 const INPUT_CLASS =
-    'w-full min-w-0 rounded-md border border-admin-line px-2 py-1 text-right font-mono text-base';
+    'w-full min-w-0 appearance-none rounded-md border border-admin-line px-2 py-1 text-right font-mono text-base [appearance:textfield] focus:border-admin-brand focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none';
 
 export function ShippingSettingRow({
     row,
@@ -69,7 +77,7 @@ export function ShippingSettingRow({
                 min={1}
                 max={30}
                 value={deliveryDays}
-                className={cn(INPUT_CLASS, 'w-14')}
+                className={cn(INPUT_CLASS, 'w-16')}
                 aria-invalid={deliveryDaysError !== undefined}
                 onChange={(event) => onChangeDeliveryDays(event.target.value)}
             />
