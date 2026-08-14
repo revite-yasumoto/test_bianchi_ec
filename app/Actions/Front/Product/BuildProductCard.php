@@ -6,7 +6,6 @@ namespace App\Actions\Front\Product;
 
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * 商品カード（一覧・TOPのランキング／おすすめ／閲覧履歴）の表示データを組み立てる。
@@ -42,7 +41,7 @@ class BuildProductCard
             'product_code' => $product->product_code,
             'price' => $product->price,
             'main_image_url' => $product->mainImage
-                ? Storage::disk('public')->url($product->mainImage->path)
+                ? asset('storage/'.$product->mainImage->path)
                 : null,
             'is_sold_out' => ((int) $product->in_stock_variants_count) === 0,
         ];

@@ -9,7 +9,6 @@ use App\Models\CartItem;
 use App\Models\User;
 use App\Services\Setting\EcSettingProvider;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -140,7 +139,7 @@ class HandleInertiaRequests extends Middleware
                     'quantity' => $item->quantity,
                     'line_total' => $product->price * $item->quantity,
                     'image_url' => $product->mainImage
-                        ? Storage::disk('public')->url($product->mainImage->path)
+                        ? asset('storage/'.$product->mainImage->path)
                         : null,
                     'category_name' => $product->category->name,
                 ];

@@ -18,7 +18,6 @@ use App\Models\SpecOption;
 use App\Services\Admin\Product\ProductSaveService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -162,7 +161,7 @@ class ProductController extends Controller
             'images' => $product->images
                 ->map(fn (ProductImage $image): array => [
                     'id' => $image->id,
-                    'url' => Storage::disk('public')->url($image->path),
+                    'url' => asset('storage/'.$image->path),
                 ])
                 ->all(),
             'specs' => $product->specs

@@ -19,6 +19,9 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <!-- 画像URLがリクエスト基準で解決されることを検証するため、.env の値に左右されないよう固定する -->
+        <env name="APP_URL" value="http://localhost"/>
+        <env name="ASSET_URL" value=""/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>

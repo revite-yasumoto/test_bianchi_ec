@@ -6,6 +6,7 @@ namespace Tests\Feature\Front\Product;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use App\Models\Stock;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -125,6 +126,24 @@ class ProductIndexTest extends TestCase
         }
 
         $this->assertSame($queryCount, $this->countQueriesOfIndex());
+    }
+
+    #[Test]
+    public function 商品画像のリンク先はアクセス元のホストとポートに追従する(): void
+    {
+        $product = $this->makeProduct();
+        ProductImage::factory()->create([
+            'product_id' => $product->id,
+            'path' => 'products/1/sample.png',
+            'sort_order' => 0,
+        ]);
+
+        // APP_URL の設定値ではなくリクエストを基準にする。ポートを変えた環境でも画像が解決できる必要がある
+        $this->get('http://localhost:8000/products')
+            ->assertInertia(fn ($page) => $page->where(
+                'products.data.0.main_image_url',
+                'http://localhost:8000/storage/products/1/sample.png',
+            ));
     }
 
     private function countQueriesOfIndex(): int

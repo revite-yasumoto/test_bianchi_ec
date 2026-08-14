@@ -11,7 +11,6 @@ use App\Models\Prefecture;
 use App\Models\User;
 use App\Services\Shipping\ShippingCalculator;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * カートページのPropsを組み立てる。
@@ -96,7 +95,7 @@ class CartService
             'category_name' => $product->category->name,
             'variant_label' => $variant->displayName(),
             'main_image_url' => $product->mainImage
-                ? Storage::disk('public')->url($product->mainImage->path)
+                ? asset('storage/'.$product->mainImage->path)
                 : null,
             // 単価はカート投入時ではなく現在の商品価格。価格が固定されるのは注文確定時
             'unit_price' => $product->price,

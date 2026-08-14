@@ -11,7 +11,6 @@ use App\Models\ProductSpec;
 use App\Models\ProductVariant;
 use App\Models\SpecOption;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * 商品詳細のPropsを組み立てる。
@@ -41,7 +40,7 @@ class BuildProductDetail
             ),
             'images' => $product->images
                 ->map(fn (ProductImage $image): array => [
-                    'url' => Storage::disk('public')->url($image->path),
+                    'url' => asset('storage/'.$image->path),
                     'sort_order' => $image->sort_order,
                 ])
                 ->all(),

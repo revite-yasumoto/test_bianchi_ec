@@ -72,7 +72,8 @@ type Props = {
 };
 ```
 
-- `main_image_url` は `Storage::disk('public')->url()` で生成した公開URL。画像未登録は `null`。
+- `main_image_url` は `asset('storage/'.$path)` で生成した公開URL。画像未登録は `null`。`Storage::disk('public')->url()` は `APP_URL` を基準にした固定値を返すため使わない。ポートやホストが環境ごとに違っても解決できるよう、リクエストを基準にする。画像URLを組み立てる箇所はすべてこの方法に揃える。
+- `ASSET_URL`（`config('app.asset_url')`）を設定した環境では、`asset()` がそちらを基準にする。CDN等から配信する場合に使う。未設定のときが上記のリクエスト基準。
 - `is_sold_out` の判定は [docs/front/product-show.md](product-show.md)「在庫の二値判定」が正本。
 - `totalCount` は公開商品の総件数。`products.total` は絞り込み後の件数。
 
@@ -121,5 +122,6 @@ type Props = {
 - 在庫0の商品に `is_sold_out` が立つ: 同上（`在庫が0の商品は在庫切れとして返る`）
 - カテゴリの選択肢が並び順で返る: 同上（`カテゴリの選択肢が並び順で返る`）
 - 商品件数が増えてもクエリ数が増えない（N+1が発生しない）: 同上（`商品件数が増えてもクエリ数が増えない`）
+- 画像URLがアクセス元のホスト・ポートに追従する: 同上（`商品画像のリンク先はアクセス元のホストとポートに追従する`）
 - 一覧の在庫切れ判定が詳細と一致する: `tests/Feature/Front/Product/ProductStockDisplayTest.php`
 - カードのグリッド折り返し・在庫切れバッジ・プレースホルダー表示: 自動テストなし。目視確認で担保する

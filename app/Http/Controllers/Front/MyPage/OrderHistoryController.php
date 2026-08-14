@@ -11,7 +11,6 @@ use App\Models\OrderItem;
 use App\Models\OrderStatusHistory;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -93,7 +92,7 @@ class OrderHistoryController extends Controller
                     'category_name' => $item->category_name,
                     'variant_label' => $this->variantLabelOf($item),
                     'product_image_url' => $item->product_image_path
-                        ? Storage::disk('public')->url($item->product_image_path)
+                        ? asset('storage/'.$item->product_image_path)
                         : null,
                     'unit_price' => $item->unit_price,
                     'quantity' => $item->quantity,
