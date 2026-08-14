@@ -334,7 +334,7 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 |---|---|---|
 | `OrderStatus` | `received` / `awaiting_payment` / `payment_confirmed` / `preparing` / `shipped` / `cancelled` | `label()` で日本語表示名、`color()` でバッジ配色、`allowedTransitions()` / `canTransitionTo()` で遷移規則を提供 |
 | `PaymentMethod` | `bank_transfer` / `cod` | `label()` で日本語表示名、`initialOrderStatus()` で注文確定時の初期ステータス（銀行振込＝入金待ち／代引き＝注文受付）を提供 |
-| `UserStatus` | `active` / `suspended` | `label()` で日本語表示名 |
+| `UserStatus` | `active` / `suspended` / `withdrawn` | `label()` で日本語表示名。`withdrawn` を付けられるのは会員自身の退会のみ |
 | `SpecOptionType` | `size` / `color` | `label()` で日本語表示名 |
 | `NewsCategory` | `新商品` / `お知らせ` / `商品情報` | `label()` / `color()` |
 

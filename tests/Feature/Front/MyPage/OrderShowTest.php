@@ -10,6 +10,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -146,5 +147,94 @@ class OrderShowTest extends TestCase
                 ->where('order.payment_method_label', '代金引換')
                 ->where('order.bank_transfer_note', null)
             );
+    }
+
+    #[Test]
+    public function 公開中の商品の明細には商品詳細へのリンクが付く(): void
+    {
+        $product = Product::factory()->create(['is_published' => true]);
+        $order = Order::factory()->create(['user_id' => $this->user->id]);
+        OrderItem::factory()->create([
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+        ]);
+
+        $this->actingAs($this->user)
+            ->get(route('mypage.orders.show', [$order]))
+            ->assertInertia(fn ($page) => $page
+                ->where('order.items.0.product_url', route('products.show', $product))
+            );
+    }
+
+    #[Test]
+    public function 非公開になった商品の明細にはリンクが付かない(): void
+    {
+        $product = Product::factory()->create(['is_published' => false]);
+        $order = Order::factory()->create(['user_id' => $this->user->id]);
+        OrderItem::factory()->create([
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+        ]);
+
+        $this->actingAs($this->user)
+            ->get(route('mypage.orders.show', [$order]))
+            ->assertInertia(fn ($page) => $page->where('order.items.0.product_url', null));
+    }
+
+    #[Test]
+    public function 削除済みの商品の明細にはリンクが付かない(): void
+    {
+        $product = Product::factory()->create(['is_published' => true]);
+        $order = Order::factory()->create(['user_id' => $this->user->id]);
+        $item = OrderItem::factory()->create([
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'product_name' => '架空ジャージ 2026',
+        ]);
+
+        $product->delete();
+
+        $this->actingAs($this->user)
+            ->get(route('mypage.orders.show', [$order]))
+            ->assertInertia(fn ($page) => $page
+                ->where('order.items.0.product_url', null)
+                // スナップショットの商品名は残る
+                ->where('order.items.0.product_name', $item->product_name)
+            );
+    }
+
+    #[Test]
+    public function 明細が増えても注文詳細のクエリ数は変わらない(): void
+    {
+        $order = Order::factory()->create(['user_id' => $this->user->id]);
+        OrderItem::factory()->create([
+            'order_id' => $order->id,
+            'product_id' => Product::factory()->create()->id,
+        ]);
+
+        $baseline = $this->countQueriesOfShow($order);
+
+        for ($index = 0; $index < 4; $index++) {
+            OrderItem::factory()->create([
+                'order_id' => $order->id,
+                'product_id' => Product::factory()->create()->id,
+            ]);
+        }
+
+        $this->assertSame($baseline, $this->countQueriesOfShow($order));
+    }
+
+    private function countQueriesOfShow(Order $order): int
+    {
+        $count = 0;
+        DB::listen(function () use (&$count): void {
+            $count++;
+        });
+
+        $this->actingAs($this->user)
+            ->get(route('mypage.orders.show', [$order]))
+            ->assertOk();
+
+        return $count;
     }
 }

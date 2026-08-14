@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { CancelOrderButton } from '@/front/Components/MyPage/CancelOrderButton';
 import { ProductVisual } from '@/front/Components/Product/ProductVisual';
@@ -14,11 +15,38 @@ type OrderDetailItem = {
     product_name: string;
     category_name: string;
     variant_label: string;
+    product_url: string | null;
     product_image_url: string | null;
     unit_price: number;
     quantity: number;
     subtotal: number;
 };
+
+/**
+ * 遷移先があるときだけリンクにする。削除済み・非公開の商品はスナップショットの表示だけを残す。
+ * `<p>` の中でも使えるよう、リンクでない側も span で包む。
+ */
+function ItemLink({
+    href,
+    className,
+    'aria-label': ariaLabel,
+    children,
+}: {
+    href: string | null;
+    className?: string;
+    'aria-label'?: string;
+    children: ReactNode;
+}) {
+    if (href === null) {
+        return <span className={className}>{children}</span>;
+    }
+
+    return (
+        <Link href={href} className={className} aria-label={ariaLabel}>
+            {children}
+        </Link>
+    );
+}
 
 type Props = {
     order: {
@@ -116,15 +144,28 @@ export default function OrderShow({ order }: Props) {
                                 key={item.id}
                                 className="flex gap-3.5 border-b border-line py-3.5"
                             >
-                                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl">
+                                <ItemLink
+                                    href={item.product_url}
+                                    className="block h-16 w-16 shrink-0 overflow-hidden rounded-xl"
+                                    // 中身が装飾画像だけになるため、リンクの読み上げ名を補う
+                                    aria-label={item.product_name}
+                                >
                                     <ProductVisual
                                         imageUrl={item.product_image_url}
                                         categoryName={item.category_name}
                                     />
-                                </div>
+                                </ItemLink>
                                 <div className="min-w-0 flex-1">
                                     <p className="text-[13px] leading-[1.5] font-bold">
-                                        {item.product_name}
+                                        <ItemLink
+                                            href={item.product_url}
+                                            className={cn(
+                                                item.product_url !== null &&
+                                                    'hover:text-brand hover:underline',
+                                            )}
+                                        >
+                                            {item.product_name}
+                                        </ItemLink>
                                     </p>
                                     <p className="mt-1 text-[11.5px] text-ink2">
                                         {item.variant_label} ／{' '}

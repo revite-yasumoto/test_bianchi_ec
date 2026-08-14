@@ -66,14 +66,16 @@ class LoginRequest extends FormRequest
         /** @var User $user */
         $user = Auth::guard('web')->user();
 
-        if ($user->status === UserStatus::Suspended) {
+        if ($user->status !== UserStatus::Active) {
             Auth::guard('web')->logout();
 
             // 資格情報自体は正しいため、失敗の記録は残さない
             $user->update(['failed_login_attempts' => 0, 'locked_until' => null]);
 
             throw ValidationException::withMessages([
-                'email' => 'アカウントが利用停止中です。お問い合わせください。',
+                'email' => $user->status === UserStatus::Withdrawn
+                    ? 'このアカウントは退会済みです。'
+                    : 'アカウントが利用停止中です。お問い合わせください。',
             ]);
         }
 

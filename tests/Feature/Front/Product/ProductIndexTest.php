@@ -90,6 +90,78 @@ class ProductIndexTest extends TestCase
     }
 
     #[Test]
+    public function 価格帯で絞り込める(): void
+    {
+        $this->makeProduct(['name' => 'アパレル', 'price' => 9900]);
+        $this->makeProduct(['name' => '車体', 'price' => 398000]);
+
+        $this->get(route('products.index', ['price_range' => 'under_10000']))
+            ->assertInertia(fn ($page) => $page
+                ->has('products.data', 1)
+                ->where('products.data.0.name', 'アパレル')
+                ->where('filters.price_range', 'under_10000')
+                ->where('totalCount', 2)
+            );
+    }
+
+    #[Test]
+    public function 価格帯の境界は下限を含み上限を含まない(): void
+    {
+        $this->makeProduct(['name' => '下限ちょうど', 'price' => 10000]);
+        $this->makeProduct(['name' => '上限ちょうど', 'price' => 50000]);
+
+        $this->get(route('products.index', ['price_range' => 'from_10000']))
+            ->assertInertia(fn ($page) => $page
+                ->has('products.data', 1)
+                ->where('products.data.0.name', '下限ちょうど')
+            );
+    }
+
+    #[Test]
+    public function 上限のない価格帯は下限以上の商品が残る(): void
+    {
+        $this->makeProduct(['name' => '高額商品', 'price' => 980000]);
+        $this->makeProduct(['name' => '中価格帯', 'price' => 149999]);
+
+        $this->get(route('products.index', ['price_range' => 'from_150000']))
+            ->assertInertia(fn ($page) => $page
+                ->has('products.data', 1)
+                ->where('products.data.0.name', '高額商品')
+            );
+    }
+
+    #[Test]
+    public function カテゴリと価格帯を併用できる(): void
+    {
+        $wear = Category::factory()->create(['name' => 'アパレル']);
+        $bike = Category::factory()->create(['name' => 'ロードバイク']);
+        $this->makeProduct(['name' => '安いジャージ', 'price' => 9900, 'category_id' => $wear->id]);
+        $this->makeProduct(['name' => '高いジャージ', 'price' => 39900, 'category_id' => $wear->id]);
+        $this->makeProduct(['name' => '安い車体', 'price' => 9900, 'category_id' => $bike->id]);
+
+        $this->get(route('products.index', [
+            'category_id' => $wear->id,
+            'price_range' => 'under_10000',
+        ]))->assertInertia(fn ($page) => $page
+            ->has('products.data', 1)
+            ->where('products.data.0.name', '安いジャージ')
+        );
+    }
+
+    #[Test]
+    public function 存在しない価格帯の値は絞り込みに使われない(): void
+    {
+        $this->makeProduct(['price' => 9900]);
+        $this->makeProduct(['price' => 398000]);
+
+        $this->get(route('products.index', ['price_range' => 'unknown-range']))
+            ->assertInertia(fn ($page) => $page
+                ->has('products.data', 2)
+                ->where('filters.price_range', null)
+            );
+    }
+
+    #[Test]
     public function 在庫が0の商品は在庫切れとして返る(): void
     {
         $this->makeProduct(['name' => '在庫切れ商品'], quantity: 0);

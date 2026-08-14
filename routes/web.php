@@ -33,6 +33,7 @@ use App\Http\Controllers\Front\MyPage\OrderCancelController;
 use App\Http\Controllers\Front\MyPage\OrderHistoryController;
 use App\Http\Controllers\Front\MyPage\PasswordController;
 use App\Http\Controllers\Front\MyPage\ProfileController;
+use App\Http\Controllers\Front\MyPage\WithdrawalController;
 use App\Http\Controllers\Front\NewsController as FrontNewsController;
 use App\Http\Controllers\Front\NoticeController as FrontNoticeController;
 use App\Http\Controllers\Front\OrderController as FrontOrderController;
@@ -175,6 +176,8 @@ Route::middleware('auth')->group(function (): void {
     Route::get('mypage/addresses', [AddressListController::class, 'index'])->name('mypage.addresses');
     Route::get('mypage/profile', [ProfileController::class, 'edit'])->name('mypage.profile');
     Route::put('mypage/profile', [ProfileController::class, 'update'])->name('mypage.profile.update');
+    Route::get('mypage/withdrawal', [WithdrawalController::class, 'create'])->name('mypage.withdrawal');
+    Route::post('mypage/withdrawal', [WithdrawalController::class, 'store'])->name('mypage.withdrawal.store');
     Route::get('mypage/password', [PasswordController::class, 'edit'])->name('mypage.password');
     Route::put('mypage/password', [PasswordController::class, 'update'])->name('mypage.password.update');
 });
