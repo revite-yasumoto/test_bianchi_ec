@@ -4,6 +4,7 @@ export type ShippingSettingRowData = {
     id: number;
     prefecture_id: number;
     prefecture_name: string;
+    region: string;
     fee: number;
     delivery_days: number;
 };

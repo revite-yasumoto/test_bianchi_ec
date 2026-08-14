@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Admin\ShippingSetting;
 
+use App\Enums\Region;
 use App\Models\Admin;
 use Database\Seeders\PrefectureSeeder;
 use Database\Seeders\ShippingSettingSeeder;
@@ -61,5 +62,34 @@ class ShippingSettingIndexTest extends TestCase
     {
         $this->get(route('admin.shipping-settings.index'))
             ->assertRedirect(route('admin.login'));
+    }
+
+    #[Test]
+    public function 各行に所属する地方が付与される(): void
+    {
+        $admin = Admin::factory()->create();
+
+        $this->actingAs($admin, 'admin')
+            ->get(route('admin.shipping-settings.index'))
+            ->assertInertia(fn ($page) => $page
+                // 先頭は北海道、13番目は東京（関東）、末尾は沖縄（九州・沖縄）
+                ->where('settings.0.region', Region::Hokkaido->value)
+                ->where('settings.12.region', Region::Kanto->value)
+                ->where('settings.46.region', Region::Kyushu->value)
+            );
+    }
+
+    #[Test]
+    public function 地方の選択肢が八件渡される(): void
+    {
+        $admin = Admin::factory()->create();
+
+        $this->actingAs($admin, 'admin')
+            ->get(route('admin.shipping-settings.index'))
+            ->assertInertia(fn ($page) => $page
+                ->has('regions', 8)
+                ->where('regions.0.label', '北海道')
+                ->where('regions.7.label', '九州・沖縄')
+            );
     }
 }
