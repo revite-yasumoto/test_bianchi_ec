@@ -10,7 +10,7 @@
 | フロントエンド | React |
 | 言語（フロントエンド） | TypeScript（`.tsx`/`.ts`、`any`禁止） |
 | CSS / スタイリング | Tailwind CSS |
-| データベース（本番） | MySQL（バージョン未確認） |
+| データベース（本番） | MySQL 8.0 |
 | データベース（テスト用） | SQLite（in-memory。`phpunit.xml` 参照） |
 
 ### フォーマッター・静的解析コマンド
@@ -33,6 +33,7 @@ ESLintは未導入（`typescript-eslint` が本プロジェクトの `typescript
 - Laravel Controller は `App\Http\Controllers\Front` / `App\Http\Controllers\Admin` に分ける。
 - 管理画面の route 名は必ず `admin.` prefix を付ける。
 - Inertia のページ名はディレクトリを含めて指定する（例: `Inertia::render('front/Top')`）。
+- `admin` は認証の内側だけで動き利用者が特定される領域で、検索流入・不特定多数の利用を想定しない（PC専用）。`front` は不特定多数の利用と検索流入を想定する。
 
 ## ワークスペース操作ルール
 
@@ -44,7 +45,7 @@ ESLintは未導入（`typescript-eslint` が本プロジェクトの `typescript
 
 - プロジェクトディレクトリ外のファイル・フォルダへのアクセス・編集
   - 例外1: `~/.claude/plugins/` 配下（プラグイン実体・マーケットプレイス実体）の**読み取り**。メタスキル・オーケストレーターがスキル定義・CHANGELOG・雛形を参照するために必要。同ディレクトリへの書き込みはいずれの例外にも含めない
-  - 例外2: `~/.claude/` 配下のファイルの読み書きのうち、ユーザーが起動したスキルが自身の定義で対象と手順を明記しているもの。対象の実パス・保護措置は当該スキルを単一情報源とする。依頼から自分で導いたアクセスは含めない
+  - 例外2: **エージェント自身の動作設定に属するファイル**（`~/.claude/` 配下、git のグローバル設定・除外ファイル等）の読み書きのうち、ユーザーが起動したスキルが自身の定義で対象と手順を明記しているもの。対象の実パス・保護措置は当該スキルを単一情報源とする。案件のソース・ユーザーの個人ファイルは、スキルが対象と明記していても含めない。依頼から自分で導いたアクセスは含めない
   - `claude plugin install|enable|disable` によるプラグイン状態の変更（マシン側の install と `.claude/settings.json` の案件別有効化）は、例外1・例外2にかかわらず「ユーザー承認が必要な操作」として扱う
 
 ### ユーザー承認が必要な操作
@@ -72,7 +73,7 @@ php artisan migrate:rollback
 
 ## 仕様書（docs/*.md）とソースコードの同期ルール
 
-本プロジェクトでは `docs/` 配下の `.md` ファイル（仕様書）がソースコードの正確な反映であることを維持する（記録用のディレクトリを除く。「同期対象外の記録ディレクトリ」参照）。コードを変更したら対応するmdも同時に更新する。同期の手順・乖離の判断基準は `core:specification-writer`（同期モード）に従う。既存の仕様書はまだ整備されていないため、本ルールは新規に作成する仕様書から適用する。
+本プロジェクトでは `docs/` 配下の `.md` ファイル（仕様書）がソースコードの正確な反映であることを維持する（記録用のディレクトリを除く。「同期対象外の記録ディレクトリ」参照）。コードを変更したら対応するmdも同時に更新する。同期の手順・乖離の判断基準は `core:specification-writer`（同期モード）に従う。
 
 ### 参照ルール（読む側）
 
@@ -120,11 +121,10 @@ php artisan migrate:rollback
 | 外部API連携・非同期通信 | `core:api-integration` |
 | 実装完了後（共通） | `core:code-styling` |
 | バックエンドテスト | `laravel-set:testing-laravel` |
-| E2Eテスト（実施判定基準はスキル内に定義） | `playwright-e2e:playwright-e2e` |
 | 画面・機能定義書の作成 | `core:specification-writer` |
 | 人間が実物を操作して確認する手順の作成 | `core:verification-planner` |
 
-E2E基盤（Playwright）は本プロジェクトに未導入。導入前提のTODO行として表に置いているが、導入が完了するまで本行は適用しない。
+E2E基盤（Playwright）は本プロジェクトに未導入のため、E2Eテストの行は置かない。導入した時点で `playwright-e2e:playwright-e2e` の行を追加する。
 
 各スキルは、表の対象に該当する作業を行う**前または最中**に呼び、チェックリストを適用してから完了を報告する（適用の時点は `core:implement` の Step 順に従う）。
 
@@ -164,7 +164,7 @@ E2E基盤（Playwright）は本プロジェクトに未導入。導入前提のT
 
 | プラグイン | バージョン |
 |---|---|
-| core@revite-skills | 1.23.0 |
-| laravel-set@revite-skills | 1.9.0 |
+| core@revite-skills | 1.28.0 |
+| laravel-set@revite-skills | 1.10.0 |
 | inertia-react@revite-skills | 1.3.2 |
 | db-mysql@revite-skills | 1.0.1 |
