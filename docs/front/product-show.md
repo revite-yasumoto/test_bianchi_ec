@@ -58,7 +58,7 @@
 - 在庫切れの商品は「カートに入れる」を「在庫切れ」に変え、灰色で押せない状態にする。
 - 画像が未登録の商品は、メイン画像の枠にカテゴリ相応のシルエットと商品識別コードを出す（[docs/front/common-layout.md](common-layout.md) の `ProductVisual` が正本）。サムネイルは登録済みの枚数分のみ表示し、1枚以下のときは表示しない。
 - 「送料・お支払い方法・発送日数について」は同一画面上のモーダルを開く（`Escape`・背景クリックで閉じる）。
-- 「この商品について問い合わせる」は `/contact?product_name=<商品名>` へ遷移する（[docs/front/contact.md](contact.md)）。
+- 「この商品について問い合わせる」は `/contact?product_id=<商品ID>` へ遷移する。問い合わせ側は商品IDから商品名を引き直す（[docs/front/contact.md](contact.md)）。
 - 送料モーダルの末尾から買い物ガイド（`guide`）へ遷移できる（[docs/front/static-pages.md](static-pages.md)）。
 
 ## インターフェース ＆ データロジック

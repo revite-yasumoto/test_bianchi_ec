@@ -63,7 +63,7 @@ Laravel の Markdown メール（`<x-mail::message>`）を使い、標準レイ�
 **2. お問い合わせ受付通知（管理者宛）**
 
 - 件名: `【<サイト名>】お問い合わせを受け付けました`
-- 本文: 受付日時・送信者名・メールアドレス・対象商品・本文
+- 本文: 受付日時・送信者名・メールアドレス・対象商品・本文、管理画面のお問い合わせ詳細へのリンク
 
 **3. お問い合わせ控え（送信者宛）**
 
@@ -152,6 +152,7 @@ Laravel の Markdown メール（`<x-mail::message>`）を使い、標準レイ�
 - [docs/front/checkout.md](front/checkout.md) — 購入手続き（注文確定の処理）
 - [docs/front/order-complete.md](front/order-complete.md) — 注文完了（注文受付メールと同じ内容を画面にも表示する）
 - [docs/admin/order-show.md](admin/order-show.md) — 管理画面の注文詳細（注文通知メールのリンク先）
+- [docs/admin/contact.md](admin/contact.md) — 管理画面のお問い合わせ詳細（受付通知メールのリンク先）
 - [docs/2_database.md](2_database.md) — テーブル定義の正本
 
 ## ソースファイル
@@ -199,6 +200,7 @@ Laravel の Markdown メール（`<x-mail::message>`）を使い、標準レイ�
 - 送信に失敗しても例外が伝播せずログに残る: 同上（`送信に失敗しても例外は伝播せずログに残る`）
 - 8通すべてが例外なく描画でき、記載項目とリンクが揃う: `tests/Feature/Mail/MailRenderingTest.php`（各メールの描画。支払方法による振込案内・代引き手数料の出し分け、送り状番号の有無を含む）
 - 自由記述が Markdown 記法として解釈されず、改行が保たれる: 同上（`問い合わせ本文のリンク記法は装飾に変換されず改行が保たれる`）
+- お問い合わせ受付通知に管理画面のお問い合わせ詳細へのリンクが載る: `tests/Feature/Mail/MailRenderingTest.php` に実装時に追加するFeatureテスト
 - 会員登録で登録完了メールが会員宛に送られる: `tests/Feature/Front/Auth/RegisterTest.php`（`会員登録すると登録完了メールが送られる`・`登録に失敗したときはメールが送られない`）
 - お問い合わせで管理者への通知と送信者への控えが送られる: `tests/Feature/Front/Contact/ContactStoreTest.php`（`送信すると管理者への通知と送信者への控えが送られる`・`管理者の宛先が未設定でも送信者への控えは送られる`）
 - 注文の確定で会員への受付メールと管理者への通知が送られ、送信に失敗しても注文が成立する: `tests/Feature/Front/Order/PlaceOrderTest.php`（`注文を確定すると会員と管理者にメールが送られる`・`メールの送信に失敗しても注文は成立する`・`注文が失敗したときはメールが送られない`）

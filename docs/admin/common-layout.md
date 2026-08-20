@@ -94,7 +94,7 @@ type SidebarMenuItem = {
 };
 ```
 
-`SIDEBAR_MENU` に全10メニュー分の項目を定義する（グループを除く実項目数は15）。
+`SIDEBAR_MENU` に全11メニュー分の項目を定義する（グループを除く実項目数は16）。
 
 | 表示名 | 子項目 | `routeName` |
 |---|---|---|
@@ -107,6 +107,7 @@ type SidebarMenuItem = {
 | EC基本設定 | - | `admin.ec-settings.edit` |
 | 新着ニュース管理 | - | `admin.news.index` |
 | 重要なお知らせ管理 | - | `admin.notices.index` |
+| お問い合わせ管理 | - | `admin.contacts.index` |
 
 各項目のルート名は、対応する単位がその名前でルートを実装することを前提に本書が定めたもの。単位04以降で異なる名前を採用する場合は、実装側で本テーブルと `SidebarMenu.ts` の両方を更新する。
 
@@ -192,6 +193,7 @@ type ConfirmDialogProps = {
 - [docs/front/common-layout.md](../front/common-layout.md) — フロント共通レイアウトの正本。フォント構成と共通UIコンポーネント（`resources/js/shared/`）はこちらが正本
 - [docs/admin/category.md](category.md) — `MasterListCard` の利用画面
 - [docs/admin/spec-option.md](spec-option.md) — `MasterListCard` の利用画面
+- [docs/admin/contact.md](contact.md) — お問い合わせ管理（サイドメニューに追加した11番目のメニュー）
 - [docs/1_system_overview.md](../1_system_overview.md) — ブランド表記・技術構成の前提
 
 ## ソースファイル
@@ -214,7 +216,7 @@ type ConfirmDialogProps = {
 
 本機能を担保する自動テストは存在しない（フロントエンドのユニットテスト基盤は本プロジェクトに未導入）。以下は型チェック（`npx tsc --noEmit`）と目視確認で担保する。
 
-- サイドバーの全10メニューが表示され、未実装項目は非活性表示になる: 目視確認
+- サイドバーの全11メニューが表示され、未実装項目は非活性表示になる: 目視確認
 - 実装済み項目（現時点ではダッシュボードを除くサイドメニューの全項目）へのリンクが機能する: 目視確認
 - グループの開閉、開閉時のデフォルト状態: 目視確認
 - ログアウト確認モーダルの表示・キャンセル・`Escape`キーでの閉じる動作: 目視確認
