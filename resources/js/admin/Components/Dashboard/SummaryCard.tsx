@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import { cn } from '@/lib/utils';
 
 type SummaryCardProps = {
@@ -5,7 +6,11 @@ type SummaryCardProps = {
     value: string;
     note: string;
     tone?: 'ink' | 'brand' | 'danger';
+    /** 指定するとカード全体が該当画面への導線になる */
+    href?: string;
 };
+
+const CARD_CLASS = 'rounded-xl border border-admin-line bg-white px-5 py-4';
 
 const VALUE_TONE_CLASS = {
     ink: 'text-admin-ink',
@@ -18,9 +23,10 @@ export function SummaryCard({
     value,
     note,
     tone = 'ink',
+    href,
 }: SummaryCardProps) {
-    return (
-        <div className="rounded-xl border border-admin-line bg-white px-5 py-4">
+    const content = (
+        <>
             <p className="text-[11.5px] font-bold text-admin-ink-muted">
                 {label}
             </p>
@@ -33,6 +39,16 @@ export function SummaryCard({
                 {value}
             </p>
             <p className="mt-1.5 text-[11px] text-admin-ink-muted">{note}</p>
-        </div>
+        </>
+    );
+
+    if (href === undefined) {
+        return <div className={CARD_CLASS}>{content}</div>;
+    }
+
+    return (
+        <Link href={href} className={cn(CARD_CLASS, 'block')}>
+            {content}
+        </Link>
     );
 }

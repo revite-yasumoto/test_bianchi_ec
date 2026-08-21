@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Admin\Dashboard;
 
+use App\Enums\ContactStatus;
 use App\Enums\OrderStatus;
+use App\Models\Contact;
 use App\Models\Order;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,6 +30,7 @@ class DashboardSummaryService
      *     month_sales_note: string,
      *     new_order_count: int,
      *     awaiting_payment_count: int,
+     *     unhandled_contact_count: int,
      * }
      */
     public function summary(): array
@@ -47,6 +50,9 @@ class DashboardSummaryService
             'new_order_count' => Order::query()->whereDate('ordered_at', $today)->count(),
             'awaiting_payment_count' => Order::query()
                 ->where('status', OrderStatus::AwaitingPayment->value)
+                ->count(),
+            'unhandled_contact_count' => Contact::query()
+                ->where('status', ContactStatus::Unhandled->value)
                 ->count(),
         ];
     }

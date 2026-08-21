@@ -322,11 +322,13 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 | カラム | 型 | 制約 | 内容 |
 |---|---|---|---|
 | id | bigIncrements | PK | |
+| contact_number | string(20) | unique | 問い合わせ番号（`INQ-YYMM-NNNN`）。送信時に採番する |
 | user_id | foreignId | nullable, → `users.id` set null | ログイン中の会員 |
 | product_id | foreignId | nullable, → `products.id` set null | 商品詳細から遷移したときの対象商品。集計・絞り込みのキー |
 | name | string(100) | | |
 | email | string(191) | | |
 | product_name | string(255) | nullable | 対象商品の名称。`product_id` があるときは送信時点の商品名、無いときは手入力値 |
+| product_code | string(50) | nullable | 対象商品の商品識別コード。`product_id` があるときのみ記録する |
 | body | text | | |
 | status | string(20) | default `unhandled` | 対応ステータス（`ContactStatus`） |
 | admin_note | text | nullable | 管理者の対応メモ |
@@ -335,7 +337,9 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 
 索引: `index(status, created_at)`（管理画面のステータス絞り込みと受信日時降順の並びに対応）
 
-`product_name` は `product_id` と対で保持する。商品が削除されると `product_id` は `null` になるが、送信時点の商品名は残る。値の決定規則は [docs/front/contact.md](front/contact.md) が正本。
+`product_name` と `product_code` は `product_id` と対で保持する。商品が削除されると `product_id` は `null` になるが、送信時点の商品名と商品識別コードは残る。**`product_code` があって `product_id` が `null` の行は「商品詳細から送信された後に商品が削除された」ものと判定でき、`product_code` も `null` の行は商品名を手入力したものと区別できる。** 値の決定規則は [docs/front/contact.md](front/contact.md) が正本。
+
+`contact_number` の採番規則は [docs/front/contact.md](front/contact.md) が正本。
 
 ## Enum一覧（`app/Enums/`）
 

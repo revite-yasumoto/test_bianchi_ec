@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
-type Column<T> = {
+export type Column<T> = {
     key: string;
     header: string;
     render: (row: T) => ReactNode;

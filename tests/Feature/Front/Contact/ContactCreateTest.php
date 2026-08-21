@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Front\Contact;
 
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
@@ -23,6 +24,7 @@ class ContactCreateTest extends TestCase
                 ->where('defaults.name', '')
                 ->where('defaults.email', '')
                 ->where('defaults.product_name', '')
+                ->where('product', null)
             );
     }
 
@@ -43,28 +45,47 @@ class ContactCreateTest extends TestCase
     }
 
     #[Test]
-    public function クエリの商品名が対象商品の初期値に入る(): void
+    public function クエリの商品の指定で公開商品を引き当てる(): void
     {
-        $this->get(route('contact', ['product_name' => '架空ジャージ 2026']))
+        $product = Product::factory()->create([
+            'name' => '架空ジャージ 2026',
+            'is_published' => true,
+        ]);
+
+        $this->get(route('contact', ['product_id' => $product->id]))
             ->assertInertia(fn ($page) => $page
-                ->where('defaults.product_name', '架空ジャージ 2026')
+                ->where('product.id', $product->id)
+                ->where('product.name', '架空ジャージ 2026')
             );
     }
 
     #[Test]
-    public function 上限を超える商品名は切り詰められる(): void
+    public function 非公開商品を指定したときは対象商品なしとして開ける(): void
     {
-        $this->get(route('contact', ['product_name' => str_repeat('あ', 300)]))
-            ->assertInertia(fn ($page) => $page
-                ->where('defaults.product_name', str_repeat('あ', 255))
-            );
-    }
+        $product = Product::factory()->create(['is_published' => false]);
 
-    #[Test]
-    public function 商品名に文字列以外を渡してもフォームを開ける(): void
-    {
-        $this->get('/contact?product_name[]=a&product_name[]=b')
+        $this->get(route('contact', ['product_id' => $product->id]))
             ->assertOk()
-            ->assertInertia(fn ($page) => $page->where('defaults.product_name', ''));
+            ->assertInertia(fn ($page) => $page->where('product', null));
+    }
+
+    #[Test]
+    public function 存在しない商品を指定したときは対象商品なしとして開ける(): void
+    {
+        $this->get(route('contact', ['product_id' => 999999]))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->where('product', null));
+    }
+
+    #[Test]
+    public function 商品の指定に文字列や配列を渡してもフォームを開ける(): void
+    {
+        $this->get('/contact?product_id=abc')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->where('product', null));
+
+        $this->get('/contact?product_id[]=1&product_id[]=2')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->where('product', null));
     }
 }

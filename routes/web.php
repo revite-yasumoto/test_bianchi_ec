@@ -4,6 +4,8 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminUserCsvController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AdminAuthenticatedSessionController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Admin\ContactCsvController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EcSettingController;
 use App\Http\Controllers\Admin\MemberController;
@@ -54,7 +56,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-        // CSVのルートは `{user}` `{admin}` `{product}` として解釈されないよう、各リソースより先に定義する
+        // CSVのルートは `{user}` `{admin}` `{product}` `{contact}` として解釈されないよう、各リソースより先に定義する
         Route::post('members/csv/import', [MemberCsvController::class, 'import'])->name('members.csv.import');
         Route::get('members/csv/export', [MemberCsvController::class, 'export'])->name('members.csv.export');
         Route::post('admins/csv/import', [AdminUserCsvController::class, 'import'])->name('admins.csv.import');
@@ -63,6 +65,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('products/csv/import', [ProductCsvController::class, 'import'])->name('products.csv.import');
         Route::get('products/csv/export', [ProductCsvController::class, 'export'])->name('products.csv.export');
         Route::get('products/csv/template', [ProductCsvController::class, 'template'])->name('products.csv.template');
+        Route::get('contacts/csv/export', [ContactCsvController::class, 'export'])->name('contacts.csv.export');
 
         Route::get('members', [MemberController::class, 'index'])->name('members.index');
         Route::get('members/{user}', [MemberController::class, 'show'])->name('members.show');
@@ -75,6 +78,8 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::put('orders/{order}/status', [OrderStatusController::class, 'update'])->name('orders.status.update');
 
         Route::resource('products', ProductController::class)->except(['show']);
+
+        Route::resource('contacts', AdminContactController::class)->only(['index', 'show', 'update']);
 
         // bulk は {stock} にマッチしてしまうため、個別更新より先に定義する
         Route::put('stocks/bulk', [StockController::class, 'bulkUpdate'])->name('stocks.bulk-update');

@@ -25,6 +25,9 @@ use Tests\TestCase;
  * 送信時の例外は NotificationMailer が握り潰すため、テンプレートが壊れても本番では
  * ログにしか現れない。送信をモックせず実際に描画することで、変数名の誤り・遅延ロード
  * 違反・ルート名の変更をここで検出する。
+ *
+ * 問い合わせは Factory で用意する。送信の経路（`POST /contact`）は
+ * `Tests\Feature\Front\Contact\ContactStoreTest` が検証している。
  */
 class MailRenderingTest extends TestCase
 {
@@ -33,6 +36,9 @@ class MailRenderingTest extends TestCase
     private function orderWithItem(): Order
     {
         $order = Order::factory()->create([
+            // 氏名を固定する。Factory のランダム値ではアポストロフィを含む名前が生成され、
+            // HTMLエスケープの有無で照合が不安定になる
+            'customer_name' => '架空 太郎',
             'payment_method' => PaymentMethod::BankTransfer,
             'bank_transfer_note' => "架空銀行 架空支店\n普通 0000000",
         ]);
@@ -108,6 +114,7 @@ class MailRenderingTest extends TestCase
     public function 管理者宛のお問い合わせ通知が描画できる(): void
     {
         $contact = Contact::factory()->create([
+            'contact_number' => 'INQ-2608-0121',
             'name' => '架空 太郎',
             'email' => 'taro@example.test',
             'body' => '在庫の入荷予定を教えてください。',
@@ -118,12 +125,16 @@ class MailRenderingTest extends TestCase
         $mailable->assertSeeInHtml('架空 太郎');
         $mailable->assertSeeInHtml('taro@example.test');
         $mailable->assertSeeInHtml('在庫の入荷予定を教えてください。');
+        $mailable->assertSeeInHtml('INQ-2608-0121');
+        $mailable->assertSeeInHtml(route('admin.contacts.show', $contact));
+        $mailable->assertHasSubject('【'.config('app.name').'】お問い合わせを受け付けました（INQ-2608-0121）');
     }
 
     #[Test]
     public function お問い合わせの控えが描画できる(): void
     {
         $contact = Contact::factory()->create([
+            'contact_number' => 'INQ-2608-0121',
             'name' => '架空 太郎',
             'body' => '在庫の入荷予定を教えてください。',
         ]);
@@ -132,6 +143,25 @@ class MailRenderingTest extends TestCase
 
         $mailable->assertSeeInHtml('架空 太郎');
         $mailable->assertSeeInHtml('在庫の入荷予定を教えてください。');
+        $mailable->assertSeeInHtml('INQ-2608-0121');
+        $mailable->assertHasSubject('【'.config('app.name').'】お問い合わせを承りました（INQ-2608-0121）');
+    }
+
+    #[Test]
+    public function 対象商品のある問い合わせでは両メールに商品名が載る(): void
+    {
+        $contact = Contact::factory()->create([
+            'contact_number' => 'INQ-2608-0122',
+            'name' => '架空 太郎',
+            'product_name' => '架空ジャージ 2026',
+            'body' => 'サイズ展開を教えてください。',
+        ]);
+
+        $received = new ContactReceived($contact);
+        $received->assertSeeInHtml('架空ジャージ 2026');
+
+        $acknowledgement = new ContactAcknowledgement($contact);
+        $acknowledgement->assertSeeInHtml('架空ジャージ 2026');
     }
 
     #[Test]

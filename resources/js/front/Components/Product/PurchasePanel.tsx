@@ -161,7 +161,7 @@ export function PurchasePanel({
                     送料・お支払い方法・発送日数について →
                 </button>
                 <Link
-                    href={route('contact', { product_name: product.name })}
+                    href={route('contact', { product_id: product.id })}
                     className="text-left text-[13px] font-semibold text-brand"
                 >
                     この商品について問い合わせる →

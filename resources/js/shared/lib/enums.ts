@@ -42,3 +42,19 @@ export const OrderStatus = {
 } as const;
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
+
+export const ContactStatus = {
+    Unhandled: 'unhandled',
+    InProgress: 'in_progress',
+    Handled: 'handled',
+} as const;
+
+export type ContactStatus = (typeof ContactStatus)[keyof typeof ContactStatus];
+
+/** お問い合わせ管理の一覧タブ。`product_id` の有無で振り分ける */
+export const ContactTab = {
+    General: 'general',
+    Product: 'product',
+} as const;
+
+export type ContactTab = (typeof ContactTab)[keyof typeof ContactTab];

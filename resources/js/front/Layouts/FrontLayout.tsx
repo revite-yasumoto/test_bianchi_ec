@@ -34,12 +34,15 @@ export function useCartDrawer(): CartDrawerContextValue {
 type FrontLayoutProps = {
     title: string;
     description?: string;
+    /** 同一内容が複数URLで到達できる画面で、正規URLを示す */
+    canonical?: string;
     children: ReactNode;
 };
 
 export function FrontLayout({
     title,
     description,
+    canonical,
     children,
 }: FrontLayoutProps) {
     const [isCartOpen, setIsCartOpen] = useState(false);
@@ -54,6 +57,7 @@ export function FrontLayout({
                 {description ? (
                     <meta name="description" content={description} />
                 ) : null}
+                {canonical ? <link rel="canonical" href={canonical} /> : null}
             </Head>
             <div className="flex min-h-dvh flex-col bg-white">
                 <Header onOpenCart={openCart} />

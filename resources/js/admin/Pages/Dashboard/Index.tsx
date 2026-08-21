@@ -8,6 +8,7 @@ import {
     type SalesChartBar,
 } from '@/admin/Components/Dashboard/SalesBarChart';
 import { SummaryCard } from '@/admin/Components/Dashboard/SummaryCard';
+import { ContactStatus } from '@/shared/lib/enums';
 import { yen } from '@/shared/lib/yen';
 
 type Props = {
@@ -18,6 +19,7 @@ type Props = {
         month_sales_note: string;
         new_order_count: number;
         awaiting_payment_count: number;
+        unhandled_contact_count: number;
     };
     chart: SalesChartBar[];
     latestOrders: LatestOrderRow[];
@@ -52,6 +54,15 @@ export default function Index({ summary, chart, latestOrders }: Props) {
                     value={`${summary.awaiting_payment_count}件`}
                     note="要確認"
                     tone="danger"
+                />
+                <SummaryCard
+                    label="未対応のお問い合わせ"
+                    value={`${summary.unhandled_contact_count}件`}
+                    note="要対応"
+                    tone="danger"
+                    href={route('admin.contacts.index', {
+                        status: ContactStatus.Unhandled,
+                    })}
                 />
             </div>
 
