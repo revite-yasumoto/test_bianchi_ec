@@ -94,6 +94,22 @@ class ContactStoreTest extends TestCase
     }
 
     #[Test]
+    public function 未入力のエラーメッセージが日本語で返る(): void
+    {
+        $this->post(route('contact.store'), [])
+            ->assertSessionHasErrors(['name' => 'お名前を入力してください。']);
+    }
+
+    #[Test]
+    public function 文字数不足のエラーメッセージが日本語で返る(): void
+    {
+        $this->post(route('contact.store'), $this->payload(['body' => str_repeat('あ', 9)]))
+            ->assertSessionHasErrors([
+                'body' => 'お問い合わせ内容は10文字以上で入力してください。',
+            ]);
+    }
+
+    #[Test]
     public function 本文が九文字なら送信されない(): void
     {
         $this->post(route('contact.store'), $this->payload(['body' => str_repeat('あ', 9)]))

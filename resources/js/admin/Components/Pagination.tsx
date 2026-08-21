@@ -5,19 +5,6 @@ type PaginationProps = {
     links: { url: string | null; label: string; active: boolean }[];
 };
 
-/** Laravel が返す `&laquo; Previous` 等のラベルを日本語に置き換える */
-function formatLabel(label: string): string {
-    if (label.includes('Previous')) {
-        return '前へ';
-    }
-
-    if (label.includes('Next')) {
-        return '次へ';
-    }
-
-    return label;
-}
-
 export function Pagination({ links }: PaginationProps) {
     if (links.length <= 3) {
         return null;
@@ -41,7 +28,7 @@ export function Pagination({ links }: PaginationProps) {
                             aria-disabled="true"
                             className={className}
                         >
-                            {formatLabel(link.label)}
+                            {link.label}
                         </span>
                     );
                 }
@@ -54,7 +41,7 @@ export function Pagination({ links }: PaginationProps) {
                         preserveScroll
                         className={className}
                     >
-                        {formatLabel(link.label)}
+                        {link.label}
                     </Link>
                 );
             })}

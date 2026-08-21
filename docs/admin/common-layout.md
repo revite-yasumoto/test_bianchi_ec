@@ -67,6 +67,8 @@
 
 ボタン・プルダウン・チェックボックス／ラジオのラベルのホバー時のカーソル（`resources/css/app.css` `@layer base`）はフロントと共通で、[docs/front/common-layout.md](../front/common-layout.md) が正本。
 
+バリデーションのエラーメッセージ・ページ送りのラベルの日本語化（`lang/ja/`）もフロントと共通で、[docs/front/common-layout.md](../front/common-layout.md) が正本。
+
 ### `AdminLayout`（`resources/js/admin/Layouts/AdminLayout.tsx`）
 
 ```ts
@@ -133,7 +135,7 @@ type FilterBarProps = { resultCount: number; totalCount?: number; onClear: () =>
 type PaginationProps = { links: { url: string | null; label: string; active: boolean }[] };
 ```
 
-Laravel の `paginate()` が返す `links` をそのまま渡す。1ページに収まる場合（リンクが3件以下）は何も描画しない。`&laquo; Previous` 等の既定ラベルは「前へ」「次へ」に置き換える。
+Laravel の `paginate()` が返す `links` をそのまま渡す。1ページに収まる場合（リンクが3件以下）は何も描画しない。`label` は言語ファイルで日本語化済みのため、表示側で文言を置き換えない（[docs/front/common-layout.md](../front/common-layout.md) が正本）。
 
 ### `DataTable`（`resources/js/admin/Components/DataTable.tsx`）
 
@@ -213,6 +215,8 @@ type ConfirmDialogProps = {
 | Component | `resources/js/admin/Components/Pagination.tsx` |
 | 型 | `resources/js/types/global.d.ts` |
 | スタイル | `resources/css/app.css` |
+| 言語 | `lang/ja/validation.php` |
+| 言語 | `lang/ja/pagination.php` |
 
 ## 受け入れ条件
 
