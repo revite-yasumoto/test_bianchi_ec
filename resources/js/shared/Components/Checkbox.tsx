@@ -19,7 +19,10 @@ export function Checkbox({
 }: CheckboxProps) {
     return (
         <div className={className}>
-            <label htmlFor={id} className="flex items-start gap-3">
+            <label
+                htmlFor={id}
+                className="flex cursor-pointer items-start gap-3"
+            >
                 <input
                     id={id}
                     type="checkbox"

@@ -6,7 +6,6 @@ import { EmptyState } from '@/shared/Components/EmptyState';
 type NoticeArticle = {
     id: number;
     title: string;
-    body: string;
     period_start: string;
     period_start_iso: string;
     period_end: string;
@@ -34,7 +33,7 @@ export default function Index({ notices }: Props) {
                             articles={notices.data.map((notice) => ({
                                 id: notice.id,
                                 title: notice.title,
-                                body: notice.body,
+                                href: route('notices.show', [notice.id]),
                                 meta: (
                                     <>
                                         <span className="shrink-0 rounded bg-coral px-2 py-0.5 font-mono text-[10px] tracking-[.1em] text-white">

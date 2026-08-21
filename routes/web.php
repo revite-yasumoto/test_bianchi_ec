@@ -110,7 +110,9 @@ Route::get('products', [FrontProductController::class, 'index'])->name('products
 Route::get('products/{product}', [FrontProductController::class, 'show'])->name('products.show');
 
 Route::get('news', [FrontNewsController::class, 'index'])->name('news.index');
+Route::get('news/{news}', [FrontNewsController::class, 'show'])->name('news.show');
 Route::get('notices', [FrontNoticeController::class, 'index'])->name('notices.index');
+Route::get('notices/{notice}', [FrontNoticeController::class, 'show'])->name('notices.show');
 
 Route::get('guide', [StaticPageController::class, 'guide'])->name('guide');
 Route::get('legal/tokushoho', [StaticPageController::class, 'tokushoho'])->name('legal.tokushoho');

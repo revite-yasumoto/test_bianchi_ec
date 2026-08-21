@@ -36,7 +36,7 @@ export function NewsSection({ news }: NewsSectionProps) {
                 {news.map((row) => (
                     <li key={row.id} className="border-b border-line">
                         <Link
-                            href={route('news.index')}
+                            href={route('news.show', [row.id])}
                             className="flex flex-wrap items-center gap-3.5 py-3.5"
                         >
                             <time

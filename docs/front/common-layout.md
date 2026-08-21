@@ -141,6 +141,21 @@ TONE.info      // 新商品・受付中           { fg: '#2F6F86', bg: '#E7F0F4'
 TONE.warning   // お知らせ                { fg: '#B0521F', bg: '#FDF0E2' }
 ```
 
+### 操作可能要素のカーソル（`resources/css/app.css` `@layer base`）
+
+フロント・管理画面の全ページに適用される共通の指定であり、本書を正本とする。
+
+Tailwind CSS v4 の Preflight はv3と違いボタンへ `cursor: pointer` を当てないため、指定を置かないとリンク（`a`）だけがポインタに変わり、ボタン類は変わらないという差が出る。押せる・選べることが分かるよう、`resources/css/app.css` の `@layer base` で次の要素をポインタにする。
+
+| 対象セレクタ | 対象の例 |
+|---|---|
+| `button:not(:disabled)` | ボタン・タブ・規格の選択肢・ページ送り |
+| `select:not(:disabled)` | 絞り込み・都道府県などのプルダウン |
+
+- チェックボックス・ラジオのラベル（`label`）は `:has()` セレクタでの一括指定を避け、ラベルを描画する各コンポーネント側で `cursor-pointer` を当てる。
+- 非活性の要素はポインタにしない。押せないことを示す要素（`disabled` のボタン、`aria-disabled="true"` の `span`）には `cursor-not-allowed` を当てる。
+- リンク（`a`・Inertia の `Link`）はブラウザ既定でポインタになるため、個別の指定を置かない。
+
 ### `FrontLayout`（`resources/js/front/Layouts/FrontLayout.tsx`）
 
 ```ts
@@ -388,5 +403,6 @@ type EmptyStateProps = { message: string; className?: string };
 - 長い氏名がヘッダーで省略表示になり、`title` 属性に全文が入る: 自動テストなし。目視確認で担保する
 - カートドロワーの開閉（背景クリック・`Escape`キー・閉じるボタン）とフォーカス復帰: 自動テストなし。目視確認で担保する
 - トーストの表示位置・配色と自動消去（成功2.2秒／エラー5秒）: 自動テストなし。目視確認で担保する
+- ボタン・プルダウン・チェックボックス／ラジオのラベルにホバーするとポインタになり、非活性の要素はポインタにならない（フロント・管理画面とも）: 自動テストなし。目視確認で担保する
 - 3書体（`Schibsted Grotesk` / `Zen Kaku Gothic New` / `Space Mono`）が適用される: 自動テストなし。目視確認で担保する
 - Props型定義の整合性: `npx tsc --noEmit`

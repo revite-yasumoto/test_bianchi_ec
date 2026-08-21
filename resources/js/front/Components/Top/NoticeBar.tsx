@@ -8,7 +8,7 @@ type NoticeBarProps = {
 export function NoticeBar({ notice }: NoticeBarProps) {
     return (
         <Link
-            href={route('notices.index')}
+            href={route('notices.show', [notice.id])}
             className="flex w-full items-center gap-3 border-b border-notice-line bg-notice-bg px-5 py-2.5 text-left"
         >
             <span className="shrink-0 rounded bg-coral px-2 py-0.5 font-mono text-[10px] tracking-[.1em] text-white">

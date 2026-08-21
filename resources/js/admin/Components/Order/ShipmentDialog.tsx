@@ -45,7 +45,7 @@ export function ShipmentDialog({
 
             <label
                 htmlFor="notifies_customer"
-                className="mt-4 flex items-center gap-2 text-[12.5px] text-admin-ink"
+                className="mt-4 flex cursor-pointer items-center gap-2 text-[12.5px] text-admin-ink"
             >
                 <input
                     id="notifies_customer"

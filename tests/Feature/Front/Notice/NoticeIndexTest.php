@@ -112,6 +112,15 @@ class NoticeIndexTest extends TestCase
     }
 
     #[Test]
+    public function 本文は一覧に渡されない(): void
+    {
+        $this->createNotice(['body' => '一覧には出さない本文']);
+
+        $this->get(route('notices.index'))
+            ->assertInertia(fn ($page) => $page->missing('notices.data.0.body'));
+    }
+
+    #[Test]
     public function 掲載中のお知らせが無くても閲覧できる(): void
     {
         $this->get(route('notices.index'))

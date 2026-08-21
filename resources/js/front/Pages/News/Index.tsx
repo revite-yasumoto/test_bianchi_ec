@@ -12,7 +12,6 @@ type NewsArticle = {
     category: string;
     category_tone: Tone;
     title: string;
-    body: string;
 };
 
 type Props = {
@@ -36,7 +35,7 @@ export default function Index({ news }: Props) {
                             articles={news.data.map((article) => ({
                                 id: article.id,
                                 title: article.title,
-                                body: article.body,
+                                href: route('news.show', [article.id]),
                                 meta: (
                                     <>
                                         <time

@@ -113,7 +113,7 @@ export default function Login() {
 
                     <label
                         htmlFor="remember"
-                        className="mt-4 flex items-center gap-2 text-xs text-admin-ink-muted"
+                        className="mt-4 flex cursor-pointer items-center gap-2 text-xs text-admin-ink-muted"
                     >
                         <input
                             id="remember"

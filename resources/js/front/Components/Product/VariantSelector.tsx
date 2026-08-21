@@ -36,7 +36,7 @@ export function VariantSelector({
                                 ? 'border-brand bg-[#E7F0F4]'
                                 : 'border-line bg-white',
                             option.disabled
-                                ? 'cursor-not-allowed text-[#B6BCC2] line-through'
+                                ? 'cursor-not-allowed bg-bg2 text-[#B6BCC2]'
                                 : 'text-ink',
                         )}
                     >

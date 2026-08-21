@@ -65,6 +65,8 @@
 
 フォント（`--font-sans` / `--font-jp` / `--font-mono`）はフロントと共通で、[docs/front/common-layout.md](../front/common-layout.md) が正本。管理画面の本文書体も共通テンプレート（`resources/views/app.blade.php`）の指定に従う。
 
+ボタン・プルダウン・チェックボックス／ラジオのラベルのホバー時のカーソル（`resources/css/app.css` `@layer base`）はフロントと共通で、[docs/front/common-layout.md](../front/common-layout.md) が正本。
+
 ### `AdminLayout`（`resources/js/admin/Layouts/AdminLayout.tsx`）
 
 ```ts
