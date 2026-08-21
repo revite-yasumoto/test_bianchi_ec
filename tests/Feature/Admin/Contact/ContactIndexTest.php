@@ -320,7 +320,12 @@ class ContactIndexTest extends TestCase
     public function 検索語が零でも絞り込みが効く(): void
     {
         $this->makeContact(['name' => '架空 太郎', 'body' => '在庫は0個ですか']);
-        $this->makeContact(['name' => '架空 花子', 'body' => '納期を教えてください']);
+        // Factory のメールアドレスは数字を含むことがあり、検索語 "0" に偶然ヒットするため固定する
+        $this->makeContact([
+            'name' => '架空 花子',
+            'body' => '納期を教えてください',
+            'email' => 'hanako@example.test',
+        ]);
 
         $this->index(['q' => '0'])
             ->assertInertia(fn ($page) => $page
