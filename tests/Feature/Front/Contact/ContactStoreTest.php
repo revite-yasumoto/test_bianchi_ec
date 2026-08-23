@@ -45,7 +45,7 @@ class ContactStoreTest extends TestCase
     public function 未ログインでもお問い合わせを送信できる(): void
     {
         $this->post(route('contact.store'), $this->payload())
-            ->assertSessionHas('success', '送信しました。3営業日以内にご返信いたします。');
+            ->assertRedirect(route('contact.complete'));
 
         $this->assertDatabaseHas('contacts', [
             'user_id' => null,
@@ -178,7 +178,7 @@ class ContactStoreTest extends TestCase
         config(['mail.admin_addresses' => []]);
 
         $this->post(route('contact.store'), $this->payload())
-            ->assertSessionHas('success');
+            ->assertRedirect(route('contact.complete'));
 
         Mail::assertNotSent(ContactReceived::class);
         Mail::assertSent(ContactAcknowledgement::class);
@@ -245,7 +245,7 @@ class ContactStoreTest extends TestCase
         $this->post(route('contact.store'), $this->payload([
             'product_id' => 999999,
             'product_name' => '手入力の商品名',
-        ]))->assertSessionHas('success');
+        ]))->assertRedirect(route('contact.complete'));
 
         $this->assertDatabaseHas('contacts', [
             'product_id' => null,

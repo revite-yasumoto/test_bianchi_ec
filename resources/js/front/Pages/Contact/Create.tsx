@@ -16,7 +16,7 @@ type Props = {
 };
 
 export default function Create({ defaults, product }: Props) {
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         name: defaults.name,
         email: defaults.email,
         product_id: product?.id ?? null,
@@ -39,10 +39,7 @@ export default function Create({ defaults, product }: Props) {
                 <form
                     onSubmit={(event) => {
                         event.preventDefault();
-                        post(route('contact.store'), {
-                            preserveScroll: true,
-                            onSuccess: () => reset('body'),
-                        });
+                        post(route('contact.store'));
                     }}
                     className="mt-6 flex flex-col gap-3.5"
                 >

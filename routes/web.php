@@ -120,6 +120,7 @@ Route::get('legal/privacy', [StaticPageController::class, 'privacy'])->name('leg
 Route::get('legal/terms', [StaticPageController::class, 'terms'])->name('legal.terms');
 
 Route::get('contact', [ContactController::class, 'create'])->name('contact');
+Route::get('contact/complete', [ContactController::class, 'complete'])->name('contact.complete');
 // 未認証で投稿できるため、同一IPからの連投を抑える
 Route::post('contact', [ContactController::class, 'store'])
     ->name('contact.store')

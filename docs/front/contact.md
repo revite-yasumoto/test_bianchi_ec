@@ -11,9 +11,10 @@
 |---|---|---|---|
 | GET | `/contact` | `contact` | お問い合わせフォーム |
 | POST | `/contact` | `contact.store` | 送信 |
+| GET | `/contact/complete` | `contact.complete` | 送信完了 |
 
-- **アクセス権限・ミドルウェア:** 認証は不要。送信（`POST`）のみ `throttle:10,60`（同一の送信元から1時間に10回まで）を適用する。
-- **本ドキュメントのスコープ:** フォームの表示と送信、`contacts` への保存。管理画面での閲覧・対応状況の記録は [docs/admin/contact.md](../admin/contact.md) が正本。
+- **アクセス権限・ミドルウェア:** 認証は不要。送信（`POST`）のみ `throttle:10,60`（同一の送信元から1時間に10回まで）を適用する。完了画面はミドルウェアで保護せず、送信時にセッションへ置いた印を消費して開く（下記「主要な処理フロー」参照）。
+- **本ドキュメントのスコープ:** フォームの表示と送信、`contacts` への保存、送信完了画面の表示。管理画面での閲覧・対応状況の記録は [docs/admin/contact.md](../admin/contact.md) が正本。
 
 ## 使用テーブル
 
@@ -54,7 +55,23 @@
 - 幅は最大560pxで中央寄せにする。エラーは各入力欄の下に出す。
 - `?product_id=` 付きのURLが商品数ぶん到達可能になるため、正規URLとして `/contact` を `<link rel="canonical">` で示す。
 - 対象商品が確定している場合は入力欄を置かず、商品名を文字として表示する。`product_id` は入力欄を持たずに送信データへ含める。
-- 送信に成功するとその場に留まり（`preserveScroll`）、成功メッセージをトーストで出す。本文の入力欄だけを空に戻し、お名前・メールアドレス・対象商品は残す。
+- 送信に成功すると完了画面へ遷移する。完了画面は幅520pxで中央寄せにし、チェックのアイコン・見出し・返信の案内・問い合わせ番号・TOPへ戻る導線を縦に並べる（会員登録完了・注文完了と同じ構成）。
+
+```
+送信完了（/contact/complete）
+
+        （チェックのアイコン）
+     お問い合わせを送信しました      （h1）
+   3営業日以内にご返信いたします。
+   ご入力のメールアドレスへ控えをお送りしました。
+
+   ┌────────────────────────┐
+   │ 問い合わせ番号           │ ← dl（dt / dd）
+   │ INQ-2608-0001           │
+   └────────────────────────┘
+
+        [ TOPへ戻る ]
+```
 
 ## インターフェース ＆ データロジック
 
@@ -70,6 +87,13 @@ type Props = {
     };
     // クエリ ?product_id= で公開商品を引き当てられたときのみ値が入る
     product: { id: number; name: string } | null;
+};
+```
+
+```ts
+// resources/js/front/Pages/Contact/Complete.tsx
+type Props = {
+    contactNumber: string;  // 送信直後の遷移でのみ渡る問い合わせ番号
 };
 ```
 
@@ -122,7 +146,14 @@ type Props = {
 2. 上記「対象商品の決定規則」に従って `product_id` / `product_name` / `product_code` を確定する。
 3. `SubmitContact` が問い合わせ番号を採番し、`contacts` に1件保存する。ログイン中なら `user_id` を記録し、未ログインなら `null` にする。`status` は既定値の `unhandled` になる（区分の正本は [docs/admin/contact.md](../admin/contact.md)）。
 4. 続けて管理者へ受付通知を、フォームに入力されたアドレスへ控えを送る。どちらの本文にも問い合わせ番号を載せる。送信の仕様は [docs/mail-notification.md](../mail-notification.md) が正本。
-5. 元の画面へ戻して `送信しました。3営業日以内にご返信いたします。` を表示する。
+5. 採番した問い合わせ番号をセッション（`contact.submitted_number`）へ置き、完了画面へリダイレクトする。
+
+**完了画面の表示（`complete()`）**
+
+1. セッションの `contact.submitted_number` を取り出して消す。値が無ければフォーム（`contact`）へリダイレクトする。
+2. 取り出せた問い合わせ番号を `contactNumber` として完了画面へ渡す。
+
+送信直後の一度だけ開ける形にすることで、リロード・URLの直接入力で他人の問い合わせ番号を表示させない。
 
 ## 業務ルール
 
@@ -151,9 +182,11 @@ type Props = {
 | FormRequest | `app/Http/Requests/Front/Contact/StoreContactRequest.php` |
 | Model | `app/Models/Contact.php` |
 | Page | `resources/js/front/Pages/Contact/Create.tsx` |
+| Page | `resources/js/front/Pages/Contact/Complete.tsx` |
 | Component | `resources/js/front/Components/Product/PurchasePanel.tsx` |
 | Test | `tests/Feature/Front/Contact/ContactCreateTest.php` |
 | Test | `tests/Feature/Front/Contact/ContactStoreTest.php` |
+| Test | `tests/Feature/Front/Contact/ContactCompleteTest.php` |
 | Test | `tests/Unit/GenerateContactNumberActionTest.php` |
 
 ## 受け入れ条件
@@ -181,4 +214,6 @@ type Props = {
 - 同時送信で番号が衝突しないこと: MySQL実環境での確認（テスト用のSQLiteはロック構文を解釈しない）
 - 商品詳細の「この商品について問い合わせる」が `product_id` 付きのURLへ遷移する: 目視確認（リンクの生成はフロント側の実装のため）
 - 対象商品が確定しているとき入力欄ではなく文字として表示されること: 目視確認
-- 送信後に本文だけが空に戻ること・トーストの表示: 目視確認
+- 送信すると完了画面へリダイレクトする: `tests/Feature/Front/Contact/ContactStoreTest.php`（`未ログインでもお問い合わせを送信できる`）
+- 送信直後の完了画面に採番された問い合わせ番号が渡る: `tests/Feature/Front/Contact/ContactCompleteTest.php`（`送信直後は問い合わせ番号付きで完了画面を開ける`）
+- 送信を経ずに完了画面を開くとフォームへ戻される・完了画面は再読み込みすると開けない: 同上（`送信を経ずに完了画面を開くとお問い合わせフォームへ戻される`・`完了画面は再読み込みすると開けない`）

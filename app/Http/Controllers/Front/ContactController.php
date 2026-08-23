@@ -16,6 +16,9 @@ use Inertia\Response;
 
 class ContactController extends Controller
 {
+    /** 完了画面を送信直後の一度だけ開けるようにするための印 */
+    private const SESSION_SUBMITTED = 'contact.submitted_number';
+
     public function create(Request $request, ResolveContactProduct $resolveProduct): Response
     {
         /** @var User|null $user */
@@ -38,8 +41,23 @@ class ContactController extends Controller
 
     public function store(StoreContactRequest $request, SubmitContact $submitContact): RedirectResponse
     {
-        $submitContact($request->safe()->all(), $request->user('web')?->id);
+        $contact = $submitContact($request->safe()->all(), $request->user('web')?->id);
 
-        return back()->with('success', '送信しました。3営業日以内にご返信いたします。');
+        $request->session()->put(self::SESSION_SUBMITTED, $contact->contact_number);
+
+        return redirect()->route('contact.complete');
+    }
+
+    public function complete(Request $request): Response|RedirectResponse
+    {
+        $contactNumber = $request->session()->pull(self::SESSION_SUBMITTED);
+
+        if ($contactNumber === null) {
+            return redirect()->route('contact');
+        }
+
+        return Inertia::render('front/Contact/Complete', [
+            'contactNumber' => $contactNumber,
+        ]);
     }
 }
