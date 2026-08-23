@@ -41,8 +41,12 @@ const EMPTY_FILTERS: FilterFields = { status: 'all', q: '', from: '', to: '' };
 
 const KEYWORD_DEBOUNCE_MS = 400;
 
+// 管理画面の絞り込みは枠線だけの見た目で操作できるか分かりにくいため、ホバーで枠線を強調する
 const FIELD_CLASS =
-    'w-full rounded-lg border border-admin-line px-3 py-2 text-base';
+    'w-full rounded-lg border border-admin-line px-3 py-2 text-base transition-colors hover:border-admin-brand';
+
+// カレンダーアイコンは input の shadow DOM 内にあり枠線のホバーでは変化しないため、アイコン自体にも指定する（Chromium 系のみ有効）
+const DATE_FIELD_CLASS = `${FIELD_CLASS} [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:rounded [&::-webkit-calendar-picker-indicator:hover]:bg-admin-line`;
 
 const LABEL_CLASS = 'mb-1.5 block text-[11.5px] font-bold text-admin-ink';
 
@@ -143,7 +147,7 @@ export default function Index({
                                 type="date"
                                 aria-label="受信日（開始）"
                                 value={fields.from}
-                                className={FIELD_CLASS}
+                                className={DATE_FIELD_CLASS}
                                 onChange={(event) =>
                                     updateField('from', event.target.value)
                                 }
@@ -155,7 +159,7 @@ export default function Index({
                                 type="date"
                                 aria-label="受信日（終了）"
                                 value={fields.to}
-                                className={FIELD_CLASS}
+                                className={DATE_FIELD_CLASS}
                                 onChange={(event) =>
                                     updateField('to', event.target.value)
                                 }
