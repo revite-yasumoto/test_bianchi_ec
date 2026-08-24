@@ -33,22 +33,20 @@ export function DropZone({ file, error, onSelect }: DropZoneProps) {
                 onDragLeave={() => setIsDragOver(false)}
                 onDrop={handleDrop}
             >
-                <p className="text-[13px] font-bold text-admin-ink">
+                <p className="text-[15px] font-bold text-admin-ink">
                     ここにCSVファイルをドロップ
                 </p>
-                <p className="mt-1.5 text-[11.5px] text-admin-ink-muted">
-                    または
-                </p>
+                <p className="mt-1.5 text-sm text-admin-ink-muted">または</p>
                 <button
                     type="button"
-                    className="mt-3 rounded-lg border border-admin-line bg-white px-5 py-2.5 text-[12.5px] font-bold text-admin-ink"
+                    className="mt-3 rounded-lg border border-admin-line bg-white px-5 py-2.5 text-[15px] font-bold text-admin-ink"
                     onClick={() => inputRef.current?.click()}
                 >
                     ファイルを選択
                 </button>
 
                 {file ? (
-                    <p className="mt-3 font-mono text-[11.5px] text-admin-ink">
+                    <p className="mt-3 font-mono text-sm text-admin-ink">
                         {file.name}
                         <button
                             type="button"
@@ -73,7 +71,7 @@ export function DropZone({ file, error, onSelect }: DropZoneProps) {
             />
 
             {error ? (
-                <p className="mt-2 text-[11.5px] font-bold text-admin-danger">
+                <p className="mt-2 text-sm font-bold text-admin-danger">
                     {error}
                 </p>
             ) : null}

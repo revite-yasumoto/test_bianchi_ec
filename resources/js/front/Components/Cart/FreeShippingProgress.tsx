@@ -21,7 +21,7 @@ export function FreeShippingProgress({
         <div>
             <p
                 className={cn(
-                    'rounded-xl px-4 py-3.5 text-[12.5px] leading-[1.6] font-bold',
+                    'rounded-xl px-4 py-3.5 text-[15px] leading-[1.6] font-bold',
                     percentage === 100
                         ? 'bg-[#E4F2EF] text-[#2b6f64]'
                         : 'bg-white text-ink2',

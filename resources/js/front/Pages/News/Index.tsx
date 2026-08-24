@@ -12,7 +12,6 @@ type NewsArticle = {
     category: string;
     category_tone: Tone;
     title: string;
-    body: string;
 };
 
 type Props = {
@@ -36,12 +35,12 @@ export default function Index({ news }: Props) {
                             articles={news.data.map((article) => ({
                                 id: article.id,
                                 title: article.title,
-                                body: article.body,
+                                href: route('news.show', [article.id]),
                                 meta: (
                                     <>
                                         <time
                                             dateTime={article.published_on_iso}
-                                            className="shrink-0 font-mono text-[11.5px] text-ink2"
+                                            className="shrink-0 font-mono text-sm text-ink2"
                                         >
                                             {article.published_on}
                                         </time>

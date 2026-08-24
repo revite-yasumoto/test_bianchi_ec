@@ -34,7 +34,7 @@ const EMPTY_FILTERS: FilterFields = { status: 'all', q: '' };
 const FIELD_CLASS =
     'w-full rounded-lg border border-admin-line px-3 py-2 text-base';
 
-const LABEL_CLASS = 'mb-1.5 block text-[11.5px] font-bold text-admin-ink';
+const LABEL_CLASS = 'mb-1.5 block text-sm font-bold text-admin-ink';
 
 export default function Index({
     orders,
@@ -122,7 +122,7 @@ export default function Index({
                             key: 'order_number',
                             header: '注文番号',
                             render: (row) => (
-                                <span className="font-mono text-[11.5px] font-bold">
+                                <span className="font-mono text-sm font-bold">
                                     {row.order_number}
                                 </span>
                             ),
@@ -177,7 +177,7 @@ export default function Index({
                             render: (row) => (
                                 <Link
                                     href={route('admin.orders.show', [row.id])}
-                                    className="block text-right text-[11.5px] font-bold text-admin-brand"
+                                    className="block text-right text-sm font-bold text-admin-brand"
                                 >
                                     詳細
                                 </Link>

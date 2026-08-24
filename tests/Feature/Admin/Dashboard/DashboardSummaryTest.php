@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Admin\Dashboard;
 
+use App\Enums\ContactStatus;
 use App\Enums\OrderStatus;
 use App\Models\Admin;
+use App\Models\Contact;
 use App\Models\Order;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
+/**
+ * 問い合わせは Factory で用意する。送信の経路（`POST /contact`）は
+ * `Tests\Feature\Front\Contact\ContactStoreTest`、対応状況の更新経路は
+ * `Tests\Feature\Admin\Contact\ContactUpdateTest` が検証している。
+ */
 class DashboardSummaryTest extends TestCase
 {
     use RefreshDatabase;
@@ -136,7 +143,22 @@ class DashboardSummaryTest extends TestCase
                 ->where('summary.month_sales', 0)
                 ->where('summary.new_order_count', 0)
                 ->where('summary.awaiting_payment_count', 0)
+                ->where('summary.unhandled_contact_count', 0)
                 ->where('summary.today_sales_note', '前日実績なし')
+            );
+    }
+
+    #[Test]
+    public function 未対応のお問い合わせ件数は対応中と対応済みを除いて集計される(): void
+    {
+        Contact::factory()->count(3)->create(['status' => ContactStatus::Unhandled]);
+        Contact::factory()->create(['status' => ContactStatus::InProgress]);
+        Contact::factory()->create(['status' => ContactStatus::Handled]);
+
+        $this->actingAs($this->admin, 'admin')
+            ->get(route('admin.dashboard'))
+            ->assertInertia(fn ($page) => $page
+                ->where('summary.unhandled_contact_count', 3)
             );
     }
 }

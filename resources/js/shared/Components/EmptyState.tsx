@@ -7,7 +7,7 @@ type EmptyStateProps = {
 
 export function EmptyState({ message, className }: EmptyStateProps) {
     return (
-        <p className={cn('py-10 text-center text-sm text-ink2', className)}>
+        <p className={cn('py-10 text-center text-base text-ink2', className)}>
             {message}
         </p>
     );

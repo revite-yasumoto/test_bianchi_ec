@@ -4,6 +4,8 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminUserCsvController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AdminAuthenticatedSessionController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Admin\ContactCsvController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EcSettingController;
 use App\Http\Controllers\Admin\MemberController;
@@ -54,7 +56,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-        // CSVのルートは `{user}` `{admin}` `{product}` として解釈されないよう、各リソースより先に定義する
+        // CSVのルートは `{user}` `{admin}` `{product}` `{contact}` として解釈されないよう、各リソースより先に定義する
         Route::post('members/csv/import', [MemberCsvController::class, 'import'])->name('members.csv.import');
         Route::get('members/csv/export', [MemberCsvController::class, 'export'])->name('members.csv.export');
         Route::post('admins/csv/import', [AdminUserCsvController::class, 'import'])->name('admins.csv.import');
@@ -63,6 +65,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('products/csv/import', [ProductCsvController::class, 'import'])->name('products.csv.import');
         Route::get('products/csv/export', [ProductCsvController::class, 'export'])->name('products.csv.export');
         Route::get('products/csv/template', [ProductCsvController::class, 'template'])->name('products.csv.template');
+        Route::get('contacts/csv/export', [ContactCsvController::class, 'export'])->name('contacts.csv.export');
 
         Route::get('members', [MemberController::class, 'index'])->name('members.index');
         Route::get('members/{user}', [MemberController::class, 'show'])->name('members.show');
@@ -75,6 +78,8 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::put('orders/{order}/status', [OrderStatusController::class, 'update'])->name('orders.status.update');
 
         Route::resource('products', ProductController::class)->except(['show']);
+
+        Route::resource('contacts', AdminContactController::class)->only(['index', 'show', 'update']);
 
         // bulk は {stock} にマッチしてしまうため、個別更新より先に定義する
         Route::put('stocks/bulk', [StockController::class, 'bulkUpdate'])->name('stocks.bulk-update');
@@ -105,14 +110,23 @@ Route::get('products', [FrontProductController::class, 'index'])->name('products
 Route::get('products/{product}', [FrontProductController::class, 'show'])->name('products.show');
 
 Route::get('news', [FrontNewsController::class, 'index'])->name('news.index');
+Route::get('news/{news}', [FrontNewsController::class, 'show'])->name('news.show');
 Route::get('notices', [FrontNoticeController::class, 'index'])->name('notices.index');
+Route::get('notices/{notice}', [FrontNoticeController::class, 'show'])->name('notices.show');
 
 Route::get('guide', [StaticPageController::class, 'guide'])->name('guide');
 Route::get('legal/tokushoho', [StaticPageController::class, 'tokushoho'])->name('legal.tokushoho');
 Route::get('legal/privacy', [StaticPageController::class, 'privacy'])->name('legal.privacy');
 Route::get('legal/terms', [StaticPageController::class, 'terms'])->name('legal.terms');
 
+// 会員登録の住所入力からも呼ぶため認証の外に置く。未認証で外部サービスへの問い合わせを誘発できるためレート制限で抑える
+Route::get('postal-codes/{postalCode}', PostalCodeController::class)
+    ->name('postal-codes.show')
+    ->where('postalCode', '[0-9]{7}')
+    ->middleware('throttle:30,1');
+
 Route::get('contact', [ContactController::class, 'create'])->name('contact');
+Route::get('contact/complete', [ContactController::class, 'complete'])->name('contact.complete');
 // 未認証で投稿できるため、同一IPからの連投を抑える
 Route::post('contact', [ContactController::class, 'store'])
     ->name('contact.store')
@@ -165,11 +179,6 @@ Route::middleware('auth')->group(function (): void {
     Route::delete('addresses/{address}', [UserAddressController::class, 'destroy'])
         ->name('addresses.destroy')
         ->can('delete', 'address');
-
-    Route::get('postal-codes/{postalCode}', PostalCodeController::class)
-        ->name('postal-codes.show')
-        ->where('postalCode', '[0-9]{7}')
-        ->middleware('throttle:60,1');
 
     Route::get('mypage', [OrderHistoryController::class, 'index'])->name('mypage.index');
     Route::get('mypage/orders/{order}', [OrderHistoryController::class, 'show'])

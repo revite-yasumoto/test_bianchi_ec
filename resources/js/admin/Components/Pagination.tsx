@@ -5,19 +5,6 @@ type PaginationProps = {
     links: { url: string | null; label: string; active: boolean }[];
 };
 
-/** Laravel が返す `&laquo; Previous` 等のラベルを日本語に置き換える */
-function formatLabel(label: string): string {
-    if (label.includes('Previous')) {
-        return '前へ';
-    }
-
-    if (label.includes('Next')) {
-        return '次へ';
-    }
-
-    return label;
-}
-
 export function Pagination({ links }: PaginationProps) {
     if (links.length <= 3) {
         return null;
@@ -27,7 +14,7 @@ export function Pagination({ links }: PaginationProps) {
         <nav aria-label="ページ送り" className="mt-4 flex justify-center gap-1">
             {links.map((link) => {
                 const className = cn(
-                    'rounded-lg border border-admin-line px-3 py-1.5 text-xs font-bold',
+                    'rounded-lg border border-admin-line px-3 py-1.5 text-sm font-bold',
                     link.active
                         ? 'bg-admin-brand text-white'
                         : 'bg-white text-admin-ink',
@@ -41,7 +28,7 @@ export function Pagination({ links }: PaginationProps) {
                             aria-disabled="true"
                             className={className}
                         >
-                            {formatLabel(link.label)}
+                            {link.label}
                         </span>
                     );
                 }
@@ -54,7 +41,7 @@ export function Pagination({ links }: PaginationProps) {
                         preserveScroll
                         className={className}
                     >
-                        {formatLabel(link.label)}
+                        {link.label}
                     </Link>
                 );
             })}

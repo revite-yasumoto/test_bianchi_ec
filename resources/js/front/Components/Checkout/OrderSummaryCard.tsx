@@ -28,14 +28,14 @@ export function OrderSummaryCard({
 }: OrderSummaryCardProps) {
     return (
         <aside className="rounded-[20px] bg-bg2 p-6">
-            <h2 className="mb-3.5 text-[15px] font-extrabold">{title}</h2>
+            <h2 className="mb-3.5 text-base font-extrabold">{title}</h2>
 
             {items ? (
                 <ul className="mb-3 border-b border-line pb-3">
                     {items.map((item) => (
                         <li
                             key={item.id}
-                            className="flex gap-2.5 py-2 text-[12.5px]"
+                            className="flex gap-2.5 py-2 text-[15px]"
                         >
                             <span className="flex-1 leading-[1.5]">
                                 {item.product_name}
@@ -53,17 +53,17 @@ export function OrderSummaryCard({
             ) : null}
 
             <dl>
-                <div className="flex justify-between py-1.5 text-[13.5px]">
+                <div className="flex justify-between py-1.5 text-[15px]">
                     <dt>商品合計</dt>
                     <dd className="font-mono font-bold">{yen(subtotal)}</dd>
                 </div>
-                <div className="flex justify-between py-1.5 text-[13.5px]">
+                <div className="flex justify-between py-1.5 text-[15px]">
                     <dt>送料（{prefectureName}）</dt>
                     <dd className="font-mono font-bold">
                         {shippingFee === 0 ? '無料' : yen(shippingFee)}
                     </dd>
                 </div>
-                <div className="flex justify-between py-1.5 text-[13.5px]">
+                <div className="flex justify-between py-1.5 text-[15px]">
                     <dt>代引き手数料</dt>
                     <dd className="font-mono font-bold">
                         {codFee === 0 ? '—' : yen(codFee)}
@@ -76,10 +76,10 @@ export function OrderSummaryCard({
             </dl>
 
             <p className="mt-3.5 rounded-xl border border-line bg-white px-4 py-3.5">
-                <span className="block text-[11.5px] font-bold text-ink2">
+                <span className="block text-sm font-bold text-ink2">
                     お届け予定日
                 </span>
-                <span className="mt-1 block text-[17px] font-extrabold text-brand">
+                <span className="mt-1 block text-lg font-extrabold text-brand">
                     {deliveryDateLabel}
                 </span>
             </p>

@@ -45,16 +45,16 @@ type Props = {
 
 const CARD_CLASS = 'rounded-xl border border-admin-line bg-white p-5';
 
-const HEADING_CLASS = 'mb-2.5 text-[13px] font-extrabold text-admin-ink';
+const HEADING_CLASS = 'mb-2.5 text-[15px] font-extrabold text-admin-ink';
 
-const DEFINITION_TERM_CLASS = 'text-[11.5px] font-bold text-admin-ink-muted';
+const DEFINITION_TERM_CLASS = 'text-sm font-bold text-admin-ink-muted';
 
 export default function Show({ member, addresses, recentOrders }: Props) {
     return (
         <AdminLayout title={`会員 ${member.member_code}`}>
             <Link
                 href={route('admin.members.index')}
-                className="mb-3.5 inline-block font-mono text-[11px] text-admin-ink-muted"
+                className="mb-3.5 inline-block font-mono text-sm text-admin-ink-muted"
             >
                 ← 会員マスタへ
             </Link>
@@ -63,7 +63,7 @@ export default function Show({ member, addresses, recentOrders }: Props) {
                 <div className="flex flex-col gap-4">
                     <div className={CARD_CLASS}>
                         <div className="mb-2.5 flex items-center gap-3">
-                            <h2 className="text-[13px] font-extrabold text-admin-ink">
+                            <h2 className="text-[15px] font-extrabold text-admin-ink">
                                 会員情報
                             </h2>
                             <Badge
@@ -77,7 +77,7 @@ export default function Show({ member, addresses, recentOrders }: Props) {
                             </Badge>
                         </div>
 
-                        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-[12.5px]">
+                        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-[15px]">
                             <dt className={DEFINITION_TERM_CLASS}>会員ID</dt>
                             <dd className="font-mono">{member.member_code}</dd>
 
@@ -103,7 +103,7 @@ export default function Show({ member, addresses, recentOrders }: Props) {
                             <dd>{member.registered_on}</dd>
                         </dl>
 
-                        <p className="mt-3 text-[11.5px] text-admin-ink-muted">
+                        <p className="mt-3 text-sm text-admin-ink-muted">
                             会員情報の編集は会員自身がマイページで行います。管理画面からは変更できません。
                         </p>
                     </div>
@@ -111,7 +111,7 @@ export default function Show({ member, addresses, recentOrders }: Props) {
                     <div className={CARD_CLASS}>
                         <h2 className={HEADING_CLASS}>配送先住所</h2>
                         {addresses.length === 0 ? (
-                            <p className="text-[12.5px] text-admin-ink-muted">
+                            <p className="text-[15px] text-admin-ink-muted">
                                 登録されている配送先はありません。
                             </p>
                         ) : (
@@ -119,7 +119,7 @@ export default function Show({ member, addresses, recentOrders }: Props) {
                                 {addresses.map((address) => (
                                     <li
                                         key={address.id}
-                                        className="border-b border-admin-line pb-3 text-[12.5px] last:border-b-0 last:pb-0"
+                                        className="border-b border-admin-line pb-3 text-[15px] last:border-b-0 last:pb-0"
                                     >
                                         <div className="flex items-center gap-2">
                                             <span className="font-bold">
@@ -163,7 +163,7 @@ export default function Show({ member, addresses, recentOrders }: Props) {
                     <div className={CARD_CLASS}>
                         <h2 className={HEADING_CLASS}>直近の注文</h2>
                         {recentOrders.length === 0 ? (
-                            <p className="text-[12.5px] text-admin-ink-muted">
+                            <p className="text-[15px] text-admin-ink-muted">
                                 注文履歴はありません。
                             </p>
                         ) : (
@@ -171,7 +171,7 @@ export default function Show({ member, addresses, recentOrders }: Props) {
                                 {recentOrders.map((order) => (
                                     <li
                                         key={order.id}
-                                        className="flex flex-wrap items-baseline gap-x-3 border-b border-admin-line pb-2 text-[12px] last:border-b-0 last:pb-0"
+                                        className="flex flex-wrap items-baseline gap-x-3 border-b border-admin-line pb-2 text-sm last:border-b-0 last:pb-0"
                                     >
                                         <Link
                                             href={route('admin.orders.show', [

@@ -63,7 +63,7 @@ type Props = {
 
 const CARD_CLASS = 'rounded-xl border border-admin-line bg-white p-5';
 
-const HEADING_CLASS = 'mb-2.5 text-[13px] font-extrabold text-admin-ink';
+const HEADING_CLASS = 'mb-2.5 text-[15px] font-extrabold text-admin-ink';
 
 function AmountRow({
     label,
@@ -78,8 +78,8 @@ function AmountRow({
         <div
             className={
                 emphasized
-                    ? 'flex justify-between border-t border-admin-line pt-2 text-[15px] font-extrabold'
-                    : 'flex justify-between text-[12.5px]'
+                    ? 'flex justify-between border-t border-admin-line pt-2 text-base font-extrabold'
+                    : 'flex justify-between text-[15px]'
             }
         >
             <span>{label}</span>
@@ -93,7 +93,7 @@ export default function Show({ order, statusOptions, errors }: Props) {
         <AdminLayout title={`注文 ${order.order_number}`}>
             <Link
                 href={route('admin.orders.index')}
-                className="mb-3.5 inline-block font-mono text-[11px] text-admin-ink-muted"
+                className="mb-3.5 inline-block font-mono text-sm text-admin-ink-muted"
             >
                 ← 注文一覧へ
             </Link>
@@ -103,7 +103,7 @@ export default function Show({ order, statusOptions, errors }: Props) {
                     label={order.status_label}
                     tone={order.status_tone}
                 />
-                <span className="text-[12.5px] text-admin-ink-muted">
+                <span className="text-[15px] text-admin-ink-muted">
                     注文日時 {order.ordered_at}
                 </span>
             </div>
@@ -111,7 +111,7 @@ export default function Show({ order, statusOptions, errors }: Props) {
             <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] items-start gap-4">
                 <div className={CARD_CLASS}>
                     <h2 className={HEADING_CLASS}>注文商品</h2>
-                    <table className="w-full text-left text-sm">
+                    <table className="w-full text-left text-base">
                         <tbody>
                             {order.items.map((item) => (
                                 <tr
@@ -122,13 +122,13 @@ export default function Show({ order, statusOptions, errors }: Props) {
                                         <span className="font-bold">
                                             {item.product_name}
                                         </span>
-                                        <span className="mt-0.5 block text-[11px] text-admin-ink-muted">
+                                        <span className="mt-0.5 block text-sm text-admin-ink-muted">
                                             {item.variant_label}
                                             {item.sku_code
                                                 ? ` / ${item.sku_code}`
                                                 : ''}
                                         </span>
-                                        <span className="block text-[11px] text-admin-ink-muted">
+                                        <span className="block text-sm text-admin-ink-muted">
                                             {yen(item.unit_price)}
                                         </span>
                                     </td>
@@ -163,7 +163,7 @@ export default function Show({ order, statusOptions, errors }: Props) {
                 <div className="flex flex-col gap-4">
                     <div className={CARD_CLASS}>
                         <h2 className={HEADING_CLASS}>お届け先</h2>
-                        <p className="text-[12.5px] leading-loose text-admin-ink-muted">
+                        <p className="text-[15px] leading-loose text-admin-ink-muted">
                             {order.shipping.recipient_name}
                             <br />〒{order.shipping.postal_code}
                             <br />
@@ -183,14 +183,14 @@ export default function Show({ order, statusOptions, errors }: Props) {
                         <h2 className={`${HEADING_CLASS} mt-4`}>
                             お支払い・配送
                         </h2>
-                        <p className="text-[12.5px] leading-loose text-admin-ink-muted">
+                        <p className="text-[15px] leading-loose text-admin-ink-muted">
                             {order.payment_method_label}
                             <br />
                             お届け予定日 {order.estimated_delivery_date}
                         </p>
 
                         <h2 className={`${HEADING_CLASS} mt-4`}>ご注文者</h2>
-                        <p className="text-[12.5px] leading-loose text-admin-ink-muted">
+                        <p className="text-[15px] leading-loose text-admin-ink-muted">
                             <span className="font-mono">
                                 {order.customer.member_code}
                             </span>
@@ -217,7 +217,7 @@ export default function Show({ order, statusOptions, errors }: Props) {
                     <div className={CARD_CLASS}>
                         <h2 className={HEADING_CLASS}>ステータス変更履歴</h2>
                         {order.histories.length === 0 ? (
-                            <p className="text-[12.5px] text-admin-ink-muted">
+                            <p className="text-[15px] text-admin-ink-muted">
                                 変更履歴はありません。
                             </p>
                         ) : (
@@ -225,14 +225,14 @@ export default function Show({ order, statusOptions, errors }: Props) {
                                 {order.histories.map((history) => (
                                     <li
                                         key={history.id}
-                                        className="border-b border-admin-line pb-2 text-[12px] last:border-b-0 last:pb-0"
+                                        className="border-b border-admin-line pb-2 text-sm last:border-b-0 last:pb-0"
                                     >
                                         <span className="font-bold">
                                             {history.from_status_label
                                                 ? `${history.from_status_label} → ${history.to_status_label}`
                                                 : history.to_status_label}
                                         </span>
-                                        <span className="mt-0.5 block text-[11px] text-admin-ink-muted">
+                                        <span className="mt-0.5 block text-sm text-admin-ink-muted">
                                             {history.changed_at}
                                             {history.admin_name
                                                 ? ` / ${history.admin_name}`

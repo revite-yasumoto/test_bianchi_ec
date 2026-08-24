@@ -30,10 +30,10 @@ export function HistorySection({ products }: HistorySectionProps) {
                                 />
                             </div>
                             <div className="px-3 pt-2.5 pb-3">
-                                <p className="text-xs leading-[1.4] font-bold">
+                                <p className="text-sm leading-[1.4] font-bold">
                                     {product.name}
                                 </p>
-                                <p className="mt-1 font-mono text-xs">
+                                <p className="mt-1 font-mono text-sm">
                                     {yen(product.price)}
                                 </p>
                             </div>

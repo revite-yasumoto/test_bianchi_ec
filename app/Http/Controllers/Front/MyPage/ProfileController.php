@@ -25,6 +25,11 @@ class ProfileController extends Controller
                 'name_kana' => $user->name_kana,
                 'email' => $user->email,
                 'tel' => $user->tel,
+                'birth_year' => $user->birthday?->format('Y') ?? '',
+                'birth_month' => $user->birthday?->format('n') ?? '',
+                'birth_day' => $user->birthday?->format('j') ?? '',
+                'gender' => $user->gender?->value ?? '',
+                'is_newsletter_subscribed' => $user->is_newsletter_subscribed,
             ],
         ]);
     }
@@ -34,7 +39,11 @@ class ProfileController extends Controller
         /** @var User $user */
         $user = $request->user('web');
 
-        $user->update($request->safe()->all());
+        $user->update([
+            ...$request->safe()->except(['birth_year', 'birth_month', 'birth_day']),
+            'birthday' => $request->birthday(),
+            'is_newsletter_subscribed' => $request->boolean('is_newsletter_subscribed'),
+        ]);
 
         return back()->with('success', '会員情報を更新しました');
     }

@@ -2,7 +2,7 @@
 
 ## 機能概要
 
-- **対象画面・機能の目的:** 会員が自分の登録情報（氏名・カナ・メールアドレス・電話番号）とパスワードを変更する。
+- **対象画面・機能の目的:** 会員が自分の登録情報（氏名・カナ・メールアドレス・電話番号・生年月日・性別・メールマガジンの購読）とパスワードを変更する。
 - **URL / メソッド:**
 
 | メソッド | パス | ルート名 | 内容 |
@@ -19,7 +19,7 @@
 
 | テーブル | 用途 |
 |---|---|
-| `users` | 氏名・カナ・メールアドレス・電話番号・パスワードを更新する |
+| `users` | 氏名・カナ・メールアドレス・電話番号・生年月日・性別・メールマガジンの購読・パスワードを更新する |
 
 `member_code` / `status` は本画面から変更できない。定義は [docs/2_database.md](../2_database.md) が正本。
 
@@ -31,8 +31,11 @@
 │ お名前 *            │              │ 現在のパスワード *   │
 │ お名前（カナ）       │              │ 新しいパスワード *   │
 │ メールアドレス *     │              │ 新しいパスワード（確認）* │
-│ 電話番号            │              │ [ パスワードを変更する ] │
-│ [ 保存する ]        │              └────────────────────┘
+│ 電話番号 *          │              │ [ パスワードを変更する ] │
+│ 生年月日 [年v][月v][日v] │          └────────────────────┘
+│ 性別                │
+│ [v] メールマガジンを受け取る │
+│ [ 保存する ]        │
 └────────────────────┘
 
 （画面下部）
@@ -55,6 +58,12 @@ type Props = {
         name_kana: string | null;
         email: string;
         tel: string | null;
+        // 未設定は空文字。生年月日は年・月・日のプルダウンで選ぶ
+        birth_year: string;
+        birth_month: string;
+        birth_day: string;
+        gender: string;                    // '' | 'male' | 'female'
+        is_newsletter_subscribed: boolean;
     };
 };
 
@@ -71,7 +80,12 @@ type Props = {
 | `name` | 必須・文字列・最大100 |
 | `name_kana` | 任意・文字列・最大100・全角カタカナ（長音符・スペースを含む） |
 | `email` | 必須・メール形式・最大191・`users.email` で一意（自分自身は除外） |
-| `tel` | 任意・文字列・`[\d-]{10,20}` 形式 |
+| `tel` | 必須・文字列・`[\d-]{10,20}` 形式 |
+| `birth_year` / `birth_month` / `birth_day` | 任意・整数。3つすべて選ぶか、すべて未選択のどちらか。揃っている場合は実在する日付で、当日以前であること |
+| `gender` | 任意・`male` / `female` のいずれか |
+| `is_newsletter_subscribed` | 任意・boolean（未送信は `false` として扱う） |
+
+生年月日・性別・電話番号のルールは会員登録（[docs/front/auth.md](auth.md)）と同一にする。
 
 **`Front\MyPage\UpdatePasswordRequest`**
 
@@ -85,7 +99,8 @@ type Props = {
 **会員情報の更新**
 
 1. 入力を検証する。メールアドレスの一意判定からは自分自身を除外する。
-2. ログイン中の会員の該当列を更新する。
+2. 生年月日の3項目が揃っていれば日付に組み立て、未選択なら `null` にする。
+3. ログイン中の会員の該当列を更新する。
 3. 元の画面へ戻して `会員情報を更新しました` を表示する。
 
 **パスワードの更新**
@@ -100,6 +115,8 @@ type Props = {
 - パスワード変更後もログイン状態を維持し、他端末のセッションも切断しない。
 - 退会の手続きは本画面では行わず、画面下部のリンクから専用の画面へ送る（[docs/front/withdrawal.md](withdrawal.md) が正本）。マイページのタブには並べない。
 - 会員情報を変更しても、確定済みの注文が保持する注文者情報は変わらない（[docs/order-snapshot.md](../order-snapshot.md)）。
+- 電話番号は会員登録で必須にしているため、本画面でも必須とする。登録時に作った配送先の電話番号（`user_addresses.tel`）とは独立で、本画面の変更は配送先へ波及しない。
+- メールマガジンの購読はチェックボックスで表し、外すと購読しない状態（`false`）で保存する。
 
 ## 関連ドキュメント
 
@@ -117,8 +134,10 @@ type Props = {
 | Controller | `app/Http/Controllers/Front/MyPage/ProfileController.php` |
 | Controller | `app/Http/Controllers/Front/MyPage/PasswordController.php` |
 | FormRequest | `app/Http/Requests/Front/MyPage/UpdateProfileRequest.php` |
+| Trait | `app/Http/Requests/Concerns/ValidatesBirthdayParts.php` |
 | FormRequest | `app/Http/Requests/Front/MyPage/UpdatePasswordRequest.php` |
 | Page | `resources/js/front/Pages/MyPage/Profile.tsx` |
+| Component | `resources/js/front/Components/Auth/BirthdayField.tsx` |
 | Page | `resources/js/front/Pages/MyPage/Password.tsx` |
 | Test | `tests/Feature/Front/MyPage/ProfileUpdateTest.php` |
 | Test | `tests/Feature/Front/MyPage/PasswordUpdateTest.php` |
@@ -128,9 +147,13 @@ type Props = {
 - 未ログインでログイン画面へリダイレクトされる: `tests/Feature/Front/MyPage/ProfileUpdateTest.php`・`PasswordUpdateTest.php`（各`未ログインではログイン画面へリダイレクトされる`）
 - 現在の会員情報が初期値として表示される: `tests/Feature/Front/MyPage/ProfileUpdateTest.php`（`現在の会員情報が初期値として表示される`）
 - 会員情報を更新できる: 同上（`会員情報を更新できる`）
+- 生年月日・性別・メールマガジンの購読を更新できる: 同上（`生年月日と性別を更新できる`・`メールマガジンのチェックを外すと購読しない状態になる`）
+- 電話番号が未入力なら更新されない: 同上（`電話番号が未入力なら更新されない`）
+- 生年月日を一部だけ選ぶ・未来の日付を選ぶと更新されない: 同上（`生年月日を一部だけ選ぶと更新されない`・`未来の生年月日は更新されない`）
+- 現在の生年月日・性別・メールマガジンの購読が初期値として表示される: 同上（`現在の生年月日と性別が初期値として表示される`）
 - 自分の現在のメールアドレスのままでも更新できる: 同上（`現在のメールアドレスのまま更新できる`）
 - 他の会員が使用中のメールアドレスを弾く: 同上（`他の会員が使用中のメールアドレスは登録できない`）
-- 必須・形式の不備を弾き、任意項目は省略できる: 同上（`氏名が未入力なら更新されない`・`カナが全角カタカナ以外なら更新されない`・`カナと電話番号は省略できる`）
+- 必須・形式の不備を弾き、任意項目は省略できる: 同上（`氏名が未入力なら更新されない`・`カナが全角カタカナ以外なら更新されない`・`カナは省略できる`）
 - 会員情報を変更しても確定済み注文の注文者情報が変わらない: 同上（`会員情報を変更しても確定済みの注文の注文者名は変わらない`）
 - パスワードを変更できる: `tests/Feature/Front/MyPage/PasswordUpdateTest.php`（`パスワードを変更できる`）
 - 現在のパスワードの誤り・確認用の不一致・8文字未満・現在と同一を弾く: 同上（`現在のパスワードが誤っていれば変更されない`・`確認用パスワードが一致しなければ変更されない`・`八文字未満のパスワードには変更できない`・`現在と同じパスワードには変更できない`）

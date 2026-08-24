@@ -9,7 +9,7 @@ type Props = { columns: string[] };
 
 const CARD_CLASS = 'rounded-xl border border-admin-line bg-white p-5';
 
-const HEADING_CLASS = 'mb-3.5 text-[13px] font-extrabold text-admin-ink';
+const HEADING_CLASS = 'mb-3.5 text-[15px] font-extrabold text-admin-ink';
 
 /** 各列の必須条件。列名は `ProductCsvImporter::HEADER` と対応する */
 const REQUIREMENTS: Record<string, string> = {
@@ -53,14 +53,14 @@ export default function Csv({ columns }: Props) {
                             <button
                                 type="button"
                                 disabled={data.file === null || processing}
-                                className="flex-1 rounded-lg bg-admin-brand py-3 text-[13px] font-extrabold text-white disabled:opacity-50"
+                                className="flex-1 rounded-lg bg-admin-brand py-3 text-[15px] font-extrabold text-white disabled:opacity-50"
                                 onClick={() => setIsConfirmOpen(true)}
                             >
                                 インポート実行
                             </button>
                             <button
                                 type="button"
-                                className="rounded-lg border border-admin-line bg-white px-4 py-3 text-[12.5px] font-bold whitespace-nowrap text-admin-ink"
+                                className="rounded-lg border border-admin-line bg-white px-4 py-3 text-[15px] font-bold whitespace-nowrap text-admin-ink"
                                 onClick={() =>
                                     router.get(
                                         route('admin.products.csv.template'),
@@ -71,7 +71,7 @@ export default function Csv({ columns }: Props) {
                             </button>
                         </div>
 
-                        <p className="mt-3 text-[11.5px] leading-relaxed text-admin-ink-muted">
+                        <p className="mt-3 text-sm leading-relaxed text-admin-ink-muted">
                             1行でもエラーがある場合は1件も取り込みません。文字コードは
                             UTF-8 と Shift_JIS のどちらでも取り込めます。
                         </p>
@@ -84,7 +84,7 @@ export default function Csv({ columns }: Props) {
                     <div className={CARD_CLASS}>
                         <h2 className={HEADING_CLASS}>フォーマット</h2>
                         <div className="overflow-x-auto">
-                            <table className="w-full text-left text-sm">
+                            <table className="w-full text-left text-base">
                                 <thead className="border-b border-admin-line text-admin-ink-muted">
                                     <tr>
                                         <th
@@ -113,15 +113,15 @@ export default function Csv({ columns }: Props) {
                                             key={column}
                                             className="border-b border-admin-line last:border-b-0"
                                         >
-                                            <td className="py-2 font-mono text-[11.5px]">
+                                            <td className="py-2 font-mono text-sm">
                                                 {String.fromCharCode(
                                                     65 + index,
                                                 )}
                                             </td>
-                                            <td className="py-2 text-[12.5px] font-bold">
+                                            <td className="py-2 text-[15px] font-bold">
                                                 {column}
                                             </td>
-                                            <td className="py-2 text-[11.5px] text-admin-ink-muted">
+                                            <td className="py-2 text-sm text-admin-ink-muted">
                                                 {REQUIREMENTS[column] ?? ''}
                                             </td>
                                         </tr>
@@ -130,19 +130,19 @@ export default function Csv({ columns }: Props) {
                             </table>
                         </div>
 
-                        <p className="mt-3 text-[11.5px] leading-relaxed text-admin-ink-muted">
+                        <p className="mt-3 text-sm leading-relaxed text-admin-ink-muted">
                             SKUあり商品は同じ商品IDの行を並べ、行ごとに枝番と在庫数を指定します。サイズ・カラーはCSVでは設定できません。
                         </p>
                     </div>
 
                     <div className={CARD_CLASS}>
                         <h2 className={HEADING_CLASS}>CSVエクスポート</h2>
-                        <p className="mb-3 text-[12.5px] text-admin-ink-muted">
+                        <p className="mb-3 text-[15px] text-admin-ink-muted">
                             登録済みの全商品をCSVで書き出します。SKUあり商品はバリエーションごとの行になります。
                         </p>
                         <a
                             href={route('admin.products.csv.export')}
-                            className="inline-block rounded-lg border border-admin-line bg-white px-4 py-2.5 text-[12.5px] font-bold text-admin-ink"
+                            className="inline-block rounded-lg border border-admin-line bg-white px-4 py-2.5 text-[15px] font-bold text-admin-ink"
                         >
                             CSVエクスポート
                         </a>

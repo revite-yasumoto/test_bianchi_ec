@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Front\MyPage;
 
+use App\Enums\Gender;
+use App\Http\Requests\Concerns\ValidatesBirthdayParts;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class UpdateProfileRequest extends FormRequest
 {
+    use ValidatesBirthdayParts;
+
     /**
      * @return array<string, array<int, mixed>>
      */
@@ -22,7 +27,20 @@ class UpdateProfileRequest extends FormRequest
                 'required', 'string', 'email', 'max:191',
                 Rule::unique('users', 'email')->ignore($this->user('web')?->id),
             ],
-            'tel' => ['nullable', 'string', 'regex:/\A[\d-]{10,20}\z/'],
+            'tel' => ['required', 'string', 'regex:/\A[\d-]{10,20}\z/'],
+            'gender' => ['nullable', Rule::enum(Gender::class)],
+            'is_newsletter_subscribed' => ['nullable', 'boolean'],
+            ...$this->birthdayPartRules(),
+        ];
+    }
+
+    /**
+     * @return array<int, callable>
+     */
+    public function after(): array
+    {
+        return [
+            fn (Validator $validator) => $this->validateBirthdayParts($validator),
         ];
     }
 
@@ -36,6 +54,8 @@ class UpdateProfileRequest extends FormRequest
             'name_kana' => 'お名前（カナ）',
             'email' => 'メールアドレス',
             'tel' => '電話番号',
+            'gender' => '性別',
+            ...$this->birthdayPartAttributes(),
         ];
     }
 

@@ -48,10 +48,13 @@ class PostalCodeLookupTest extends TestCase
     }
 
     #[Test]
-    public function 未ログインではログイン画面へリダイレクトされる(): void
+    public function 未ログインでも住所を引ける(): void
     {
+        Http::fake(['*' => Http::response($this->body([$this->resultRow()]))]);
+
         $this->get(route('postal-codes.show', ['postalCode' => '1500041']))
-            ->assertRedirect(route('login'));
+            ->assertOk()
+            ->assertJsonPath('city', '渋谷区');
     }
 
     #[Test]

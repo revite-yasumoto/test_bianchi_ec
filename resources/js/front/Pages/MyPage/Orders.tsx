@@ -17,12 +17,12 @@ export default function Orders({ orders }: Props) {
         >
             {orders.data.length === 0 ? (
                 <div className="rounded-[20px] bg-bg2 px-5 py-[60px] text-center">
-                    <p className="mb-3.5 text-[15px] font-bold">
+                    <p className="mb-3.5 text-base font-bold">
                         ご注文はまだありません
                     </p>
                     <Link
                         href={route('products.index')}
-                        className="inline-block rounded-full bg-brand px-6.5 py-3.5 text-sm font-bold text-white"
+                        className="inline-block rounded-full bg-brand px-6.5 py-3.5 text-base font-bold text-white"
                     >
                         商品を探す
                     </Link>

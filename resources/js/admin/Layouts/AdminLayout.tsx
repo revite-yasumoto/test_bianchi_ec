@@ -92,7 +92,7 @@ export function AdminLayout({
                 <div
                     role="status"
                     aria-live="polite"
-                    className="fixed bottom-6 left-1/2 -translate-x-1/2 rounded-lg bg-admin-ink px-5 py-3 text-sm font-bold text-white shadow-lg"
+                    className="fixed bottom-6 left-1/2 -translate-x-1/2 rounded-lg bg-admin-ink px-5 py-3 text-base font-bold text-white shadow-lg"
                 >
                     {message}
                 </div>

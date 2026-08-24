@@ -4,40 +4,60 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Front;
 
+use App\Actions\Front\Contact\ResolveContactProduct;
 use App\Actions\Front\Contact\SubmitContact;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Front\Contact\StoreContactRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ContactController extends Controller
 {
-    public function create(Request $request): Response
+    /** 完了画面を送信直後の一度だけ開けるようにするための印 */
+    private const SESSION_SUBMITTED = 'contact.submitted_number';
+
+    public function create(Request $request, ResolveContactProduct $resolveProduct): Response
     {
         /** @var User|null $user */
         $user = $request->user('web');
 
-        // 商品詳細の「この商品について問い合わせる」から渡る商品名。
-        // 未認証で到達でき、配列や任意長の値を渡されうるため、文字列のみを入力欄と同じ上限で受ける
-        $productName = $request->query('product_name');
+        $product = $resolveProduct($request->query('product_id'));
 
         return Inertia::render('front/Contact/Create', [
             'defaults' => [
                 'name' => $user?->name ?? '',
                 'email' => $user?->email ?? '',
-                'product_name' => is_string($productName) ? Str::substr($productName, 0, 255) : '',
+                'product_name' => '',
+            ],
+            'product' => $product === null ? null : [
+                'id' => $product->id,
+                'name' => $product->name,
             ],
         ]);
     }
 
     public function store(StoreContactRequest $request, SubmitContact $submitContact): RedirectResponse
     {
-        $submitContact($request->safe()->all(), $request->user('web')?->id);
+        $contact = $submitContact($request->safe()->all(), $request->user('web')?->id);
 
-        return back()->with('success', '送信しました。3営業日以内にご返信いたします。');
+        $request->session()->put(self::SESSION_SUBMITTED, $contact->contact_number);
+
+        return redirect()->route('contact.complete');
+    }
+
+    public function complete(Request $request): Response|RedirectResponse
+    {
+        $contactNumber = $request->session()->pull(self::SESSION_SUBMITTED);
+
+        if ($contactNumber === null) {
+            return redirect()->route('contact');
+        }
+
+        return Inertia::render('front/Contact/Complete', [
+            'contactNumber' => $contactNumber,
+        ]);
     }
 }

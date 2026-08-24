@@ -40,7 +40,7 @@ export default function Guide({ shippingTable, ecSetting }: Props) {
                     （税込）以上のご購入で送料無料です。
                 </p>
                 <div className="overflow-x-auto">
-                    <table className="w-full min-w-[320px] border-t border-line text-[12.5px]">
+                    <table className="w-full min-w-[320px] border-t border-line text-[15px]">
                         <caption className="sr-only">
                             都道府県ごとの送料とお届け日数
                         </caption>

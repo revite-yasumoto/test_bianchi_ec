@@ -46,7 +46,7 @@ export function RankingSection({
                     ランキング
                 </h2>
                 {updatedAt ? (
-                    <p className="font-mono text-[10.5px] text-ink2">
+                    <p className="font-mono text-sm text-ink2">
                         UPDATED{' '}
                         <time dateTime={updatedAtIso ?? undefined}>
                             {updatedAt}
@@ -70,7 +70,7 @@ export function RankingSection({
                         aria-controls={`${baseId}-panel-${tab.key}`}
                         onClick={() => setSelectedKey(tab.key)}
                         className={cn(
-                            'rounded-full border px-4 py-1.5 text-[12.5px] font-bold',
+                            'rounded-full border px-4 py-1.5 text-[15px] font-bold',
                             tab.key === currentKey
                                 ? 'border-brand bg-brand text-white'
                                 : 'border-line bg-white text-ink2',

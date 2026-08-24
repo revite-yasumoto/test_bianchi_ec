@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Front\Auth;
 
+use App\Enums\Gender;
 use App\Enums\UserStatus;
 use App\Mail\Front\RegistrationCompleted;
+use App\Models\Prefecture;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use PHPUnit\Framework\Attributes\Test;
@@ -15,6 +18,15 @@ use Tests\TestCase;
 class RegisterTest extends TestCase
 {
     use RefreshDatabase;
+
+    private Prefecture $prefecture;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->prefecture = Prefecture::factory()->create(['name' => '東京都']);
+    }
 
     /**
      * @param  array<string, mixed>  $overrides
@@ -28,6 +40,11 @@ class RegisterTest extends TestCase
             'email' => 'taro@example.test',
             'password' => 'password123',
             'password_confirmation' => 'password123',
+            'tel' => '090-0000-0000',
+            'postal_code' => '150-0041',
+            'prefecture_id' => $this->prefecture->id,
+            'city' => '渋谷区',
+            'address_line1' => '架空町1-2-3',
             'agree' => true,
         ], $overrides);
     }
@@ -50,6 +67,162 @@ class RegisterTest extends TestCase
             'name' => '山田 太郎',
             'status' => UserStatus::Active->value,
         ]);
+    }
+
+    #[Test]
+    public function 会員登録画面に都道府県の選択肢が渡る(): void
+    {
+        $this->get(route('register'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('front/Auth/Register')
+                ->where('prefectures.0.name', '東京都')
+            );
+    }
+
+    #[Test]
+    public function 会員登録すると既定の配送先が作られる(): void
+    {
+        $this->post(route('register.store'), $this->validPayload());
+
+        $user = User::query()->where('email', 'taro@example.test')->sole();
+
+        $this->assertDatabaseHas('user_addresses', [
+            'user_id' => $user->id,
+            'label' => '自宅',
+            'recipient_name' => '山田 太郎',
+            'postal_code' => '150-0041',
+            'prefecture_id' => $this->prefecture->id,
+            'city' => '渋谷区',
+            'address_line1' => '架空町1-2-3',
+            'tel' => '090-0000-0000',
+            'is_default' => true,
+        ]);
+    }
+
+    #[Test]
+    public function 電話番号が未入力なら登録されない(): void
+    {
+        $this->post(route('register.store'), $this->validPayload(['tel' => '']))
+            ->assertSessionHasErrors('tel');
+
+        $this->assertDatabaseCount('users', 0);
+    }
+
+    #[Test]
+    public function 住所が未入力なら登録されない(): void
+    {
+        $this->post(route('register.store'), $this->validPayload([
+            'postal_code' => '',
+            'city' => '',
+            'address_line1' => '',
+        ]))->assertSessionHasErrors(['postal_code', 'city', 'address_line1']);
+
+        $this->assertDatabaseCount('users', 0);
+    }
+
+    #[Test]
+    public function 住所の検証に失敗すると会員も配送先も作られない(): void
+    {
+        $this->post(route('register.store'), $this->validPayload([
+            'prefecture_id' => 999999,
+        ]))->assertSessionHasErrors('prefecture_id');
+
+        $this->assertDatabaseCount('users', 0);
+        $this->assertDatabaseCount('user_addresses', 0);
+    }
+
+    #[Test]
+    public function 生年月日と性別が保存される(): void
+    {
+        $this->post(route('register.store'), $this->validPayload([
+            'birth_year' => '1990',
+            'birth_month' => '4',
+            'birth_day' => '1',
+            'gender' => Gender::Female->value,
+        ]));
+
+        $user = User::query()->where('email', 'taro@example.test')->sole();
+
+        $this->assertSame('1990-04-01', $user->birthday?->toDateString());
+        $this->assertSame(Gender::Female, $user->gender);
+    }
+
+    #[Test]
+    public function 生年月日と性別は未選択でも登録できる(): void
+    {
+        $this->post(route('register.store'), $this->validPayload([
+            'birth_year' => '',
+            'birth_month' => '',
+            'birth_day' => '',
+            'gender' => '',
+        ]))->assertRedirect(route('register.complete'));
+
+        $user = User::query()->where('email', 'taro@example.test')->sole();
+
+        $this->assertNull($user->birthday);
+        $this->assertNull($user->gender);
+    }
+
+    #[Test]
+    public function 生年月日を一部だけ選ぶと登録されない(): void
+    {
+        $this->post(route('register.store'), $this->validPayload([
+            'birth_year' => '1990',
+            'birth_month' => '4',
+        ]))->assertSessionHasErrors('birth_year');
+
+        $this->assertDatabaseCount('users', 0);
+    }
+
+    #[Test]
+    public function 実在しない生年月日は登録されない(): void
+    {
+        $this->post(route('register.store'), $this->validPayload([
+            'birth_year' => '1990',
+            'birth_month' => '2',
+            'birth_day' => '30',
+        ]))->assertSessionHasErrors('birth_year');
+
+        $this->assertDatabaseCount('users', 0);
+    }
+
+    #[Test]
+    public function 未来の生年月日は登録されない(): void
+    {
+        $tomorrow = CarbonImmutable::tomorrow();
+
+        $this->post(route('register.store'), $this->validPayload([
+            'birth_year' => $tomorrow->format('Y'),
+            'birth_month' => $tomorrow->format('n'),
+            'birth_day' => $tomorrow->format('j'),
+        ]))->assertSessionHasErrors('birth_year');
+
+        $this->assertDatabaseCount('users', 0);
+    }
+
+    #[Test]
+    public function メールマガジンのチェックを外すと購読しない状態で保存される(): void
+    {
+        $this->post(route('register.store'), $this->validPayload([
+            'is_newsletter_subscribed' => false,
+        ]));
+
+        $user = User::query()->where('email', 'taro@example.test')->sole();
+
+        $this->assertFalse($user->is_newsletter_subscribed);
+    }
+
+    #[Test]
+    public function メールマガジンを受け取る状態で登録できる(): void
+    {
+        $this->post(route('register.store'), $this->validPayload([
+            'is_newsletter_subscribed' => true,
+        ]));
+
+        $user = User::query()->where('email', 'taro@example.test')->sole();
+
+        $this->assertTrue($user->is_newsletter_subscribed);
     }
 
     #[Test]

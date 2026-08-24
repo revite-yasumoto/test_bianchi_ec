@@ -18,23 +18,42 @@ class NewsController extends Controller
     {
         $news = News::query()
             ->published()
-            ->select(['id', 'published_on', 'category', 'title', 'body'])
+            ->select(['id', 'published_on', 'category', 'title'])
             ->orderByDesc('published_on')
             ->orderByDesc('id')
             ->paginate(self::PER_PAGE)
-            ->through(fn (News $row): array => [
-                'id' => $row->id,
-                'published_on' => $row->published_on->format('Y.m.d'),
-                'published_on_iso' => $row->published_on->toDateString(),
-                'category' => $row->category->value,
-                'category_tone' => $this->toneOf($row->category),
-                'title' => $row->title,
-                'body' => $row->body,
-            ]);
+            ->through(fn (News $row): array => $this->summary($row));
 
         return Inertia::render('front/News/Index', [
             'news' => $news,
         ]);
+    }
+
+    public function show(News $news): Response
+    {
+        abort_unless($news->is_published, 404);
+
+        return Inertia::render('front/News/Show', [
+            'news' => [
+                ...$this->summary($news),
+                'body' => $news->body,
+            ],
+        ]);
+    }
+
+    /**
+     * @return array{id: int, published_on: string, published_on_iso: string, category: string, category_tone: array{fg: string, bg: string}, title: string}
+     */
+    private function summary(News $row): array
+    {
+        return [
+            'id' => $row->id,
+            'published_on' => $row->published_on->format('Y.m.d'),
+            'published_on_iso' => $row->published_on->toDateString(),
+            'category' => $row->category->value,
+            'category_tone' => $this->toneOf($row->category),
+            'title' => $row->title,
+        ];
     }
 
     /**

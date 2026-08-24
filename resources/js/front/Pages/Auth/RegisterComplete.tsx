@@ -28,7 +28,7 @@ export default function RegisterComplete() {
                     <h1 className="mt-5.5 text-[26px] font-black">
                         会員登録が完了しました
                     </h1>
-                    <p className="mt-3 text-[13.5px] leading-[1.9] text-ink2">
+                    <p className="mt-3 text-[15px] leading-[1.9] text-ink2">
                         ご登録のメールアドレスへ完了のご案内をお送りしました。
                         ログインしてお買い物をお楽しみください。
                     </p>
@@ -36,13 +36,13 @@ export default function RegisterComplete() {
                     <div className="mt-6.5 flex flex-wrap justify-center gap-2.5">
                         <Link
                             href={route('login')}
-                            className="rounded-full bg-brand px-6.5 py-3.5 text-sm font-bold text-white"
+                            className="rounded-full bg-brand px-6.5 py-3.5 text-base font-bold text-white"
                         >
                             ログインする
                         </Link>
                         <Link
                             href={route('top')}
-                            className="rounded-full border border-line px-6.5 py-3.5 text-sm font-bold"
+                            className="rounded-full border border-line px-6.5 py-3.5 text-base font-bold"
                         >
                             TOPへ戻る
                         </Link>

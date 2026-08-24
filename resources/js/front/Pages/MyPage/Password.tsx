@@ -64,7 +64,7 @@ export default function Password() {
                 <button
                     type="submit"
                     disabled={processing}
-                    className="mt-1 rounded-full bg-brand py-3.5 text-sm font-extrabold text-white disabled:opacity-60"
+                    className="mt-1 rounded-full bg-brand py-3.5 text-base font-extrabold text-white disabled:opacity-60"
                 >
                     パスワードを変更する
                 </button>

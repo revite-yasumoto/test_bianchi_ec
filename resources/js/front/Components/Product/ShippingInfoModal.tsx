@@ -28,23 +28,23 @@ export function ShippingInfoModal({
             title="送料・お支払い方法・発送日数"
             className="max-h-[80dvh] max-w-[520px] overflow-y-auto"
         >
-            <h3 className="text-[13px] font-extrabold">送料</h3>
-            <p className="mt-1.5 text-[12.5px] leading-[1.9] text-ink2">
+            <h3 className="text-[15px] font-extrabold">送料</h3>
+            <p className="mt-1.5 text-[15px] leading-[1.9] text-ink2">
                 送料はお届け先の都道府県ごとに異なります（下表）。
                 {yen(ecSetting.free_shipping_threshold)}
                 （税込）以上のご購入で送料無料です。
             </p>
 
-            <h3 className="mt-4 text-[13px] font-extrabold">お支払い方法</h3>
-            <p className="mt-1.5 text-[12.5px] leading-[1.9] text-ink2">
+            <h3 className="mt-4 text-[15px] font-extrabold">お支払い方法</h3>
+            <p className="mt-1.5 text-[15px] leading-[1.9] text-ink2">
                 銀行振込（前払い・ご入金確認後の発送）／代金引換（手数料{' '}
                 {yen(ecSetting.cod_fee)}）
             </p>
 
-            <h3 className="mt-4 text-[13px] font-extrabold">
+            <h3 className="mt-4 text-[15px] font-extrabold">
                 送料・発送日数の目安
             </h3>
-            <table className="mt-2 w-full border-t border-line text-[12.5px]">
+            <table className="mt-2 w-full border-t border-line text-[15px]">
                 <caption className="sr-only">
                     都道府県ごとの送料と発送日数
                 </caption>
@@ -78,7 +78,7 @@ export function ShippingInfoModal({
                 </tbody>
             </table>
 
-            <p className="mt-4 text-[12.5px]">
+            <p className="mt-4 text-[15px]">
                 <Link href={route('guide')} className="font-bold text-brand">
                     買い物ガイドで詳しく見る →
                 </Link>

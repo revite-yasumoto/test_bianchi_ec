@@ -14,7 +14,7 @@ export function Badge({ tone, className, children }: BadgeProps) {
         <span
             style={{ color: tone.fg, backgroundColor: tone.bg }}
             className={cn(
-                'inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold whitespace-nowrap',
+                'inline-flex items-center rounded-full px-2.5 py-1 text-sm font-bold whitespace-nowrap',
                 className,
             )}
         >

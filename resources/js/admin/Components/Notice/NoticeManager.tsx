@@ -72,8 +72,7 @@ export function NoticeManager({
                     {
                         key: 'period',
                         header: '掲載期間',
-                        className:
-                            'font-mono text-[11.5px] text-admin-ink-muted',
+                        className: 'font-mono text-sm text-admin-ink-muted',
                         render: (row) => row.period_label,
                     },
                     {
@@ -93,14 +92,14 @@ export function NoticeManager({
                             <>
                                 <button
                                     type="button"
-                                    className="mr-3 text-[11.5px] font-bold text-admin-brand"
+                                    className="mr-3 text-sm font-bold text-admin-brand"
                                     onClick={() => onEdit(row)}
                                 >
                                     編集
                                 </button>
                                 <button
                                     type="button"
-                                    className="text-[11.5px] font-bold text-admin-danger"
+                                    className="text-sm font-bold text-admin-danger"
                                     onClick={() => setDeleteTarget(row)}
                                 >
                                     削除
@@ -111,7 +110,7 @@ export function NoticeManager({
                 ]}
             />
 
-            <p className="mt-3 text-[11.5px] text-admin-ink-muted">
+            <p className="mt-3 text-sm text-admin-ink-muted">
                 掲載期間内のお知らせがフロントTOPの上部にリンク形式で表示されます。
             </p>
 

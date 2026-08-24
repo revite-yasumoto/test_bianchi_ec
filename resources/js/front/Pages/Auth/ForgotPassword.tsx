@@ -28,7 +28,7 @@ export default function ForgotPassword() {
                     <h1 className="text-center text-2xl font-black">
                         パスワードの再設定
                     </h1>
-                    <p className="mt-2 text-center text-[13px] leading-[1.9] text-ink2">
+                    <p className="mt-2 text-center text-[15px] leading-[1.9] text-ink2">
                         ご登録のメールアドレスを入力してください。
                         再設定用のリンクをお送りします。
                     </p>
@@ -51,14 +51,14 @@ export default function ForgotPassword() {
                         <Button
                             type="submit"
                             disabled={processing}
-                            className="mt-1.5 py-4 text-[15px]"
+                            className="mt-1.5 py-4 text-base"
                         >
                             再設定メールを送る
                         </Button>
 
                         <Link
                             href={route('login')}
-                            className="text-center text-[13px] font-bold text-brand"
+                            className="text-center text-[15px] font-bold text-brand"
                         >
                             ログイン画面へ戻る →
                         </Link>

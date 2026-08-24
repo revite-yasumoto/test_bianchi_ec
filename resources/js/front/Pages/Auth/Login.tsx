@@ -37,7 +37,7 @@ export default function Login() {
                     <h1 className="text-center text-2xl font-black">
                         ログイン
                     </h1>
-                    <p className="mt-2 text-center text-[13px] text-ink2">
+                    <p className="mt-2 text-center text-[15px] text-ink2">
                         ご購入には会員登録・ログインが必要です
                     </p>
 
@@ -82,21 +82,21 @@ export default function Login() {
                         <Button
                             type="submit"
                             disabled={processing}
-                            className="mt-1.5 py-4 text-[15px]"
+                            className="mt-1.5 py-4 text-base"
                         >
                             ログイン
                         </Button>
 
                         <Link
                             href={route('password.request')}
-                            className="text-center text-[13px] text-ink2 underline"
+                            className="text-center text-[15px] text-ink2 underline"
                         >
                             パスワードをお忘れの方
                         </Link>
 
                         <Link
                             href={route('register')}
-                            className="text-center text-[13px] font-bold text-brand"
+                            className="text-center text-[15px] font-bold text-brand"
                         >
                             新規会員登録はこちら →
                         </Link>

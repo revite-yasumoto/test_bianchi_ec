@@ -10,7 +10,7 @@ export default function Terms() {
             title="利用規約"
             description="本サイトのご利用にあたっての会員登録・ご注文・禁止事項などの取り決めです。"
         >
-            <p className="text-[12.5px] leading-[1.95] text-ink2">
+            <p className="text-[15px] leading-[1.95] text-ink2">
                 本サイトはデモンストレーション用のサンプルサイトです。以下の記載内容はすべて架空のものです。
             </p>
 

@@ -26,7 +26,7 @@ export function NewsSection({ news }: NewsSectionProps) {
                 <h2 className="text-2xl font-black">新着ニュース</h2>
                 <Link
                     href={route('news.index')}
-                    className="text-[12.5px] font-bold text-brand"
+                    className="text-[15px] font-bold text-brand"
                 >
                     すべて見る →
                 </Link>
@@ -36,12 +36,12 @@ export function NewsSection({ news }: NewsSectionProps) {
                 {news.map((row) => (
                     <li key={row.id} className="border-b border-line">
                         <Link
-                            href={route('news.index')}
+                            href={route('news.show', [row.id])}
                             className="flex flex-wrap items-center gap-3.5 py-3.5"
                         >
                             <time
                                 dateTime={row.published_on_iso}
-                                className="shrink-0 font-mono text-[11.5px] text-ink2"
+                                className="shrink-0 font-mono text-sm text-ink2"
                             >
                                 {row.published_on}
                             </time>
@@ -51,7 +51,7 @@ export function NewsSection({ news }: NewsSectionProps) {
                             >
                                 {row.category}
                             </Badge>
-                            <span className="min-w-0 text-[13.5px] font-semibold break-words">
+                            <span className="min-w-0 text-[15px] font-semibold break-words">
                                 {row.title}
                             </span>
                         </Link>

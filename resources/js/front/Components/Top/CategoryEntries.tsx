@@ -19,7 +19,7 @@ export function CategoryEntries({ entries }: CategoryEntriesProps) {
 
     return (
         <section className="px-5 pt-11 pb-2">
-            <p className="mb-1.5 font-mono text-[11px] tracking-[.16em] text-brand">
+            <p className="mb-1.5 font-mono text-sm tracking-[.16em] text-brand">
                 SHOP BY CATEGORY
             </p>
             <h2 className="mb-5 text-2xl font-black">購入方法から探す</h2>
@@ -44,10 +44,10 @@ export function CategoryEntries({ entries }: CategoryEntriesProps) {
                                 />
                             </div>
                             <div className="px-4 py-3.5">
-                                <p className="text-[14.5px] font-extrabold">
+                                <p className="text-base font-extrabold">
                                     {entry.name}
                                 </p>
-                                <p className="mt-0.5 text-[11.5px] text-ink2">
+                                <p className="mt-0.5 text-sm text-ink2">
                                     {entry.product_count}アイテム
                                 </p>
                             </div>

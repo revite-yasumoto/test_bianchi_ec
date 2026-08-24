@@ -70,7 +70,7 @@ export default function Index({ members, filters, totalCount }: Props) {
                 <div className="min-w-[220px] flex-1">
                     <label
                         htmlFor="filter-q"
-                        className="mb-1.5 block text-[11.5px] font-bold text-admin-ink"
+                        className="mb-1.5 block text-sm font-bold text-admin-ink"
                     >
                         氏名・メール・会員ID
                     </label>
@@ -92,7 +92,7 @@ export default function Index({ members, filters, totalCount }: Props) {
                             key: 'member_code',
                             header: '会員ID',
                             render: (row) => (
-                                <span className="font-mono text-[11.5px]">
+                                <span className="font-mono text-sm">
                                     {row.member_code}
                                 </span>
                             ),
@@ -144,7 +144,7 @@ export default function Index({ members, filters, totalCount }: Props) {
                             render: (row) => (
                                 <Link
                                     href={route('admin.members.show', [row.id])}
-                                    className="block text-right text-[11.5px] font-bold text-admin-brand"
+                                    className="block text-right text-sm font-bold text-admin-brand"
                                 >
                                     詳細
                                 </Link>

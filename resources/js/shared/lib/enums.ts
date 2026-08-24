@@ -23,6 +23,19 @@ export const UserStatus = {
 
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus];
 
+/** 性別。未回答は列を null にして表すため、Enumに未回答の値は持たせない */
+export const Gender = {
+    Male: 'male',
+    Female: 'female',
+} as const;
+
+export type Gender = (typeof Gender)[keyof typeof Gender];
+
+export const GENDER_OPTIONS: { value: Gender; label: string }[] = [
+    { value: Gender.Male, label: '男性' },
+    { value: Gender.Female, label: '女性' },
+];
+
 export const PriceRange = {
     Under10000: 'under_10000',
     From10000: 'from_10000',
@@ -42,3 +55,19 @@ export const OrderStatus = {
 } as const;
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
+
+export const ContactStatus = {
+    Unhandled: 'unhandled',
+    InProgress: 'in_progress',
+    Handled: 'handled',
+} as const;
+
+export type ContactStatus = (typeof ContactStatus)[keyof typeof ContactStatus];
+
+/** お問い合わせ管理の一覧タブ。`product_id` の有無で振り分ける */
+export const ContactTab = {
+    General: 'general',
+    Product: 'product',
+} as const;
+
+export type ContactTab = (typeof ContactTab)[keyof typeof ContactTab];

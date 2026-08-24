@@ -29,14 +29,14 @@ export default function Index({ admins }: Props) {
                     />
                     <Link
                         href={route('admin.admins.create')}
-                        className="rounded-lg bg-admin-brand px-4 py-2 text-[12.5px] font-bold whitespace-nowrap text-white"
+                        className="rounded-lg bg-admin-brand px-4 py-2 text-[15px] font-bold whitespace-nowrap text-white"
                     >
                         ＋ 管理者登録
                     </Link>
                 </div>
             }
         >
-            <p className="mb-3.5 text-[11.5px] text-admin-ink-muted">
+            <p className="mb-3.5 text-sm text-admin-ink-muted">
                 管理者ごとの権限管理は行いません。登録された管理者はすべての機能を利用できます。
             </p>
 

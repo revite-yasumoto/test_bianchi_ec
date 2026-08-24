@@ -31,7 +31,7 @@ export default function Show({
             <div className="px-5 py-5 pb-14">
                 <Link
                     href={route('products.index')}
-                    className="font-mono text-[11px] text-ink2"
+                    className="font-mono text-sm text-ink2"
                 >
                     ← 商品一覧へ戻る
                 </Link>

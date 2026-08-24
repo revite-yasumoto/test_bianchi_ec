@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Front\MyPage;
 
+use App\Enums\Gender;
 use App\Models\Order;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -47,6 +49,97 @@ class ProfileUpdateTest extends TestCase
     public function 未ログインではログイン画面へリダイレクトされる(): void
     {
         $this->get(route('mypage.profile'))->assertRedirect(route('login'));
+    }
+
+    #[Test]
+    public function 生年月日と性別を更新できる(): void
+    {
+        $this->actingAs($this->user)
+            ->put(route('mypage.profile.update'), $this->payload([
+                'birth_year' => '1990',
+                'birth_month' => '4',
+                'birth_day' => '1',
+                'gender' => Gender::Male->value,
+            ]))
+            ->assertSessionHas('success', '会員情報を更新しました');
+
+        $this->user->refresh();
+
+        $this->assertSame('1990-04-01', $this->user->birthday?->toDateString());
+        $this->assertSame(Gender::Male, $this->user->gender);
+    }
+
+    #[Test]
+    public function メールマガジンのチェックを外すと購読しない状態になる(): void
+    {
+        $this->actingAs($this->user)
+            ->put(route('mypage.profile.update'), $this->payload([
+                'is_newsletter_subscribed' => false,
+            ]));
+
+        $this->user->refresh();
+
+        $this->assertFalse($this->user->is_newsletter_subscribed);
+    }
+
+    #[Test]
+    public function 電話番号が未入力なら更新されない(): void
+    {
+        $this->actingAs($this->user)
+            ->put(route('mypage.profile.update'), $this->payload(['tel' => '']))
+            ->assertSessionHasErrors('tel');
+
+        $this->assertSame('090-0000-0000', $this->user->fresh()?->tel);
+    }
+
+    #[Test]
+    public function 生年月日を一部だけ選ぶと更新されない(): void
+    {
+        $this->actingAs($this->user)
+            ->put(route('mypage.profile.update'), $this->payload([
+                'birth_year' => '1990',
+                'birth_day' => '1',
+            ]))
+            ->assertSessionHasErrors('birth_year');
+
+        $this->assertNull($this->user->fresh()?->birthday);
+    }
+
+    #[Test]
+    public function 未来の生年月日は更新されない(): void
+    {
+        $tomorrow = CarbonImmutable::tomorrow();
+
+        $this->actingAs($this->user)
+            ->put(route('mypage.profile.update'), $this->payload([
+                'birth_year' => $tomorrow->format('Y'),
+                'birth_month' => $tomorrow->format('n'),
+                'birth_day' => $tomorrow->format('j'),
+            ]))
+            ->assertSessionHasErrors('birth_year');
+
+        $this->assertNull($this->user->fresh()?->birthday);
+    }
+
+    #[Test]
+    public function 現在の生年月日と性別が初期値として表示される(): void
+    {
+        $this->user->update([
+            'birthday' => '1990-04-01',
+            'gender' => Gender::Female,
+            'is_newsletter_subscribed' => false,
+        ]);
+
+        $this->actingAs($this->user)
+            ->get(route('mypage.profile'))
+            ->assertInertia(fn ($page) => $page
+                ->component('front/MyPage/Profile')
+                ->where('profile.birth_year', '1990')
+                ->where('profile.birth_month', '4')
+                ->where('profile.birth_day', '1')
+                ->where('profile.gender', Gender::Female->value)
+                ->where('profile.is_newsletter_subscribed', false)
+            );
     }
 
     #[Test]
@@ -120,15 +213,13 @@ class ProfileUpdateTest extends TestCase
     }
 
     #[Test]
-    public function カナと電話番号は省略できる(): void
+    public function カナは省略できる(): void
     {
         $this->actingAs($this->user)
-            ->put(route('mypage.profile.update'), $this->payload(['name_kana' => null, 'tel' => null]))
+            ->put(route('mypage.profile.update'), $this->payload(['name_kana' => null]))
             ->assertSessionHasNoErrors();
 
-        $user = $this->user->refresh();
-        $this->assertNull($user->name_kana);
-        $this->assertNull($user->tel);
+        $this->assertNull($this->user->refresh()->name_kana);
     }
 
     #[Test]

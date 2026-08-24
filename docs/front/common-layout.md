@@ -107,6 +107,19 @@ type FrontSharedProps = {
 
 日本語本文を既定にするため、`resources/views/app.blade.php` の `<body>` に `font-jp` を指定する（Tailwind の既定である `--font-sans` は英字書体のため）。この指定はフロント・管理画面の共通テンプレートであり、管理画面の本文書体も `Zen Kaku Gothic New` になる。
 
+### 文字サイズ
+
+フロント・管理画面の双方に適用する。`@theme` にフォントサイズのトークンは置かず、Tailwind標準のユーティリティ（`text-sm` = 14px・`text-base` = 16px・`text-lg` = 18px）と、標準に無い値の任意値（`text-[15px]` 等）で指定する。
+
+| 用途 | 指定 |
+|---|---|
+| 補助テキスト・バッジ・表の見出し | `text-sm`（14px。**これより小さい指定は使わない**） |
+| 本文・一覧のセル | `text-[15px]` |
+| 小見出し・強調・入力要素 | `text-base`（16px）以上 |
+| 見出し | `text-lg`（18px）以上・`text-[22px]` 以上の任意値 |
+
+モックHTML（`docs/Markdown file UI mockups.zip`）は最小 8.5px までの文字サイズを使うが、可読性を優先して上表の下限を正とする。
+
 ### デザイントークン（`resources/css/app.css` `@theme`）
 
 フロント用。管理画面用の `--color-admin-*` は [docs/admin/common-layout.md](../admin/common-layout.md) が正本。
@@ -140,6 +153,36 @@ TONE.negative  // 在庫切れ・キャンセル      { fg: '#8a4030', bg: '#FBE
 TONE.info      // 新商品・受付中           { fg: '#2F6F86', bg: '#E7F0F4' }
 TONE.warning   // お知らせ                { fg: '#B0521F', bg: '#FDF0E2' }
 ```
+
+### 操作可能要素のカーソル（`resources/css/app.css` `@layer base`）
+
+フロント・管理画面の全ページに適用される共通の指定であり、本書を正本とする。
+
+Tailwind CSS v4 の Preflight はv3と違いボタンへ `cursor: pointer` を当てないため、指定を置かないとリンク（`a`）だけがポインタに変わり、ボタン類は変わらないという差が出る。押せる・選べることが分かるよう、`resources/css/app.css` の `@layer base` で次の要素をポインタにする。
+
+| 対象セレクタ | 対象の例 |
+|---|---|
+| `button:not(:disabled)` | ボタン・タブ・規格の選択肢・ページ送り |
+| `select:not(:disabled)` | 絞り込み・都道府県などのプルダウン |
+
+- チェックボックス・ラジオのラベル（`label`）は `:has()` セレクタでの一括指定を避け、ラベルを描画する各コンポーネント側で `cursor-pointer` を当てる。
+- 非活性の要素はポインタにしない。押せないことを示す要素（`disabled` のボタン、`aria-disabled="true"` の `span`）には `cursor-not-allowed` を当てる。
+- リンク（`a`・Inertia の `Link`）はブラウザ既定でポインタになるため、個別の指定を置かない。
+
+### 表示メッセージの翻訳（`lang/ja/`）
+
+フロント・管理画面の全ページに適用される共通の指定であり、本書を正本とする。
+
+`config/app.php` の `locale`・`fallback_locale` はいずれも `ja` で、フォールバック先も日本語のため、**翻訳が見つからないキーは翻訳キーの文字列がそのまま画面に出る**（Laravel 11 以降は言語ファイルがアプリ側に同梱されず、`php artisan lang:publish` で生成する）。日本語のファイルを置くことでこれを避ける。
+
+| ファイル | 対象 |
+|---|---|
+| `lang/ja/validation.php` | バリデーションのエラーメッセージ。Laravel の全ルールを訳しておく（未使用のルールを含む。ルールを追加した時点でキーが露出しないようにするため） |
+| `lang/ja/pagination.php` | ページ送りの `前へ`・`次へ`（`paginate()` が返す `links` の `label` に入る） |
+
+- メッセージ中の項目名（`:attribute`）は各 `FormRequest` の `attributes()` が供給する。`lang/ja/validation.php` は `attributes` を持たない。
+- バリデーションのメッセージが実際のフォームを通して日本語で返ることは [docs/front/contact.md](contact.md) の受け入れ条件が担保する。
+- `lang/ja/auth.php`・`lang/ja/passwords.php` は置かない。認証の失敗・アカウントのロック・パスワード再設定の失敗は、`auth.*` / `passwords.*` を参照せず `ValidationException::withMessages()` で日本語の文言を直接投げているため（[docs/front/auth.md](auth.md)・[docs/front/password-reset.md](password-reset.md)）。
 
 ### `FrontLayout`（`resources/js/front/Layouts/FrontLayout.tsx`）
 
@@ -221,7 +264,7 @@ type PaginationProps = {
 };
 ```
 
-`paginate()` が返す `links` をそのまま渡す。`&laquo; Previous` / `Next &raquo;` は「前へ」「次へ」に置き換え、リンク先が無い項目は `aria-disabled="true"` の `<span>`、現在ページには `aria-current="page"` を付ける。リンクが3件以下（1ページのみ）のときは何も描画しない。管理画面の同名コンポーネントとは配色トークンが異なるため別実装とする。
+`paginate()` が返す `links` をそのまま渡す（`label` は言語ファイルで日本語化済みのため、表示側で文言を置き換えない）。リンク先が無い項目は `aria-disabled="true"` の `<span>`、現在ページには `aria-current="page"` を付ける。リンクが3件以下（1ページのみ）のときは何も描画しない。管理画面の同名コンポーネントとは配色トークンが異なるため別実装とする。
 
 ### `categoryTint`（`resources/js/front/lib/tint.ts`）
 
@@ -345,6 +388,8 @@ type EmptyStateProps = { message: string; className?: string };
 | ビルド設定 | `vite.config.js` |
 | テンプレート | `resources/views/app.blade.php` |
 | スタイル | `resources/css/app.css` |
+| 言語 | `lang/ja/validation.php` |
+| 言語 | `lang/ja/pagination.php` |
 | Layout | `resources/js/front/Layouts/FrontLayout.tsx` |
 | Component | `resources/js/front/Components/Header.tsx` |
 | Component | `resources/js/front/Components/MobileMenu.tsx` |
@@ -371,6 +416,7 @@ type EmptyStateProps = { message: string; className?: string };
 | 型 | `resources/js/types/global.d.ts` |
 | Test | `tests/Feature/Front/SharedPropsTest.php` |
 | Test | `tests/Feature/Front/NavigationLinkTest.php` |
+| Test | `tests/Feature/Front/PaginationLabelTest.php` |
 
 ## 受け入れ条件
 
@@ -388,5 +434,7 @@ type EmptyStateProps = { message: string; className?: string };
 - 長い氏名がヘッダーで省略表示になり、`title` 属性に全文が入る: 自動テストなし。目視確認で担保する
 - カートドロワーの開閉（背景クリック・`Escape`キー・閉じるボタン）とフォーカス復帰: 自動テストなし。目視確認で担保する
 - トーストの表示位置・配色と自動消去（成功2.2秒／エラー5秒）: 自動テストなし。目視確認で担保する
+- ボタン・プルダウン・チェックボックス／ラジオのラベルにホバーするとポインタになり、非活性の要素はポインタにならない（フロント・管理画面とも）: 自動テストなし。目視確認で担保する
+- ページ送りのラベルが `前へ`・`次へ` で渡る: `tests/Feature/Front/PaginationLabelTest.php`（`ページ送りのラベルが日本語で渡される`）
 - 3書体（`Schibsted Grotesk` / `Zen Kaku Gothic New` / `Space Mono`）が適用される: 自動テストなし。目視確認で担保する
 - Props型定義の整合性: `npx tsc --noEmit`

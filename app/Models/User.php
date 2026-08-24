@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\Gender;
 use App\Enums\UserStatus;
 use App\Mail\Front\PasswordResetLink;
 use App\Services\Mail\NotificationMailer;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['member_code', 'name', 'name_kana', 'email', 'password', 'tel', 'status', 'failed_login_attempts', 'locked_until'])]
+#[Fillable(['member_code', 'name', 'name_kana', 'email', 'password', 'tel', 'birthday', 'gender', 'is_newsletter_subscribed', 'status', 'failed_login_attempts', 'locked_until'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -33,6 +34,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'locked_until' => 'datetime',
+            'birthday' => 'date',
+            'gender' => Gender::class,
+            'is_newsletter_subscribed' => 'boolean',
             'password' => 'hashed',
             'status' => UserStatus::class,
         ];

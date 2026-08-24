@@ -59,7 +59,7 @@ export default function Form({
                 <div className="flex flex-col gap-4">
                     <div className="rounded-xl border border-admin-line bg-white p-5">
                         <div className="flex items-center gap-3">
-                            <h2 className="text-[13px] font-extrabold text-admin-ink">
+                            <h2 className="text-[15px] font-extrabold text-admin-ink">
                                 SKU（バリエーション）
                             </h2>
                             <SkuToggle
@@ -113,7 +113,7 @@ export default function Form({
                             <div className="mt-4">
                                 <label
                                     htmlFor="single_quantity"
-                                    className="mb-1.5 block text-[11.5px] font-bold text-admin-ink"
+                                    className="mb-1.5 block text-sm font-bold text-admin-ink"
                                 >
                                     在庫数
                                 </label>
@@ -129,11 +129,11 @@ export default function Form({
                                     }
                                     className="max-w-40 rounded-lg border border-admin-line px-3 py-2 text-base"
                                 />
-                                <p className="mt-2.5 text-[11.5px] leading-relaxed text-admin-ink-muted">
+                                <p className="mt-2.5 text-sm leading-relaxed text-admin-ink-muted">
                                     SKUなしの商品は単一在庫で管理します。フロントでは「在庫あり／在庫切れ」の二値で表示されます。
                                 </p>
                                 {errors['variants.0.quantity'] ? (
-                                    <p className="mt-1 text-[11px] font-bold text-admin-danger">
+                                    <p className="mt-1 text-sm font-bold text-admin-danger">
                                         {errors['variants.0.quantity']}
                                     </p>
                                 ) : null}
@@ -150,7 +150,7 @@ export default function Form({
                     ) : null}
 
                     {errors.variants ? (
-                        <p className="text-[11.5px] font-bold text-admin-danger">
+                        <p className="text-sm font-bold text-admin-danger">
                             {errors.variants}
                         </p>
                     ) : null}
@@ -159,13 +159,13 @@ export default function Form({
                         <button
                             type="submit"
                             disabled={form.processing}
-                            className="flex-1 rounded-lg bg-admin-brand py-3 text-[13.5px] font-extrabold text-white disabled:opacity-60"
+                            className="flex-1 rounded-lg bg-admin-brand py-3 text-[15px] font-extrabold text-white disabled:opacity-60"
                         >
                             保存する
                         </button>
                         <Link
                             href={route('admin.products.index')}
-                            className="rounded-lg border border-admin-line bg-white px-5 py-3 text-[13px] font-bold text-admin-ink"
+                            className="rounded-lg border border-admin-line bg-white px-5 py-3 text-[15px] font-bold text-admin-ink"
                         >
                             キャンセル
                         </Link>
@@ -174,7 +174,7 @@ export default function Form({
                     {product ? (
                         <button
                             type="button"
-                            className="self-start text-[12px] font-bold text-admin-danger"
+                            className="self-start text-sm font-bold text-admin-danger"
                             onClick={() => setIsDeleteOpen(true)}
                         >
                             この商品を削除する

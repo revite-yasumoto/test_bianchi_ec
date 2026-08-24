@@ -50,7 +50,7 @@ export function ShippingSettingRow({
                 hasError && 'border-admin-danger',
             )}
         >
-            <span className="w-16 flex-shrink-0 text-[12.5px] font-semibold text-admin-ink">
+            <span className="w-16 flex-shrink-0 text-[15px] font-semibold text-admin-ink">
                 {row.prefecture_name}
             </span>
 
@@ -67,7 +67,7 @@ export function ShippingSettingRow({
                 aria-invalid={feeError !== undefined}
                 onChange={(event) => onChangeFee(event.target.value)}
             />
-            <span className="text-[11px] text-admin-ink-muted">円</span>
+            <span className="text-sm text-admin-ink-muted">円</span>
 
             <label htmlFor={deliveryDaysId} className="sr-only">
                 {`${row.prefecture_name}の配送予定日数`}
@@ -82,7 +82,7 @@ export function ShippingSettingRow({
                 aria-invalid={deliveryDaysError !== undefined}
                 onChange={(event) => onChangeDeliveryDays(event.target.value)}
             />
-            <span className="text-[11px] text-admin-ink-muted">日</span>
+            <span className="text-sm text-admin-ink-muted">日</span>
         </li>
     );
 }

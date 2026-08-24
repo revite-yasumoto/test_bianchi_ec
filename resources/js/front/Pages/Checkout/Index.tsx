@@ -115,13 +115,13 @@ export default function Index({
                         <button
                             type="submit"
                             disabled={processing || !selectedAddress}
-                            className="w-full rounded-full bg-coral py-4 text-[15px] font-extrabold text-white disabled:opacity-40"
+                            className="w-full rounded-full bg-coral py-4 text-base font-extrabold text-white disabled:opacity-40"
                         >
                             注文内容を確認する
                         </button>
                         <Link
                             href={route('cart.index')}
-                            className="w-full rounded-full border border-line py-3.5 text-center text-[13.5px] font-bold"
+                            className="w-full rounded-full border border-line py-3.5 text-center text-[15px] font-bold"
                         >
                             カートに戻る
                         </Link>

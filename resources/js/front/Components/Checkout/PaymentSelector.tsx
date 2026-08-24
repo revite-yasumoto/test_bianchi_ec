@@ -28,7 +28,7 @@ export function PaymentSelector({
 
     return (
         <fieldset>
-            <legend className="mb-3 text-[15px] font-extrabold">
+            <legend className="mb-3 text-base font-extrabold">
                 お支払い方法
             </legend>
 
@@ -55,10 +55,10 @@ export function PaymentSelector({
                                 className="mt-0.5 h-4.5 w-4.5 shrink-0 accent-brand"
                             />
                             <span>
-                                <span className="block text-[13.5px] font-bold">
+                                <span className="block text-[15px] font-bold">
                                     {option.label}
                                 </span>
-                                <span className="mt-1 block text-[12.5px] leading-[1.6] text-ink2">
+                                <span className="mt-1 block text-[15px] leading-[1.6] text-ink2">
                                     {option.note}
                                 </span>
                             </span>
@@ -67,7 +67,7 @@ export function PaymentSelector({
                 })}
             </div>
 
-            <p className="mt-2.5 text-[11.5px] text-ink2">
+            <p className="mt-2.5 text-sm text-ink2">
                 クレジットカード等のオンライン決済はお取り扱いしておりません。
             </p>
         </fieldset>

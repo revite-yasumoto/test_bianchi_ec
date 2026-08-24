@@ -38,9 +38,7 @@ export function AddressSelector({
 }: AddressSelectorProps) {
     return (
         <fieldset>
-            <legend className="mb-3 text-[15px] font-extrabold">
-                お届け先
-            </legend>
+            <legend className="mb-3 text-base font-extrabold">お届け先</legend>
 
             <div className="flex flex-col gap-2.5">
                 {addresses.map((address) => {
@@ -65,15 +63,15 @@ export function AddressSelector({
                                 className="mt-0.5 h-4.5 w-4.5 shrink-0 accent-brand"
                             />
                             <span>
-                                <span className="block text-[13.5px] font-bold">
+                                <span className="block text-[15px] font-bold">
                                     {address.recipient_name}（{address.label}）
                                     {address.is_default ? (
-                                        <span className="ml-2 rounded-full bg-bg2 px-2 py-0.5 text-[11px] font-bold text-ink2">
+                                        <span className="ml-2 rounded-full bg-bg2 px-2 py-0.5 text-sm font-bold text-ink2">
                                             既定
                                         </span>
                                     ) : null}
                                 </span>
-                                <span className="mt-1 block text-[12.5px] leading-[1.6] text-ink2">
+                                <span className="mt-1 block text-[15px] leading-[1.6] text-ink2">
                                     {addressLines(address)}
                                 </span>
                             </span>
@@ -84,17 +82,14 @@ export function AddressSelector({
                 <button
                     type="button"
                     onClick={onAddNew}
-                    className="rounded-2xl border-[1.5px] border-dashed border-line py-3.5 text-[13px] font-bold text-brand"
+                    className="rounded-2xl border-[1.5px] border-dashed border-line py-3.5 text-[15px] font-bold text-brand"
                 >
                     ＋ 新しいお届け先を追加
                 </button>
             </div>
 
             {error ? (
-                <p
-                    role="alert"
-                    className="mt-2 text-[11.5px] font-bold text-coral"
-                >
+                <p role="alert" className="mt-2 text-sm font-bold text-coral">
                     {error}
                 </p>
             ) : null}

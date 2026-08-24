@@ -17,7 +17,7 @@ class ContactAcknowledgement extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: sprintf('【%s】お問い合わせを承りました', config('app.name')),
+            subject: sprintf('【%s】お問い合わせを承りました（%s）', config('app.name'), $this->contact->contact_number),
         );
     }
 

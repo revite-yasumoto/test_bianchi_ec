@@ -23,13 +23,13 @@ export function ImportResultPanel({
                 className,
             )}
         >
-            <h2 className="mb-2 text-[13px] font-extrabold text-admin-ink">
+            <h2 className="mb-2 text-[15px] font-extrabold text-admin-ink">
                 インポート結果
             </h2>
 
             {hasErrors ? (
                 <>
-                    <p className="text-[12.5px] font-bold text-admin-danger">
+                    <p className="text-[15px] font-bold text-admin-danger">
                         {result.errors.length}
                         件のエラーがあるため、1件も取り込んでいません。
                     </p>
@@ -37,7 +37,7 @@ export function ImportResultPanel({
                         {result.errors.map((error, index) => (
                             <li
                                 key={`${error.line}-${index}`}
-                                className="text-[12px] text-admin-ink"
+                                className="text-sm text-admin-ink"
                             >
                                 <span className="font-mono font-bold">
                                     {error.line}行目
@@ -50,7 +50,7 @@ export function ImportResultPanel({
                     </ul>
                 </>
             ) : (
-                <p className="text-[12.5px] text-admin-ink">
+                <p className="text-[15px] text-admin-ink">
                     新規 {result.created}件 / 更新 {result.updated}件
                     を取り込みました。
                 </p>

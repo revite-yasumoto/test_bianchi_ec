@@ -59,14 +59,12 @@ export function CartItemRow({ row }: CartItemRowProps) {
             <div className="min-w-[150px] flex-1">
                 <Link
                     href={route('products.show', [row.product_id])}
-                    className="text-sm leading-[1.45] font-bold"
+                    className="text-base leading-[1.45] font-bold"
                 >
                     {row.product_name}
                 </Link>
-                <p className="mt-1 text-[11.5px] text-ink2">
-                    {row.variant_label}
-                </p>
-                <p className="mt-2 font-mono text-sm font-bold">
+                <p className="mt-1 text-sm text-ink2">{row.variant_label}</p>
+                <p className="mt-2 font-mono text-base font-bold">
                     {yen(row.unit_price)}
                 </p>
 
@@ -80,28 +78,28 @@ export function CartItemRow({ row }: CartItemRowProps) {
                     <button
                         type="button"
                         onClick={remove}
-                        className="text-xs text-ink2 underline"
+                        className="text-sm text-ink2 underline"
                     >
                         削除
                     </button>
                 </div>
 
                 {message ? (
-                    <p className="mt-2.5 text-[12px] font-bold text-coral">
+                    <p className="mt-2.5 text-sm font-bold text-coral">
                         {message}
                     </p>
                 ) : null}
                 {error ? (
                     <p
                         role="alert"
-                        className="mt-2.5 text-[12px] font-bold text-coral"
+                        className="mt-2.5 text-sm font-bold text-coral"
                     >
                         {error}
                     </p>
                 ) : null}
             </div>
 
-            <p className="ml-auto font-mono text-[15px] font-bold">
+            <p className="ml-auto font-mono text-base font-bold">
                 {yen(row.subtotal)}
             </p>
         </li>

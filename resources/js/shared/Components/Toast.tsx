@@ -53,7 +53,7 @@ export function Toast() {
             role={toast.isError ? 'alert' : 'status'}
             aria-live={toast.isError ? 'assertive' : 'polite'}
             className={cn(
-                'fixed bottom-6 left-1/2 z-[80] max-w-[90vw] -translate-x-1/2 rounded-full px-6 py-3 text-[13px] font-bold text-white shadow-lg',
+                'fixed bottom-6 left-1/2 z-[80] max-w-[90vw] -translate-x-1/2 rounded-full px-6 py-3 text-[15px] font-bold text-white shadow-lg',
                 toast.isError ? 'bg-coral' : 'bg-ink',
             )}
         >

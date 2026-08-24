@@ -66,21 +66,31 @@ class NewsIndexTest extends TestCase
     }
 
     #[Test]
-    public function 本文と種別が一覧に渡される(): void
+    public function 種別が一覧に渡される(): void
     {
         News::factory()->create([
             'title' => '架空のお知らせ',
-            'body' => "1行目の本文\n2行目の本文",
             'category' => NewsCategory::NewProduct,
             'is_published' => true,
         ]);
 
         $this->get(route('news.index'))
             ->assertInertia(fn ($page) => $page
-                ->where('news.data.0.body', "1行目の本文\n2行目の本文")
                 ->where('news.data.0.category', NewsCategory::NewProduct->value)
                 ->has('news.data.0.category_tone')
             );
+    }
+
+    #[Test]
+    public function 本文は一覧に渡されない(): void
+    {
+        News::factory()->create([
+            'body' => '一覧には出さない本文',
+            'is_published' => true,
+        ]);
+
+        $this->get(route('news.index'))
+            ->assertInertia(fn ($page) => $page->missing('news.data.0.body'));
     }
 
     #[Test]

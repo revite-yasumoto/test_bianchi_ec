@@ -50,7 +50,7 @@ export function ProductVisual({
                 className="w-3/5 text-white/35"
             />
             {productCode ? (
-                <span className="absolute bottom-2 left-2.5 font-mono text-[10px] tracking-[.1em] text-white/80">
+                <span className="absolute bottom-2 left-2.5 font-mono text-sm tracking-[.1em] text-white/80">
                     {productCode}
                 </span>
             ) : null}

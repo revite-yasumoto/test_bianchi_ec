@@ -43,7 +43,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                     <h1 className="text-center text-2xl font-black">
                         パスワードの再設定
                     </h1>
-                    <p className="mt-2 text-center text-[13px] leading-[1.9] text-ink2">
+                    <p className="mt-2 text-center text-[15px] leading-[1.9] text-ink2">
                         新しいパスワードを入力してください。
                     </p>
 
@@ -92,7 +92,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                         <Button
                             type="submit"
                             disabled={processing}
-                            className="mt-1.5 py-4 text-[15px]"
+                            className="mt-1.5 py-4 text-base"
                         >
                             パスワードを変更する
                         </Button>

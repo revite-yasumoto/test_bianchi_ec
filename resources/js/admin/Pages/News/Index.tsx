@@ -19,7 +19,7 @@ export default function Index({ news, categoryOptions }: Props) {
             headerActions={
                 <button
                     type="button"
-                    className="rounded-lg bg-admin-brand px-4 py-2 text-[12.5px] font-bold whitespace-nowrap text-white"
+                    className="rounded-lg bg-admin-brand px-4 py-2 text-[15px] font-bold whitespace-nowrap text-white"
                     onClick={() => setEditing('new')}
                 >
                     ＋ 新規作成

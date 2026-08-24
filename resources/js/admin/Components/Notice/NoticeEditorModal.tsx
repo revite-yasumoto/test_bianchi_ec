@@ -17,12 +17,12 @@ type NoticeForm = {
     body: string;
 };
 
-const LABEL_CLASS = 'mb-1.5 block text-[11.5px] font-bold text-admin-ink';
+const LABEL_CLASS = 'mb-1.5 block text-sm font-bold text-admin-ink';
 
 const FIELD_CLASS =
     'w-full rounded-lg border border-admin-line px-3 py-2 text-base';
 
-const ERROR_CLASS = 'mt-1 text-[11px] font-bold text-admin-danger';
+const ERROR_CLASS = 'mt-1 text-sm font-bold text-admin-danger';
 
 export function NoticeEditorModal({
     row,
@@ -151,7 +151,7 @@ export function NoticeEditorModal({
                 <button
                     type="submit"
                     disabled={processing}
-                    className="rounded-lg bg-admin-brand py-3 text-[13px] font-extrabold text-white disabled:opacity-60"
+                    className="rounded-lg bg-admin-brand py-3 text-[15px] font-extrabold text-white disabled:opacity-60"
                 >
                     保存する
                 </button>

@@ -65,6 +65,10 @@
 
 フォント（`--font-sans` / `--font-jp` / `--font-mono`）はフロントと共通で、[docs/front/common-layout.md](../front/common-layout.md) が正本。管理画面の本文書体も共通テンプレート（`resources/views/app.blade.php`）の指定に従う。
 
+ボタン・プルダウン・チェックボックス／ラジオのラベルのホバー時のカーソル（`resources/css/app.css` `@layer base`）はフロントと共通で、[docs/front/common-layout.md](../front/common-layout.md) が正本。
+
+バリデーションのエラーメッセージ・ページ送りのラベルの日本語化（`lang/ja/`）もフロントと共通で、[docs/front/common-layout.md](../front/common-layout.md) が正本。
+
 ### `AdminLayout`（`resources/js/admin/Layouts/AdminLayout.tsx`）
 
 ```ts
@@ -94,7 +98,7 @@ type SidebarMenuItem = {
 };
 ```
 
-`SIDEBAR_MENU` に全10メニュー分の項目を定義する（グループを除く実項目数は15）。
+`SIDEBAR_MENU` に全11メニュー分の項目を定義する（グループを除く実項目数は16）。
 
 | 表示名 | 子項目 | `routeName` |
 |---|---|---|
@@ -107,6 +111,7 @@ type SidebarMenuItem = {
 | EC基本設定 | - | `admin.ec-settings.edit` |
 | 新着ニュース管理 | - | `admin.news.index` |
 | 重要なお知らせ管理 | - | `admin.notices.index` |
+| お問い合わせ管理 | - | `admin.contacts.index` |
 
 各項目のルート名は、対応する単位がその名前でルートを実装することを前提に本書が定めたもの。単位04以降で異なる名前を採用する場合は、実装側で本テーブルと `SidebarMenu.ts` の両方を更新する。
 
@@ -130,7 +135,7 @@ type FilterBarProps = { resultCount: number; totalCount?: number; onClear: () =>
 type PaginationProps = { links: { url: string | null; label: string; active: boolean }[] };
 ```
 
-Laravel の `paginate()` が返す `links` をそのまま渡す。1ページに収まる場合（リンクが3件以下）は何も描画しない。`&laquo; Previous` 等の既定ラベルは「前へ」「次へ」に置き換える。
+Laravel の `paginate()` が返す `links` をそのまま渡す。1ページに収まる場合（リンクが3件以下）は何も描画しない。`label` は言語ファイルで日本語化済みのため、表示側で文言を置き換えない（[docs/front/common-layout.md](../front/common-layout.md) が正本）。
 
 ### `DataTable`（`resources/js/admin/Components/DataTable.tsx`）
 
@@ -192,6 +197,7 @@ type ConfirmDialogProps = {
 - [docs/front/common-layout.md](../front/common-layout.md) — フロント共通レイアウトの正本。フォント構成と共通UIコンポーネント（`resources/js/shared/`）はこちらが正本
 - [docs/admin/category.md](category.md) — `MasterListCard` の利用画面
 - [docs/admin/spec-option.md](spec-option.md) — `MasterListCard` の利用画面
+- [docs/admin/contact.md](contact.md) — お問い合わせ管理（サイドメニューに追加した11番目のメニュー）
 - [docs/1_system_overview.md](../1_system_overview.md) — ブランド表記・技術構成の前提
 
 ## ソースファイル
@@ -209,12 +215,14 @@ type ConfirmDialogProps = {
 | Component | `resources/js/admin/Components/Pagination.tsx` |
 | 型 | `resources/js/types/global.d.ts` |
 | スタイル | `resources/css/app.css` |
+| 言語 | `lang/ja/validation.php` |
+| 言語 | `lang/ja/pagination.php` |
 
 ## 受け入れ条件
 
 本機能を担保する自動テストは存在しない（フロントエンドのユニットテスト基盤は本プロジェクトに未導入）。以下は型チェック（`npx tsc --noEmit`）と目視確認で担保する。
 
-- サイドバーの全10メニューが表示され、未実装項目は非活性表示になる: 目視確認
+- サイドバーの全11メニューが表示され、未実装項目は非活性表示になる: 目視確認
 - 実装済み項目（現時点ではダッシュボードを除くサイドメニューの全項目）へのリンクが機能する: 目視確認
 - グループの開閉、開閉時のデフォルト状態: 目視確認
 - ログアウト確認モーダルの表示・キャンセル・`Escape`キーでの閉じる動作: 目視確認

@@ -38,7 +38,10 @@
 | email | string(191) | unique | |
 | email_verified_at | timestamp | nullable | Laravel標準（メール認証は未使用） |
 | password | string(255) | hashed | |
-| tel | string(20) | nullable | |
+| tel | string(20) | nullable | 電話番号。会員登録では必須で入力するが、列は既存行のため nullable のまま |
+| birthday | date | nullable | 生年月日（任意項目） |
+| gender | string(10) | nullable | `App\Enums\Gender`（任意項目。未回答は `null`） |
+| is_newsletter_subscribed | boolean | default `true` | メールマガジンの購読可否 |
 | status | string(20) | default `active`, index | `App\Enums\UserStatus` |
 | remember_token | string(100) | nullable | |
 
@@ -319,14 +322,27 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 
 #### `contacts`（お問い合わせ）
 
-| カラム | 型 | 制約 |
-|---|---|---|
-| id | bigIncrements | PK |
-| user_id | foreignId | nullable, → `users.id` set null |
-| name | string(100) | |
-| email | string(191) | |
-| product_name | string(255) | nullable |
-| body | text | |
+| カラム | 型 | 制約 | 内容 |
+|---|---|---|---|
+| id | bigIncrements | PK | |
+| contact_number | string(20) | unique | 問い合わせ番号（`INQ-YYMM-NNNN`）。送信時に採番する |
+| user_id | foreignId | nullable, → `users.id` set null | ログイン中の会員 |
+| product_id | foreignId | nullable, → `products.id` set null | 商品詳細から遷移したときの対象商品。集計・絞り込みのキー |
+| name | string(100) | | |
+| email | string(191) | | |
+| product_name | string(255) | nullable | 対象商品の名称。`product_id` があるときは送信時点の商品名、無いときは手入力値 |
+| product_code | string(50) | nullable | 対象商品の商品識別コード。`product_id` があるときのみ記録する |
+| body | text | | |
+| status | string(20) | default `unhandled` | 対応ステータス（`ContactStatus`） |
+| admin_note | text | nullable | 管理者の対応メモ |
+| handled_admin_id | foreignId | nullable, → `admins.id` set null | 最後に対応状況を更新した管理者 |
+| handled_at | dateTime | nullable | 対応済みへ変更した日時 |
+
+索引: `index(status, created_at)`（管理画面のステータス絞り込みと受信日時降順の並びに対応）
+
+`product_name` と `product_code` は `product_id` と対で保持する。商品が削除されると `product_id` は `null` になるが、送信時点の商品名と商品識別コードは残る。**`product_code` があって `product_id` が `null` の行は「商品詳細から送信された後に商品が削除された」ものと判定でき、`product_code` も `null` の行は商品名を手入力したものと区別できる。** 値の決定規則は [docs/front/contact.md](front/contact.md) が正本。
+
+`contact_number` の採番規則は [docs/front/contact.md](front/contact.md) が正本。
 
 ## Enum一覧（`app/Enums/`）
 
@@ -335,8 +351,10 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 | `OrderStatus` | `received` / `awaiting_payment` / `payment_confirmed` / `preparing` / `shipped` / `cancelled` | `label()` で日本語表示名、`color()` でバッジ配色、`allowedTransitions()` / `canTransitionTo()` で遷移規則を提供 |
 | `PaymentMethod` | `bank_transfer` / `cod` | `label()` で日本語表示名、`initialOrderStatus()` で注文確定時の初期ステータス（銀行振込＝入金待ち／代引き＝注文受付）を提供 |
 | `UserStatus` | `active` / `suspended` / `withdrawn` | `label()` で日本語表示名。`withdrawn` を付けられるのは会員自身の退会のみ |
+| `Gender` | `male` / `female` | `label()` で日本語表示名。任意項目のため、未回答は列を `null` にして表す（Enumに未回答の値は持たせない） |
 | `SpecOptionType` | `size` / `color` | `label()` で日本語表示名 |
 | `NewsCategory` | `新商品` / `お知らせ` / `商品情報` | `label()` / `color()` |
+| `ContactStatus` | `unhandled` / `in_progress` / `handled` | `label()` で日本語表示名、`color()` でバッジ配色。遷移の制限は設けない（[docs/admin/contact.md](admin/contact.md) が正本） |
 
 ## 業務ルール
 
@@ -347,6 +365,8 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 
 - [docs/1_system_overview.md](1_system_overview.md) — 技術構成・認証前提・共通業務ルール
 - [docs/order-snapshot.md](order-snapshot.md) — 注文時スナップショットの設計方針と全列の値の出所の正本
+- [docs/front/contact.md](front/contact.md) — `contacts.product_id` / `product_name` の値の決定規則の正本
+- [docs/admin/contact.md](admin/contact.md) — `ContactStatus` の区分と対応状況の更新規則の正本
 
 ## ソースファイル
 
@@ -376,11 +396,13 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 | Migration | `database/migrations/2026_08_07_000021_create_product_rankings_table.php` |
 | Migration | `database/migrations/2026_08_07_000022_create_banners_table.php` |
 | Migration | `database/migrations/2026_08_07_000023_create_contacts_table.php` |
+| Migration | `database/migrations/2026_08_18_000001_add_product_and_handling_columns_to_contacts_table.php` |
 | Enum | `app/Enums/OrderStatus.php` |
 | Enum | `app/Enums/PaymentMethod.php` |
 | Enum | `app/Enums/UserStatus.php` |
 | Enum | `app/Enums/SpecOptionType.php` |
 | Enum | `app/Enums/NewsCategory.php` |
+| Enum | `app/Enums/ContactStatus.php` |
 | Model | `app/Models/User.php` |
 | Model | `app/Models/Admin.php` |
 | Model | `app/Models/Prefecture.php` |

@@ -70,13 +70,16 @@ export function ConfirmDialog({
                 <h2 id={titleId} className="text-base font-bold text-admin-ink">
                     {title}
                 </h2>
-                <p id={messageId} className="mt-2 text-sm text-admin-ink-muted">
+                <p
+                    id={messageId}
+                    className="mt-2 text-base text-admin-ink-muted"
+                >
                     {message}
                 </p>
                 <div className="mt-6 flex justify-end gap-2">
                     <button
                         type="button"
-                        className="rounded-lg border border-admin-line px-4 py-2 text-sm font-bold text-admin-ink"
+                        className="rounded-lg border border-admin-line px-4 py-2 text-base font-bold text-admin-ink"
                         onClick={onCancel}
                     >
                         キャンセル
@@ -84,7 +87,7 @@ export function ConfirmDialog({
                     <button
                         type="button"
                         className={cn(
-                            'rounded-lg px-4 py-2 text-sm font-bold text-white',
+                            'rounded-lg px-4 py-2 text-base font-bold text-white',
                             confirmVariant === 'danger'
                                 ? 'bg-admin-danger'
                                 : 'bg-admin-brand',

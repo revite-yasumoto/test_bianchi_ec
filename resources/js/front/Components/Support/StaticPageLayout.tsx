@@ -32,7 +32,7 @@ export function StaticSection({ heading, children }: StaticSectionProps) {
     return (
         <section>
             <h2 className="mb-2.5 text-[16px] font-extrabold">{heading}</h2>
-            <div className="flex flex-col gap-2.5 text-[13px] leading-[1.95] text-ink2">
+            <div className="flex flex-col gap-2.5 text-[15px] leading-[1.95] text-ink2">
                 {children}
             </div>
         </section>

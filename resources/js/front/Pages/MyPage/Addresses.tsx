@@ -58,7 +58,7 @@ export default function Addresses({ addresses, prefectures }: Props) {
             <button
                 type="button"
                 onClick={() => openForm()}
-                className="mt-3.5 w-full rounded-2xl border-[1.5px] border-dashed border-line py-3.5 text-[13px] font-bold text-brand"
+                className="mt-3.5 w-full rounded-2xl border-[1.5px] border-dashed border-line py-3.5 text-[15px] font-bold text-brand"
             >
                 ＋ 配送先を追加
             </button>
@@ -77,7 +77,7 @@ export default function Addresses({ addresses, prefectures }: Props) {
                 title="配送先を削除します"
                 onClose={() => setDeleting(null)}
             >
-                <p className="text-[13px] leading-[1.9] text-ink2">
+                <p className="text-[15px] leading-[1.9] text-ink2">
                     {deleting?.recipient_name}（{deleting?.label}
                     ）を削除します。確定済みのご注文のお届け先表示は変わりません。
                 </p>
@@ -86,14 +86,14 @@ export default function Addresses({ addresses, prefectures }: Props) {
                     <button
                         type="button"
                         onClick={() => setDeleting(null)}
-                        className="flex-1 rounded-full border border-line py-3 text-sm font-bold"
+                        className="flex-1 rounded-full border border-line py-3 text-base font-bold"
                     >
                         やめる
                     </button>
                     <button
                         type="button"
                         onClick={confirmDelete}
-                        className="flex-1 rounded-full bg-coral py-3 text-sm font-bold text-white"
+                        className="flex-1 rounded-full bg-coral py-3 text-base font-bold text-white"
                     >
                         削除する
                     </button>
