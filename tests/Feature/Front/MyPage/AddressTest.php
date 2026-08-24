@@ -161,7 +161,7 @@ class AddressTest extends TestCase
     #[Test]
     public function 配送先を削除できる(): void
     {
-        $address = $this->createAddress();
+        $address = $this->createAddress(['is_default' => false]);
 
         $this->actingAs($this->user)
             ->delete(route('addresses.destroy', [$address]))
@@ -173,7 +173,7 @@ class AddressTest extends TestCase
     #[Test]
     public function 配送先が一件だけでも削除できる(): void
     {
-        $address = $this->createAddress();
+        $address = $this->createAddress(['is_default' => false]);
 
         $this->actingAs($this->user)->delete(route('addresses.destroy', [$address]));
 
@@ -187,6 +187,7 @@ class AddressTest extends TestCase
         $othersAddress = UserAddress::factory()->create([
             'user_id' => $other->id,
             'prefecture_id' => $this->prefecture->id,
+            'is_default' => false,
         ]);
 
         $this->actingAs($this->user)
@@ -197,9 +198,40 @@ class AddressTest extends TestCase
     }
 
     #[Test]
+    public function 既定の配送先は削除できない(): void
+    {
+        $address = $this->createAddress(['is_default' => true]);
+
+        $this->actingAs($this->user)
+            ->delete(route('addresses.destroy', [$address]))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('user_addresses', ['id' => $address->id]);
+    }
+
+    #[Test]
+    public function 既定を付け替えると元の住所を削除できる(): void
+    {
+        $address = $this->createAddress(['is_default' => true]);
+        $another = $this->createAddress(['is_default' => false]);
+
+        // 既定の付け替えは更新の経路（addresses.update）でのみ起きるため、入口を通して切り替える
+        $this->actingAs($this->user)->put(
+            route('addresses.update', [$another]),
+            $this->payload(['is_default' => true]),
+        );
+
+        $this->actingAs($this->user)
+            ->delete(route('addresses.destroy', [$address]))
+            ->assertSessionHas('success', 'お届け先を削除しました');
+
+        $this->assertDatabaseMissing('user_addresses', ['id' => $address->id]);
+    }
+
+    #[Test]
     public function 配送先を削除しても確定済みの注文のお届け先は変わらない(): void
     {
-        $address = $this->createAddress();
+        $address = $this->createAddress(['is_default' => false]);
         $order = Order::factory()->create([
             'user_id' => $this->user->id,
             'shipping_recipient_name' => '架空 太郎',

@@ -11,8 +11,8 @@
 |---|---|---|---|
 | GET | `/postal-codes/{postalCode}` | `postal-codes.show` | 郵便番号から住所を引く（JSONを返す。Inertiaのページ遷移ではない） |
 
-- **アクセス権限・ミドルウェア:** `auth`（`web` ガード）と `throttle:60,1`。未ログインのアクセスはログイン画面へ遷移する。
-- **本ドキュメントのスコープ:** 住所検索のエンドポイントと、配送先モーダル（`AddressModal`）の郵便番号入力欄の分割・自動セットの挙動。配送先の追加・更新・削除、および `postal_code` の保存形式と検証は [docs/front/checkout.md](checkout.md)・[docs/front/mypage-address.md](mypage-address.md) が正本。
+- **アクセス権限・ミドルウェア:** 認証は不要（`throttle:30,1`）。会員登録の住所入力からも呼ぶため、未ログインでも到達できる。外部サービスへのリクエストを未認証で誘発できるため、レート制限のみで抑える。
+- **本ドキュメントのスコープ:** 住所検索のエンドポイントと、郵便番号入力欄（`PostalCodeField`）の分割・自動セットの挙動。同欄は配送先モーダル（`AddressModal`）と会員登録画面（[docs/front/auth.md](auth.md)）が使う。配送先の追加・更新・削除、および `postal_code` の保存形式と検証は [docs/front/checkout.md](checkout.md)・[docs/front/mypage-address.md](mypage-address.md) が正本。
 
 ## 使用テーブル
 
@@ -143,7 +143,7 @@ FormRequest は使わず、ルートパラメータの制約で受け付ける�
 
 ## 受け入れ条件
 
-- 未ログインでログイン画面へリダイレクトされる: `tests/Feature/Front/Address/PostalCodeLookupTest.php`（`未ログインではログイン画面へリダイレクトされる`）
+- 未ログインでも住所を引ける: `tests/Feature/Front/Address/PostalCodeLookupTest.php`（`未ログインでも住所を引ける`）
 - 郵便番号から都道府県・市区町村・町域が返る: 同上（`郵便番号から都道府県と市区町村と町域が返る`）
 - 都道府県名がマスタに無いときは都道府県IDが空で返る: 同上（`都道府県名がマスタにないときは都道府県の識別子が空で返る`）
 - 複数の町域が返ったときは先頭を採用する: 同上（`複数の町域が返ったときは先頭が採用される`）

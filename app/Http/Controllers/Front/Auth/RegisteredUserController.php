@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Front\Auth;
 
 use App\Actions\Front\Auth\RegisterUser;
+use App\Enums\Gender;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Front\Auth\RegisterRequest;
+use App\Models\Prefecture;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -19,7 +21,9 @@ class RegisteredUserController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('front/Auth/Register');
+        return Inertia::render('front/Auth/Register', [
+            'prefectures' => Prefecture::query()->orderBy('id')->get(['id', 'name'])->all(),
+        ]);
     }
 
     public function store(RegisterRequest $request, RegisterUser $registerUser): RedirectResponse
@@ -29,6 +33,16 @@ class RegisteredUserController extends Controller
             'name_kana' => $request->input('name_kana'),
             'email' => $request->string('email')->toString(),
             'password' => $request->string('password')->toString(),
+            'tel' => $request->string('tel')->toString(),
+            'birthday' => $request->birthday(),
+            'gender' => $request->enum('gender', Gender::class),
+            'is_newsletter_subscribed' => $request->boolean('is_newsletter_subscribed'),
+        ], [
+            'postal_code' => $request->string('postal_code')->toString(),
+            'prefecture_id' => $request->integer('prefecture_id'),
+            'city' => $request->string('city')->toString(),
+            'address_line1' => $request->string('address_line1')->toString(),
+            'address_line2' => $request->input('address_line2'),
         ]);
 
         $request->session()->put(self::SESSION_REGISTERED, true);

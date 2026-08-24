@@ -38,7 +38,10 @@
 | email | string(191) | unique | |
 | email_verified_at | timestamp | nullable | Laravel標準（メール認証は未使用） |
 | password | string(255) | hashed | |
-| tel | string(20) | nullable | |
+| tel | string(20) | nullable | 電話番号。会員登録では必須で入力するが、列は既存行のため nullable のまま |
+| birthday | date | nullable | 生年月日（任意項目） |
+| gender | string(10) | nullable | `App\Enums\Gender`（任意項目。未回答は `null`） |
+| is_newsletter_subscribed | boolean | default `true` | メールマガジンの購読可否 |
 | status | string(20) | default `active`, index | `App\Enums\UserStatus` |
 | remember_token | string(100) | nullable | |
 
@@ -348,6 +351,7 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 | `OrderStatus` | `received` / `awaiting_payment` / `payment_confirmed` / `preparing` / `shipped` / `cancelled` | `label()` で日本語表示名、`color()` でバッジ配色、`allowedTransitions()` / `canTransitionTo()` で遷移規則を提供 |
 | `PaymentMethod` | `bank_transfer` / `cod` | `label()` で日本語表示名、`initialOrderStatus()` で注文確定時の初期ステータス（銀行振込＝入金待ち／代引き＝注文受付）を提供 |
 | `UserStatus` | `active` / `suspended` / `withdrawn` | `label()` で日本語表示名。`withdrawn` を付けられるのは会員自身の退会のみ |
+| `Gender` | `male` / `female` | `label()` で日本語表示名。任意項目のため、未回答は列を `null` にして表す（Enumに未回答の値は持たせない） |
 | `SpecOptionType` | `size` / `color` | `label()` で日本語表示名 |
 | `NewsCategory` | `新商品` / `お知らせ` / `商品情報` | `label()` / `color()` |
 | `ContactStatus` | `unhandled` / `in_progress` / `handled` | `label()` で日本語表示名、`color()` でバッジ配色。遷移の制限は設けない（[docs/admin/contact.md](admin/contact.md) が正本） |

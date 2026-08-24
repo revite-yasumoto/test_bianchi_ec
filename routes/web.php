@@ -119,6 +119,12 @@ Route::get('legal/tokushoho', [StaticPageController::class, 'tokushoho'])->name(
 Route::get('legal/privacy', [StaticPageController::class, 'privacy'])->name('legal.privacy');
 Route::get('legal/terms', [StaticPageController::class, 'terms'])->name('legal.terms');
 
+// 会員登録の住所入力からも呼ぶため認証の外に置く。未認証で外部サービスへの問い合わせを誘発できるためレート制限で抑える
+Route::get('postal-codes/{postalCode}', PostalCodeController::class)
+    ->name('postal-codes.show')
+    ->where('postalCode', '[0-9]{7}')
+    ->middleware('throttle:30,1');
+
 Route::get('contact', [ContactController::class, 'create'])->name('contact');
 Route::get('contact/complete', [ContactController::class, 'complete'])->name('contact.complete');
 // 未認証で投稿できるため、同一IPからの連投を抑える
@@ -173,11 +179,6 @@ Route::middleware('auth')->group(function (): void {
     Route::delete('addresses/{address}', [UserAddressController::class, 'destroy'])
         ->name('addresses.destroy')
         ->can('delete', 'address');
-
-    Route::get('postal-codes/{postalCode}', PostalCodeController::class)
-        ->name('postal-codes.show')
-        ->where('postalCode', '[0-9]{7}')
-        ->middleware('throttle:60,1');
 
     Route::get('mypage', [OrderHistoryController::class, 'index'])->name('mypage.index');
     Route::get('mypage/orders/{order}', [OrderHistoryController::class, 'show'])

@@ -23,6 +23,19 @@ export const UserStatus = {
 
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus];
 
+/** 性別。未回答は列を null にして表すため、Enumに未回答の値は持たせない */
+export const Gender = {
+    Male: 'male',
+    Female: 'female',
+} as const;
+
+export type Gender = (typeof Gender)[keyof typeof Gender];
+
+export const GENDER_OPTIONS: { value: Gender; label: string }[] = [
+    { value: Gender.Male, label: '男性' },
+    { value: Gender.Female, label: '女性' },
+];
+
 export const PriceRange = {
     Under10000: 'under_10000',
     From10000: 'from_10000',

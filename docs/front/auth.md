@@ -20,12 +20,21 @@
 
 ## 使用テーブル
 
-`users` テーブルを使用する。定義は [docs/2_database.md](../2_database.md) が正本。ログイン失敗の連続回数とロックの期限を持つ次の2列を本機能で追加する。
+| テーブル | 用途 |
+|---|---|
+| `users` | 会員を作成する。ログイン失敗の連続回数・ロックの期限も持つ |
+| `user_addresses` | 会員登録の住所を既定の配送先として1件作成する |
+| `prefectures` | 住所の都道府県の選択肢（読み取りのみ） |
+
+定義は [docs/2_database.md](../2_database.md) が正本。次の列を本機能で追加する。
 
 | カラム | 型 | 用途 |
 |---|---|---|
-| `failed_login_attempts` | `unsignedTinyInteger`・NOT NULL・既定 `0` | ロックに至るまでの連続失敗回数。成功・ロック成立のいずれでも `0` に戻す |
-| `locked_until` | `datetime`・nullable | ロックの解除時刻。`null` はロックされていない状態 |
+| `users.failed_login_attempts` | `unsignedTinyInteger`・NOT NULL・既定 `0` | ロックに至るまでの連続失敗回数。成功・ロック成立のいずれでも `0` に戻す |
+| `users.locked_until` | `datetime`・nullable | ロックの解除時刻。`null` はロックされていない状態 |
+| `users.birthday` | `date`・nullable | 生年月日（任意項目） |
+| `users.gender` | `string(10)`・nullable | `App\Enums\Gender`。未回答は `null` |
+| `users.is_newsletter_subscribed` | `boolean`・NOT NULL・既定 `true` | メールマガジンの購読可否 |
 
 `email_verified_at`（メール認証）は Laravel 標準として存在するが、本システムでは使用しない。`password_reset_tokens` は [docs/front/password-reset.md](password-reset.md) が使用する。
 
@@ -52,6 +61,16 @@
 |  メールアドレス*（全幅）                |
 |  パスワード*（全幅）                    |
 |  パスワード（確認）*（全幅）             |
+|  電話番号*        |  性別              |
+|  生年月日（全幅）  [年v] [月v] [日v]    |
+|                                      |
+|  お届け先                （小見出し）    |
+|  郵便番号*（全幅）  [123] − [4567]      |
+|  都道府県*        |  市区町村*          |
+|  番地*（全幅）                          |
+|  建物名・部屋番号（全幅）                 |
+|                                      |
+|  [v] メールマガジンを受け取る            |
 |  [ ] 利用規約 および プライバシーポリシー |
 |      に同意します                      |
 |  [        登録する        ]           |
@@ -72,6 +91,11 @@
 - エラー表示: 各入力欄の直下にインラインで表示する。認証失敗・レート制限・休会中のメッセージは `email` の直下にまとめて表示する。
 - 必須項目のラベルには `*` を表示する。
 - 同意チェックの「利用規約」「プライバシーポリシー」はそれぞれの静的ページ（[docs/front/static-pages.md](static-pages.md)）へのリンクにする。リンクはチェックボックスのラベル内に置く（ラベル内の対話的要素へのクリックではチェックが切り替わらない）。
+- メールマガジンのチェックボックスは既定でチェック済みにする。同意チェックとは別の欄として独立させ、ラジオボタン（受け取る／受け取らない）にはしない。
+- 住所の入力欄は「お届け先」の小見出しで区切る。郵便番号欄・自動セットの挙動は [docs/front/postal-code-lookup.md](postal-code-lookup.md) が正本で、配送先モーダルと同じ `PostalCodeField` を使う。
+- 生年月日は年・月・日の3つのプルダウンで選ぶ。年は当年から100年前までを新しい順に並べ、いずれも未選択（`--`）を先頭に置く。
+- 性別のプルダウンは未選択（`--`）・男性・女性の3択にする。
+- 表示名（`user_addresses.label`）・宛名（`recipient_name`）の入力欄は置かない（下記の処理フロー参照）。
 
 ## インターフェース ＆ データロジック
 
@@ -90,7 +114,28 @@ type RegisterForm = {
     email: string;
     password: string;
     password_confirmation: string;
+    tel: string;
+    // 生年月日は3つのプルダウンで選び、未選択は空文字。サーバー側で日付に組み立てる
+    birth_year: string;
+    birth_month: string;
+    birth_day: string;
+    gender: string;              // '' | 'male' | 'female'
+    postal_code: string;         // 保存する形（`123-4567`）
+    prefecture_id: number;
+    city: string;
+    address_line1: string;
+    address_line2: string;
+    is_newsletter_subscribed: boolean;
     agree: boolean;
+};
+```
+
+会員登録画面のProps:
+
+```ts
+// resources/js/front/Pages/Auth/Register.tsx
+type Props = {
+    prefectures: { id: number; name: string }[];
 };
 ```
 
@@ -104,7 +149,18 @@ type RegisterForm = {
 | `name_kana` | 任意・文字列・最大100・全角カタカナ／長音符／空白のみ（`/\A[ァ-ヶー\x{3000}\s]+\z/u`） |
 | `email` | 必須・文字列・メール形式・最大191・`users.email` で一意 |
 | `password` | 必須・`password_confirmation` と一致・8文字以上 |
+| `tel` | 必須・文字列・数字とハイフンで10〜20文字（`/\A[\d-]{10,20}\z/`） |
+| `birth_year` / `birth_month` / `birth_day` | 任意・整数。3つすべて選ぶか、すべて未選択のどちらか。揃っている場合は実在する日付で、当日以前であること |
+| `gender` | 任意・`male` / `female` のいずれか |
+| `postal_code` | 必須・文字列・最大8・`/\A\d{3}-?\d{4}\z/` |
+| `prefecture_id` | 必須・整数・`prefectures.id` に存在 |
+| `city` | 必須・文字列・最大100 |
+| `address_line1` | 必須・文字列・最大255 |
+| `address_line2` | 任意・文字列・最大255 |
+| `is_newsletter_subscribed` | 任意・boolean（未送信は `false` として扱う） |
 | `agree` | `accepted`（利用規約・プライバシーポリシーへの同意） |
+
+住所・電話番号のルールは配送先の追加（[docs/front/mypage-address.md](mypage-address.md)・[docs/front/checkout.md](checkout.md)）と同一にする。生年月日は3項目の組み合わせで検証するため、エラーは `birth_year` にまとめて返す。
 
 - **入力値バリデーションルール（`Front\Auth\LoginRequest`）:**
 
@@ -120,8 +176,10 @@ type RegisterForm = {
 
 **会員登録（`RegisteredUserController::store()`）:**
 1. `RegisterRequest` でバリデーションする。
-2. `RegisterUser` が `GenerateMemberCode` で会員IDを採番し（`users.member_code` の最大値の数値部分 + 1、`M-` + 6桁ゼロ埋め。会員が1件も無い場合は `M-100001`）、`users` に `status = active` で作成する。
-3. 続けて登録完了メールを会員へ送る。送信の仕様は [docs/mail-notification.md](../mail-notification.md) が正本。
+2. 生年月日の3項目が揃っていれば日付に組み立て、未選択なら `null` にする。
+3. `RegisterUser` が `GenerateMemberCode` で会員IDを採番し（`users.member_code` の最大値の数値部分 + 1、`M-` + 6桁ゼロ埋め。会員が1件も無い場合は `M-100001`）、`users` に `status = active` で作成する。
+4. 同じトランザクション内で `user_addresses` に既定の配送先（`is_default = true`）を1件作成する。`label` は `自宅`、`recipient_name` は入力された氏名（`name`）、`tel` は入力された電話番号を入れる。会員の作成と住所の作成は一方だけが残らないようにする。
+5. 続けて登録完了メールを会員へ送る（トランザクションの外）。送信の仕様は [docs/mail-notification.md](../mail-notification.md) が正本。
 4. ログインはせず、セッションに完了画面の表示許可を入れて `register.complete` へリダイレクトする。
 5. 未ログインで要認証ページから来た場合の遷移先（intended URL）はここで消費せず、後続のログインまで持ち越す。
 
@@ -142,6 +200,10 @@ type RegisterForm = {
 ## 業務ルール
 
 - ログイン失敗時のメッセージは、メールアドレスの登録有無を区別できる内容にしない（アカウント列挙攻撃対策）。休会中・退会済みのメッセージのみ、利用者が次の行動を判断できるよう区別して返す。いずれも正しいパスワードを知っていなければ到達しないため、列挙の手段にはならない。
+- 会員登録で作る配送先は既定（`is_default = true`）にし、マイページから削除できない（[docs/front/mypage-address.md](mypage-address.md) が削除の正本）。購入手続きに進んだ時点で配送先が1件も無い状態を作らないため。
+- メールマガジンの購読は既定で `true`（チェック済み）にする。ラジオボタン（受け取る／受け取らない）にはしない。
+- 生年月日・性別は任意項目とし、未入力・未選択のまま登録できる。性別のEnumに「未回答」の値は持たせず、列を `null` にして表す。
+- 登録後の電話番号・生年月日・性別・メールマガジンの変更は会員情報変更（[docs/front/mypage-profile.md](mypage-profile.md)）で行う。
 - 会員登録の完了時に自動ログインはしない。完了画面からログイン画面へ案内し、会員自身にログインしてもらう。購入手続きの途中で登録した場合も同じで、ログイン後に元の手続きへ戻る。
 - ログイン失敗の抑止は2層で行う。レート制限（メールアドレス＋IP）は同一の送信元からの連投を、アカウントロック（アカウント単位）は送信元を変えた総当たりを抑える。ロックの回数はレート制限より少ないため、同じアカウントを狙う限りロックが先に成立する。
 - ロック中であることは利用者へ伝える。ロックは3回の試行を要するため列挙の手段としては割に合わず、伝えないと本人が理由を判断できないまま問い合わせに至る。休会中のメッセージと同じ扱いとする。
@@ -170,12 +232,18 @@ type RegisterForm = {
 | FormRequest | `app/Http/Requests/Front/Auth/LoginRequest.php` |
 | FormRequest | `app/Http/Requests/Front/Auth/RegisterRequest.php` |
 | Migration | `database/migrations/2026_08_14_000001_add_login_lock_columns_to_users_table.php` |
+| Migration | `database/migrations/2026_08_24_000001_add_profile_columns_to_users_table.php` |
+| Enum | `app/Enums/Gender.php` |
+| Trait | `app/Http/Requests/Concerns/ValidatesBirthdayParts.php` |
 | Action | `app/Actions/Front/Auth/GenerateMemberCode.php` |
 | Action | `app/Actions/Front/Auth/RegisterUser.php` |
 | ルート | `routes/web.php` |
 | Page | `resources/js/front/Pages/Auth/Login.tsx` |
 | Page | `resources/js/front/Pages/Auth/Register.tsx` |
+| Component | `resources/js/front/Components/Auth/BirthdayField.tsx` |
+| Component | `resources/js/front/Components/Checkout/PostalCodeField.tsx` |
 | Page | `resources/js/front/Pages/Auth/RegisterComplete.tsx` |
+| 区分値 | `resources/js/shared/lib/enums.ts` |
 | Test | `tests/Feature/Front/Auth/LoginTest.php` |
 | Test | `tests/Feature/Front/Auth/LogoutTest.php` |
 | Test | `tests/Feature/Front/Auth/RegisterTest.php` |
@@ -184,6 +252,13 @@ type RegisterForm = {
 
 - 会員登録画面が正しいInertiaコンポーネントで表示される: `tests/Feature/Front/Auth/RegisterTest.php`（`会員登録画面が表示される`）
 - 会員登録するとユーザーが作成され、ログインしないまま完了画面へ遷移する: 同上（`会員登録するとユーザーが作成され完了画面へ遷移する`・`会員登録してもログイン状態にはならない`）
+- 会員登録画面に都道府県の選択肢が渡る: 同上（`会員登録画面に都道府県の選択肢が渡る`）
+- 電話番号・住所が未入力なら登録されない: 同上（`電話番号が未入力なら登録されない`・`住所が未入力なら登録されない`）
+- 登録すると既定の配送先が1件作られ、表示名・宛名・電話番号が入る: 同上（`会員登録すると既定の配送先が作られる`）
+- 生年月日・性別・メールマガジンの購読が保存される: 同上（`生年月日と性別が保存される`・`メールマガジンを受け取る状態で登録できる`・`メールマガジンのチェックを外すと購読しない状態で保存される`）
+- 生年月日・性別は未選択でも登録できる: 同上（`生年月日と性別は未選択でも登録できる`）
+- 生年月日を一部だけ選ぶと登録されない・実在しない日付や未来の日付を弾く: 同上（`生年月日を一部だけ選ぶと登録されない`・`実在しない生年月日は登録されない`・`未来の生年月日は登録されない`）
+- 登録に失敗したとき会員も配送先も作られない: 同上（`住所の検証に失敗すると会員も配送先も作られない`）
 - 完了画面は登録直後の一度だけ開ける: 同上（`登録直後は会員登録完了画面を開ける`・`登録を経ずに会員登録完了画面を開くとログイン画面へ戻される`・`会員登録完了画面は再読み込みすると開けない`）
 - 購入手続きから登録した場合、ログイン後に購入手続きへ戻る: 同上（`購入手続きから登録するとログイン後に購入手続きへ戻る`）
 - 会員が1件も無いとき会員IDが `M-100001` で採番される: 同上（`会員が1件も無いとき会員番号は開始番号で採番される`）

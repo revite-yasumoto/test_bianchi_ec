@@ -1,6 +1,10 @@
 import { Link, useForm } from '@inertiajs/react';
+import { BirthdayField } from '@/front/Components/Auth/BirthdayField';
 import { MyPageLayout } from '@/front/Layouts/MyPageLayout';
+import { Checkbox } from '@/shared/Components/Checkbox';
+import { SelectInput } from '@/shared/Components/SelectInput';
 import { TextInput } from '@/shared/Components/TextInput';
+import { GENDER_OPTIONS } from '@/shared/lib/enums';
 
 type Props = {
     profile: {
@@ -8,6 +12,12 @@ type Props = {
         name_kana: string | null;
         email: string;
         tel: string | null;
+        /** 未設定は空文字。生年月日は年・月・日を別に受け取る */
+        birth_year: string;
+        birth_month: string;
+        birth_day: string;
+        gender: string;
+        is_newsletter_subscribed: boolean;
     };
 };
 
@@ -17,12 +27,17 @@ export default function Profile({ profile }: Props) {
         name_kana: profile.name_kana ?? '',
         email: profile.email,
         tel: profile.tel ?? '',
+        birth_year: profile.birth_year,
+        birth_month: profile.birth_month,
+        birth_day: profile.birth_day,
+        gender: profile.gender,
+        is_newsletter_subscribed: profile.is_newsletter_subscribed,
     });
 
     return (
         <MyPageLayout
             title="会員情報変更"
-            description="お名前・メールアドレス・電話番号を変更できます。"
+            description="お名前・メールアドレス・電話番号・生年月日・性別・メールマガジンの受信設定を変更できます。"
             heading="会員情報変更"
         >
             <form
@@ -68,22 +83,60 @@ export default function Profile({ profile }: Props) {
                     id="profile-tel"
                     label="電話番号"
                     inputMode="tel"
+                    required
                     value={data.tel}
                     error={errors.tel}
                     placeholder="090-1234-5678"
                     onChange={(event) => setData('tel', event.target.value)}
                 />
+                <BirthdayField
+                    id="profile-birthday"
+                    year={data.birth_year}
+                    month={data.birth_month}
+                    day={data.birth_day}
+                    error={errors.birth_year}
+                    onChange={(part, value) =>
+                        setData(`birth_${part}` as const, value)
+                    }
+                />
+                <SelectInput
+                    id="profile-gender"
+                    label="性別"
+                    value={data.gender}
+                    error={errors.gender}
+                    onChange={(event) => setData('gender', event.target.value)}
+                >
+                    <option value="">--</option>
+                    {GENDER_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </SelectInput>
+                <Checkbox
+                    id="profile-newsletter"
+                    checked={data.is_newsletter_subscribed}
+                    error={errors.is_newsletter_subscribed}
+                    onChange={(event) =>
+                        setData(
+                            'is_newsletter_subscribed',
+                            event.target.checked,
+                        )
+                    }
+                >
+                    メールマガジンを受け取る
+                </Checkbox>
 
                 <button
                     type="submit"
                     disabled={processing}
-                    className="mt-1 rounded-full bg-brand py-3.5 text-sm font-extrabold text-white disabled:opacity-60"
+                    className="mt-1 rounded-full bg-brand py-3.5 text-base font-extrabold text-white disabled:opacity-60"
                 >
                     保存する
                 </button>
             </form>
 
-            <p className="mt-10 border-t border-line pt-5 text-[12.5px] text-ink2">
+            <p className="mt-10 border-t border-line pt-5 text-[15px] text-ink2">
                 退会をご希望の方は{' '}
                 <Link
                     href={route('mypage.withdrawal')}
