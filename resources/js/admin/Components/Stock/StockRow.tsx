@@ -25,7 +25,7 @@ export function StockRow({ row, value, onChange, onUpdate }: StockRowProps) {
             <td className="px-4 py-2 text-admin-ink-muted">
                 {row.variant_label}
             </td>
-            <td className="px-4 py-2 font-mono text-[11.5px] text-admin-ink-muted">
+            <td className="px-4 py-2 font-mono text-sm text-admin-ink-muted">
                 {row.sku_code}
             </td>
             <td className="px-4 py-2 text-admin-ink-muted">
@@ -56,7 +56,7 @@ export function StockRow({ row, value, onChange, onUpdate }: StockRowProps) {
                 <button
                     type="button"
                     onClick={onUpdate}
-                    className="rounded-lg border border-admin-line px-3 py-1.5 text-[11.5px] font-bold whitespace-nowrap text-admin-ink"
+                    className="rounded-lg border border-admin-line px-3 py-1.5 text-sm font-bold whitespace-nowrap text-admin-ink"
                 >
                     更新
                 </button>

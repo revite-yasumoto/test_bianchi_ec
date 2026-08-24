@@ -36,7 +36,7 @@ export function DetailTabs({ description, specs }: DetailTabsProps) {
                         aria-controls={`${baseId}-panel-${tab.key}`}
                         onClick={() => setCurrentTab(tab.key)}
                         className={cn(
-                            'border-b-2 px-5 py-4 text-sm font-bold',
+                            'border-b-2 px-5 py-4 text-base font-bold',
                             currentTab === tab.key
                                 ? 'border-brand text-ink'
                                 : 'border-transparent text-ink2',
@@ -54,7 +54,7 @@ export function DetailTabs({ description, specs }: DetailTabsProps) {
                 aria-labelledby={`${baseId}-tab-description`}
                 hidden={currentTab !== 'description'}
             >
-                <p className="max-w-[760px] py-6 text-sm leading-8 text-ink2 whitespace-pre-line">
+                <p className="max-w-[760px] py-6 text-base leading-8 text-ink2 whitespace-pre-line">
                     {description ?? '商品説明は登録されていません。'}
                 </p>
             </div>
@@ -71,15 +71,15 @@ export function DetailTabs({ description, specs }: DetailTabsProps) {
                                 key={spec.label}
                                 className="grid grid-cols-[minmax(120px,180px)_1fr] gap-4 border-b border-line py-3"
                             >
-                                <dt className="text-[13px] font-bold text-ink2">
+                                <dt className="text-[15px] font-bold text-ink2">
                                     {spec.label}
                                 </dt>
-                                <dd className="text-[13px]">{spec.value}</dd>
+                                <dd className="text-[15px]">{spec.value}</dd>
                             </div>
                         ))}
                     </dl>
                 ) : (
-                    <p className="py-6 text-sm text-ink2">
+                    <p className="py-6 text-base text-ink2">
                         スペックは登録されていません。
                     </p>
                 )}

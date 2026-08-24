@@ -23,7 +23,7 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
     if (rows.length === 0) {
         return (
-            <div className="flex items-center justify-center rounded-xl border border-admin-line bg-white p-12 text-sm text-admin-ink-muted">
+            <div className="flex items-center justify-center rounded-xl border border-admin-line bg-white p-12 text-base text-admin-ink-muted">
                 {emptyMessage}
             </div>
         );
@@ -31,7 +31,7 @@ export function DataTable<T>({
 
     return (
         <div className="overflow-x-auto rounded-xl border border-admin-line bg-white">
-            <table className="w-full min-w-max text-left text-sm">
+            <table className="w-full min-w-max text-left text-base">
                 <thead className="border-b border-admin-line bg-admin-sidebar-bg text-admin-ink-muted">
                     <tr>
                         {columns.map((column) => (

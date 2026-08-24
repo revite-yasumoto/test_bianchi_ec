@@ -36,13 +36,13 @@ export function CsvActions({
         <div className="flex items-center gap-2">
             <a
                 href={exportUrl}
-                className="rounded-lg border border-admin-line bg-white px-3.5 py-2 text-[12.5px] font-bold whitespace-nowrap text-admin-ink"
+                className="rounded-lg border border-admin-line bg-white px-3.5 py-2 text-[15px] font-bold whitespace-nowrap text-admin-ink"
             >
                 CSVエクスポート
             </a>
             <button
                 type="button"
-                className="rounded-lg bg-admin-brand-deep px-3.5 py-2 text-[12.5px] font-bold whitespace-nowrap text-white"
+                className="rounded-lg bg-admin-brand-deep px-3.5 py-2 text-[15px] font-bold whitespace-nowrap text-white"
                 onClick={() => inputRef.current?.click()}
             >
                 CSVインポート

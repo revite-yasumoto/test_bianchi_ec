@@ -58,20 +58,20 @@ export function HeroSlider({ banners }: HeroSliderProps) {
                 />
 
                 <div className="relative max-w-[520px]">
-                    <p className="mb-3.5 font-mono text-[11px] tracking-[.2em] text-white/75">
+                    <p className="mb-3.5 font-mono text-sm tracking-[.2em] text-white/75">
                         {current.tag}
                     </p>
                     <h2 className="text-[32px] leading-[1.25] font-black whitespace-pre-line text-white lg:text-[44px]">
                         {current.title}
                     </h2>
                     {current.subtitle ? (
-                        <p className="mt-3.5 text-sm text-white/85">
+                        <p className="mt-3.5 text-base text-white/85">
                             {current.subtitle}
                         </p>
                     ) : null}
                     <Link
                         href={linkOf(current.link_url)}
-                        className="mt-5 inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-sm font-bold text-ink"
+                        className="mt-5 inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-base font-bold text-ink"
                     >
                         見る<span className="font-mono">→</span>
                     </Link>

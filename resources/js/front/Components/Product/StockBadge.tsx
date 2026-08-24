@@ -14,7 +14,7 @@ export function StockBadge({ inStock }: StockBadgeProps) {
     return (
         <Badge
             tone={inStock ? TONE.inStock : TONE.soldOut}
-            className="px-3.5 py-1.5 text-[12.5px]"
+            className="px-3.5 py-1.5 text-[15px]"
         >
             {inStock ? '在庫あり' : '在庫切れ'}
         </Badge>

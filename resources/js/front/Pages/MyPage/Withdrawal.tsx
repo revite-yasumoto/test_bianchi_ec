@@ -35,10 +35,10 @@ export default function Withdrawal() {
                 className="flex max-w-[560px] flex-col gap-4"
             >
                 <div className="rounded-2xl border border-coral/40 bg-coral/5 p-5">
-                    <h2 className="text-[13px] font-extrabold text-coral">
+                    <h2 className="text-[15px] font-extrabold text-coral">
                         退会すると以下のとおりになります
                     </h2>
-                    <ul className="mt-2.5 flex list-disc flex-col gap-1 pl-5 text-[12.5px] leading-[1.8] text-ink2">
+                    <ul className="mt-2.5 flex list-disc flex-col gap-1 pl-5 text-[15px] leading-[1.8] text-ink2">
                         {NOTICES.map((notice) => (
                             <li key={notice}>{notice}</li>
                         ))}
@@ -79,7 +79,7 @@ export default function Withdrawal() {
                     </Button>
                     <Link
                         href={route('mypage.profile')}
-                        className="text-[13px] font-bold text-ink2 underline"
+                        className="text-[15px] font-bold text-ink2 underline"
                     >
                         戻る
                     </Link>

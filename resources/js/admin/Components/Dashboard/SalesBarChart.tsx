@@ -39,7 +39,7 @@ export function SalesBarChart({ bars }: SalesBarChartProps) {
                     className="flex h-full flex-1 flex-col items-center gap-1.5"
                 >
                     <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-end gap-1.5">
-                        <span className="flex-shrink-0 font-mono text-[9.5px] text-admin-ink-muted">
+                        <span className="flex-shrink-0 font-mono text-sm text-admin-ink-muted">
                             {formatAmount(bar.amount)}
                         </span>
                         <div
@@ -54,7 +54,7 @@ export function SalesBarChart({ bars }: SalesBarChartProps) {
                             role="img"
                         />
                     </div>
-                    <span className="flex-shrink-0 text-[10.5px] text-admin-ink-muted">
+                    <span className="flex-shrink-0 text-sm text-admin-ink-muted">
                         {bar.label}
                     </span>
                 </li>

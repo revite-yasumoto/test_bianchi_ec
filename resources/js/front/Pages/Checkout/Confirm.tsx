@@ -50,25 +50,25 @@ export default function Confirm({
                 <div className="grid items-start gap-6.5 lg:grid-cols-[minmax(320px,1fr)_minmax(320px,1fr)]">
                     <div className="flex flex-col gap-4.5">
                         <section className="rounded-2xl border border-line p-5">
-                            <h2 className="mb-2 text-xs font-bold text-ink2">
+                            <h2 className="mb-2 text-sm font-bold text-ink2">
                                 お届け先
                             </h2>
-                            <p className="text-sm font-bold">
+                            <p className="text-base font-bold">
                                 {address.recipient_name}（{address.label}）
                             </p>
-                            <p className="mt-1.5 text-[13px] leading-[1.7] text-ink2">
+                            <p className="mt-1.5 text-[15px] leading-[1.7] text-ink2">
                                 {addressLines(address)}
                             </p>
                         </section>
 
                         <section className="rounded-2xl border border-line p-5">
-                            <h2 className="mb-2 text-xs font-bold text-ink2">
+                            <h2 className="mb-2 text-sm font-bold text-ink2">
                                 お支払い方法
                             </h2>
-                            <p className="text-sm font-bold">
+                            <p className="text-base font-bold">
                                 {isCod ? '代金引換' : '銀行振込（前払い）'}
                             </p>
-                            <p className="mt-1.5 text-[13px] leading-[1.7] whitespace-pre-line text-ink2">
+                            <p className="mt-1.5 text-[15px] leading-[1.7] whitespace-pre-line text-ink2">
                                 {isCod
                                     ? '商品到着時に配達員へお支払いください。'
                                     : bankTransferNote}
@@ -76,7 +76,7 @@ export default function Confirm({
                         </section>
 
                         <section className="rounded-2xl border border-line p-5">
-                            <h2 className="mb-3 text-xs font-bold text-ink2">
+                            <h2 className="mb-3 text-sm font-bold text-ink2">
                                 商品明細
                             </h2>
                             <ul>
@@ -94,15 +94,15 @@ export default function Confirm({
                                             />
                                         </div>
                                         <span className="flex-1">
-                                            <span className="block text-[13px] leading-[1.45] font-bold">
+                                            <span className="block text-[15px] leading-[1.45] font-bold">
                                                 {item.product_name}
                                             </span>
-                                            <span className="mt-1 block text-[11.5px] text-ink2">
+                                            <span className="mt-1 block text-sm text-ink2">
                                                 {item.variant_label} / 数量{' '}
                                                 {item.quantity}
                                             </span>
                                         </span>
-                                        <span className="font-mono text-[13.5px] font-bold">
+                                        <span className="font-mono text-[15px] font-bold">
                                             {yen(item.subtotal)}
                                         </span>
                                     </li>
@@ -132,7 +132,7 @@ export default function Confirm({
                         </button>
                         <Link
                             href={route('checkout.index')}
-                            className="w-full rounded-full border border-line py-3.5 text-center text-[13.5px] font-bold"
+                            className="w-full rounded-full border border-line py-3.5 text-center text-[15px] font-bold"
                         >
                             購入手続きに戻る
                         </Link>

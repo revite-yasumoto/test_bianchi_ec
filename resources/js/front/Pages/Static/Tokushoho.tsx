@@ -50,7 +50,7 @@ export default function Tokushoho() {
             title="特定商取引法に基づく表記"
             description="販売業者・所在地・お支払い方法・引渡し時期など、特定商取引法に基づく表記です。"
         >
-            <p className="text-[12.5px] leading-[1.95] text-ink2">
+            <p className="text-[15px] leading-[1.95] text-ink2">
                 本サイトはデモンストレーション用のサンプルサイトです。以下の記載内容はすべて架空のものであり、実在の企業・個人とは関係ありません。
             </p>
 
@@ -60,8 +60,8 @@ export default function Tokushoho() {
                         key={entry.term}
                         className="grid gap-1 border-b border-line py-3.5 sm:grid-cols-[180px_minmax(0,1fr)] sm:gap-4"
                     >
-                        <dt className="text-[13px] font-bold">{entry.term}</dt>
-                        <dd className="text-[12.5px] leading-[1.95] text-ink2">
+                        <dt className="text-[15px] font-bold">{entry.term}</dt>
+                        <dd className="text-[15px] leading-[1.95] text-ink2">
                             {entry.description}
                         </dd>
                     </div>

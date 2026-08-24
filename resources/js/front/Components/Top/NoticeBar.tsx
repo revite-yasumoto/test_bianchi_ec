@@ -11,13 +11,13 @@ export function NoticeBar({ notice }: NoticeBarProps) {
             href={route('notices.show', [notice.id])}
             className="flex w-full items-center gap-3 border-b border-notice-line bg-notice-bg px-5 py-2.5 text-left"
         >
-            <span className="shrink-0 rounded bg-coral px-2 py-0.5 font-mono text-[10px] tracking-[.1em] text-white">
+            <span className="shrink-0 rounded bg-coral px-2 py-0.5 font-mono text-sm tracking-[.1em] text-white">
                 重要
             </span>
-            <span className="text-[13px] font-semibold text-notice-ink">
+            <span className="text-[15px] font-semibold text-notice-ink">
                 {notice.title}
             </span>
-            <span className="ml-auto shrink-0 text-xs text-notice-ink-muted">
+            <span className="ml-auto shrink-0 text-sm text-notice-ink-muted">
                 詳細 →
             </span>
         </Link>

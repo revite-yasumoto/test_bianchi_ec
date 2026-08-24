@@ -28,10 +28,10 @@ export function SpecEditor({ specs, onChange }: SpecEditorProps) {
     return (
         <div className="rounded-xl border border-admin-line bg-white p-5">
             <div className="mb-3.5 flex items-baseline gap-2.5">
-                <h2 className="text-[13px] font-extrabold text-admin-ink">
+                <h2 className="text-[15px] font-extrabold text-admin-ink">
                     商品スペック表
                 </h2>
-                <p className="text-[11.5px] text-admin-ink-muted">
+                <p className="text-sm text-admin-ink-muted">
                     商品詳細の下部に表形式で掲載されます（最大{MAX_SPECS}項目）
                 </p>
             </div>
@@ -74,7 +74,7 @@ export function SpecEditor({ specs, onChange }: SpecEditorProps) {
                         <button
                             type="button"
                             aria-label={`${index + 1}行目を削除`}
-                            className="text-[11.5px] font-bold text-admin-danger"
+                            className="text-sm font-bold text-admin-danger"
                             onClick={() =>
                                 onChange(
                                     specs.filter(
@@ -92,7 +92,7 @@ export function SpecEditor({ specs, onChange }: SpecEditorProps) {
             {specs.length < MAX_SPECS ? (
                 <button
                     type="button"
-                    className="mt-3 rounded-lg border border-admin-line px-4 py-2 text-[12.5px] font-bold text-admin-ink"
+                    className="mt-3 rounded-lg border border-admin-line px-4 py-2 text-[15px] font-bold text-admin-ink"
                     onClick={() => onChange([...specs, newSpec()])}
                 >
                     ＋ 項目を追加

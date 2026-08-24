@@ -49,12 +49,12 @@ export function StatusUpdateCard({
 
     return (
         <div className="rounded-xl border border-admin-line bg-white p-5">
-            <h2 className="mb-2.5 text-[13px] font-extrabold text-admin-ink">
+            <h2 className="mb-2.5 text-[15px] font-extrabold text-admin-ink">
                 ステータス更新
             </h2>
 
             {statusOptions.length === 0 ? (
-                <p className="text-[12.5px] leading-relaxed text-admin-ink-muted">
+                <p className="text-[15px] leading-relaxed text-admin-ink-muted">
                     「{currentStatusLabel}
                     」は最終ステータスのため、これ以上の変更はできません。
                 </p>
@@ -78,7 +78,7 @@ export function StatusUpdateCard({
 
                     <button
                         type="button"
-                        className="mt-3 w-full rounded-lg bg-admin-brand py-3 text-[13px] font-extrabold text-white"
+                        className="mt-3 w-full rounded-lg bg-admin-brand py-3 text-[15px] font-extrabold text-white"
                         onClick={() =>
                             isShipping
                                 ? setIsShipmentOpen(true)
@@ -89,12 +89,12 @@ export function StatusUpdateCard({
                     </button>
 
                     {error ? (
-                        <p className="mt-2 text-[11.5px] font-bold text-admin-danger">
+                        <p className="mt-2 text-sm font-bold text-admin-danger">
                             {error}
                         </p>
                     ) : null}
 
-                    <p className="mt-2.5 text-[11.5px] leading-relaxed text-admin-ink-muted">
+                    <p className="mt-2.5 text-sm leading-relaxed text-admin-ink-muted">
                         {isShipping
                             ? '更新時に送り状番号の入力とメール送信の確認が表示されます。'
                             : '更新時は確認ダイアログが表示されます。'}

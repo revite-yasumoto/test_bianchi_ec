@@ -36,7 +36,7 @@ export function FavoriteButton({
             aria-pressed={isFavorited}
             onClick={toggle}
             className={cn(
-                'rounded-full border-[1.5px] px-5 py-4 text-sm font-bold',
+                'rounded-full border-[1.5px] px-5 py-4 text-base font-bold',
                 isFavorited
                     ? 'border-coral text-coral'
                     : 'border-line text-ink hover:border-brand',

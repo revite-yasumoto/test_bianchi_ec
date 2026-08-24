@@ -10,7 +10,7 @@ export default function Privacy() {
             title="プライバシーポリシー"
             description="お客様の個人情報の取得・利用目的・管理・第三者提供についての方針です。"
         >
-            <p className="text-[12.5px] leading-[1.95] text-ink2">
+            <p className="text-[15px] leading-[1.95] text-ink2">
                 本サイトはデモンストレーション用のサンプルサイトです。以下の記載内容はすべて架空のものです。
             </p>
 

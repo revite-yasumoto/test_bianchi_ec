@@ -20,7 +20,7 @@ export function VariantSelector({
 
     return (
         <fieldset>
-            <legend className="mb-2 text-[13px] font-bold">{label}</legend>
+            <legend className="mb-2 text-[15px] font-bold">{label}</legend>
             <div className="flex flex-wrap gap-2">
                 {options.map((option) => (
                     <button
@@ -30,7 +30,7 @@ export function VariantSelector({
                         aria-pressed={option.selected}
                         onClick={() => onSelect(option.name)}
                         className={cn(
-                            'rounded-[10px] border-[1.5px] px-4 py-2.5 text-[13px] font-semibold',
+                            'rounded-[10px] border-[1.5px] px-4 py-2.5 text-[15px] font-semibold',
                             minWidthClassName,
                             option.selected
                                 ? 'border-brand bg-[#E7F0F4]'

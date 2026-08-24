@@ -88,14 +88,14 @@ export function ShippingSettingEditor({
     return (
         <form onSubmit={handleSubmit}>
             <div className="flex flex-wrap items-center gap-3 rounded-xl border border-admin-line bg-white px-5 py-4">
-                <p className="text-xs leading-relaxed text-admin-ink-muted">
+                <p className="text-sm leading-relaxed text-admin-ink-muted">
                     47都道府県ごとに送料と配送予定日数を設定します。初期値：北海道・沖縄
                     1,000円／その他 500円。
                 </p>
                 <button
                     type="submit"
                     disabled={processing}
-                    className="ml-auto rounded-lg bg-admin-brand px-5 py-2.5 text-[12.5px] font-extrabold whitespace-nowrap text-white disabled:opacity-60"
+                    className="ml-auto rounded-lg bg-admin-brand px-5 py-2.5 text-[15px] font-extrabold whitespace-nowrap text-white disabled:opacity-60"
                 >
                     設定を保存
                 </button>
@@ -104,7 +104,7 @@ export function ShippingSettingEditor({
             {Object.keys(fieldErrors).length > 0 ? (
                 <p
                     role="alert"
-                    className="mt-3.5 rounded-xl border border-admin-danger bg-white px-5 py-3 text-[12px] font-bold text-admin-danger"
+                    className="mt-3.5 rounded-xl border border-admin-danger bg-white px-5 py-3 text-sm font-bold text-admin-danger"
                 >
                     入力内容に誤りがあります。赤枠の都道府県を確認してください（送料は0〜100,000円、配送予定日数は1〜30日）。
                 </p>
@@ -113,7 +113,7 @@ export function ShippingSettingEditor({
             <div className="mt-3.5 flex flex-col gap-5 rounded-xl border border-admin-line bg-white px-5 py-4">
                 {groups.map((group) => (
                     <section key={group.region.value}>
-                        <h2 className="mb-2 text-[12.5px] font-extrabold text-admin-ink">
+                        <h2 className="mb-2 text-[15px] font-extrabold text-admin-ink">
                             {group.region.label}
                         </h2>
                         <ul className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-2.5">

@@ -33,7 +33,7 @@ export default function Index({
         >
             <div className="px-5 py-6 pb-14">
                 <nav aria-label="パンくず" className="mb-2.5">
-                    <ol className="flex gap-1 font-mono text-[11px] text-ink2">
+                    <ol className="flex gap-1 font-mono text-sm text-ink2">
                         <li>
                             <Link href={route('top')}>HOME</Link>
                         </li>
@@ -43,7 +43,7 @@ export default function Index({
                 </nav>
 
                 <h1 className="mb-1.5 text-[28px] font-black">商品一覧</h1>
-                <p className="mb-5 text-[13px] text-ink2">
+                <p className="mb-5 text-[15px] text-ink2">
                     {products.total}件の商品
                     {isFiltered ? ` / 全${totalCount}件` : ''}
                 </p>

@@ -31,7 +31,7 @@ export function AdminUserTable({ admins }: AdminUserTableProps) {
                         key: 'admin_code',
                         header: '管理者ID',
                         render: (row) => (
-                            <span className="font-mono text-[11.5px]">
+                            <span className="font-mono text-sm">
                                 {row.admin_code}
                             </span>
                         ),
@@ -43,7 +43,7 @@ export function AdminUserTable({ admins }: AdminUserTableProps) {
                             <span className="font-bold">
                                 {row.name}
                                 {row.email === auth.admin?.email ? (
-                                    <span className="ml-2 text-[11px] font-normal text-admin-ink-muted">
+                                    <span className="ml-2 text-sm font-normal text-admin-ink-muted">
                                         （ログイン中）
                                     </span>
                                 ) : null}
@@ -76,13 +76,13 @@ export function AdminUserTable({ admins }: AdminUserTableProps) {
                             <span className="flex justify-end gap-3">
                                 <Link
                                     href={route('admin.admins.edit', [row.id])}
-                                    className="text-[11.5px] font-bold text-admin-brand"
+                                    className="text-sm font-bold text-admin-brand"
                                 >
                                     編集
                                 </Link>
                                 <button
                                     type="button"
-                                    className="text-[11.5px] font-bold text-admin-danger"
+                                    className="text-sm font-bold text-admin-danger"
                                     onClick={() => setPendingRow(row)}
                                 >
                                     削除

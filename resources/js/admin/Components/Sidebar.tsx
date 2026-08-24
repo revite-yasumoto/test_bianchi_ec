@@ -32,7 +32,7 @@ function MenuLink({
     const current = isItemCurrent(item);
 
     const className = cn(
-        'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-bold',
+        'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-base font-bold',
         indented && 'pl-8 font-medium',
         current ? 'bg-admin-brand text-white' : 'text-admin-ink',
         !enabled && 'cursor-not-allowed text-admin-ink-muted opacity-60',
@@ -78,7 +78,7 @@ function MenuGroup({ item }: { item: SidebarMenuItem }) {
         <div>
             <button
                 type="button"
-                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-bold text-admin-ink"
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-base font-bold text-admin-ink"
                 aria-expanded={isOpen}
                 onClick={() => setIsOpen((previous) => !previous)}
             >
@@ -112,7 +112,7 @@ export function Sidebar() {
                 <p className="text-base font-extrabold tracking-wide text-admin-brand-deep">
                     Bianchi
                 </p>
-                <p className="text-[8.5px] tracking-widest text-admin-ink-muted">
+                <p className="text-sm tracking-widest text-admin-ink-muted">
                     ADMIN CONSOLE
                 </p>
             </div>
@@ -131,16 +131,16 @@ export function Sidebar() {
             </nav>
             <div className="flex items-center gap-2 border-t border-admin-line px-3 py-3">
                 <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-bold text-admin-ink">
+                    <p className="truncate text-sm font-bold text-admin-ink">
                         {auth.admin?.name}
                     </p>
-                    <p className="truncate text-[10.5px] text-admin-ink-muted">
+                    <p className="truncate text-sm text-admin-ink-muted">
                         {auth.admin?.email}
                     </p>
                 </div>
                 <button
                     type="button"
-                    className="ml-auto rounded-lg border border-admin-line bg-white px-3 py-1.5 text-xs font-bold text-admin-ink"
+                    className="ml-auto rounded-lg border border-admin-line bg-white px-3 py-1.5 text-sm font-bold text-admin-ink"
                     onClick={() => setIsLogoutConfirmOpen(true)}
                 >
                     ログアウト

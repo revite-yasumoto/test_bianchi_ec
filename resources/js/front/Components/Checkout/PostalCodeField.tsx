@@ -63,7 +63,7 @@ export function PostalCodeField({
 
     return (
         <fieldset className="min-w-0">
-            <legend className="mb-1.5 block text-xs font-bold text-ink">
+            <legend className="mb-1.5 block text-sm font-bold text-ink">
                 郵便番号
                 <span className="ml-1 text-coral" aria-hidden="true">
                     *
@@ -125,7 +125,7 @@ export function PostalCodeField({
             {error ? (
                 <p
                     id={`${id}-error`}
-                    className="mt-1.5 text-[11.5px] font-bold text-coral"
+                    className="mt-1.5 text-sm font-bold text-coral"
                 >
                     {error}
                 </p>
@@ -134,7 +134,7 @@ export function PostalCodeField({
                 <p
                     id={`${id}-status`}
                     role="status"
-                    className="mt-1.5 text-[11.5px] text-ink2"
+                    className="mt-1.5 text-sm text-ink2"
                 >
                     {status === 'loading'
                         ? '住所を検索しています…'

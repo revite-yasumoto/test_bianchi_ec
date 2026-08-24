@@ -27,7 +27,7 @@ type Props = {
 
 const CARD_CLASS = 'rounded-xl border border-admin-line bg-white p-5';
 
-const CARD_TITLE_CLASS = 'mb-4 text-[13px] font-extrabold text-admin-ink';
+const CARD_TITLE_CLASS = 'mb-4 text-[15px] font-extrabold text-admin-ink';
 
 export default function Index({ summary, chart, latestOrders }: Props) {
     return (

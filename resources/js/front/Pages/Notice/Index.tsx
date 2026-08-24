@@ -36,10 +36,10 @@ export default function Index({ notices }: Props) {
                                 href: route('notices.show', [notice.id]),
                                 meta: (
                                     <>
-                                        <span className="shrink-0 rounded bg-coral px-2 py-0.5 font-mono text-[10px] tracking-[.1em] text-white">
+                                        <span className="shrink-0 rounded bg-coral px-2 py-0.5 font-mono text-sm tracking-[.1em] text-white">
                                             重要
                                         </span>
-                                        <span className="shrink-0 font-mono text-[11.5px] text-ink2">
+                                        <span className="shrink-0 font-mono text-sm text-ink2">
                                             <time
                                                 dateTime={
                                                     notice.period_start_iso

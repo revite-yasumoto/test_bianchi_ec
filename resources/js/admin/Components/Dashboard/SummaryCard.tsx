@@ -27,9 +27,7 @@ export function SummaryCard({
 }: SummaryCardProps) {
     const content = (
         <>
-            <p className="text-[11.5px] font-bold text-admin-ink-muted">
-                {label}
-            </p>
+            <p className="text-sm font-bold text-admin-ink-muted">{label}</p>
             <p
                 className={cn(
                     'mt-2 font-mono text-2xl font-bold',
@@ -38,7 +36,7 @@ export function SummaryCard({
             >
                 {value}
             </p>
-            <p className="mt-1.5 text-[11px] text-admin-ink-muted">{note}</p>
+            <p className="mt-1.5 text-sm text-admin-ink-muted">{note}</p>
         </>
     );
 

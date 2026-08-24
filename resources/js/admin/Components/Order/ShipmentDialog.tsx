@@ -24,13 +24,13 @@ export function ShipmentDialog({
 
     return (
         <Modal isOpen={isOpen} title="出荷済みへの変更" onClose={close}>
-            <p className="text-[12.5px] leading-relaxed text-admin-ink-muted">
+            <p className="text-[15px] leading-relaxed text-admin-ink-muted">
                 送り状番号を控える場合は入力してください。未入力のままでも変更できます。
             </p>
 
             <label
                 htmlFor="tracking_number"
-                className="mt-4 block text-[12px] font-bold text-admin-ink"
+                className="mt-4 block text-sm font-bold text-admin-ink"
             >
                 送り状番号（任意）
             </label>
@@ -45,7 +45,7 @@ export function ShipmentDialog({
 
             <label
                 htmlFor="notifies_customer"
-                className="mt-4 flex cursor-pointer items-center gap-2 text-[12.5px] text-admin-ink"
+                className="mt-4 flex cursor-pointer items-center gap-2 text-[15px] text-admin-ink"
             >
                 <input
                     id="notifies_customer"
@@ -62,14 +62,14 @@ export function ShipmentDialog({
             <div className="mt-6 flex justify-end gap-2.5">
                 <button
                     type="button"
-                    className="rounded-lg border border-admin-line px-4 py-2 text-[12.5px] font-bold"
+                    className="rounded-lg border border-admin-line px-4 py-2 text-[15px] font-bold"
                     onClick={close}
                 >
                     キャンセル
                 </button>
                 <button
                     type="button"
-                    className="rounded-lg bg-admin-brand px-4 py-2 text-[12.5px] font-extrabold text-white"
+                    className="rounded-lg bg-admin-brand px-4 py-2 text-[15px] font-extrabold text-white"
                     onClick={() => onConfirm(trackingNumber, notifiesCustomer)}
                 >
                     更新する

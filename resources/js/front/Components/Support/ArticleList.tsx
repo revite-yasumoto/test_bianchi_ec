@@ -25,12 +25,12 @@ export function ArticleList({ articles }: ArticleListProps) {
                         className="flex flex-wrap items-center gap-3.5 py-3.5"
                     >
                         {article.meta}
-                        <span className="min-w-0 text-[13.5px] font-semibold break-words">
+                        <span className="min-w-0 text-[15px] font-semibold break-words">
                             {article.title}
                         </span>
                         <span
                             aria-hidden="true"
-                            className="ml-auto shrink-0 text-xs text-ink2"
+                            className="ml-auto shrink-0 text-sm text-ink2"
                         >
                             →
                         </span>

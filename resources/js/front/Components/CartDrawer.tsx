@@ -66,7 +66,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 className="fixed inset-y-0 right-0 z-[71] flex w-[min(360px,86%)] flex-col bg-white shadow-2xl outline-none"
             >
                 <div className="flex items-center border-b border-line px-5 py-4">
-                    <h2 id={titleId} className="text-[15px] font-extrabold">
+                    <h2 id={titleId} className="text-base font-extrabold">
                         カート（{cartCount}）
                     </h2>
                     <button
@@ -94,15 +94,15 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                         />
                                     </div>
                                     <div className="flex-1">
-                                        <p className="text-[12.5px] leading-[1.45] font-bold">
+                                        <p className="text-[15px] leading-[1.45] font-bold">
                                             {item.name}
                                         </p>
-                                        <p className="mt-0.5 text-[11px] text-ink2">
+                                        <p className="mt-0.5 text-sm text-ink2">
                                             {item.variant_label} ×
                                             {item.quantity}
                                         </p>
                                     </div>
-                                    <p className="font-mono text-[12.5px] font-bold">
+                                    <p className="font-mono text-[15px] font-bold">
                                         {yen(item.line_total)}
                                     </p>
                                 </li>
@@ -114,12 +114,12 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 </div>
 
                 <div className="border-t border-line px-5 py-4">
-                    <div className="flex justify-between text-sm font-extrabold">
+                    <div className="flex justify-between text-base font-extrabold">
                         <span>商品合計</span>
                         <span className="font-mono">{yen(itemsTotal)}</span>
                     </div>
                     {freeShippingThreshold !== null ? (
-                        <p className="mt-1.5 text-[11.5px] text-ink2">
+                        <p className="mt-1.5 text-sm text-ink2">
                             {freeShippingMessage(
                                 freeShippingThreshold - itemsTotal,
                             )}
@@ -131,7 +131,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                             label: 'カートを見る',
                             routeName: 'cart.index',
                         }}
-                        className="mt-3.5 block w-full rounded-full bg-coral py-3.5 text-center text-sm font-extrabold text-white"
+                        className="mt-3.5 block w-full rounded-full bg-coral py-3.5 text-center text-base font-extrabold text-white"
                     />
                 </div>
             </div>

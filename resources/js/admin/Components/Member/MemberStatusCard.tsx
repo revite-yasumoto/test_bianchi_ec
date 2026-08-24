@@ -43,10 +43,10 @@ export function MemberStatusCard({
 
     return (
         <div className="rounded-xl border border-admin-line bg-white p-5">
-            <h2 className="mb-2.5 text-[13px] font-extrabold text-admin-ink">
+            <h2 className="mb-2.5 text-[15px] font-extrabold text-admin-ink">
                 ステータス更新
             </h2>
-            <p className="text-[12.5px] leading-relaxed text-admin-ink-muted">
+            <p className="text-[15px] leading-relaxed text-admin-ink-muted">
                 現在のステータスは「{STATUS_LABEL[status]}」です。
                 {isWithdrawn
                     ? '退会は会員ご本人の操作によるもので、管理画面から戻すことはできません。'
@@ -58,7 +58,7 @@ export function MemberStatusCard({
             {isWithdrawn ? null : (
                 <button
                     type="button"
-                    className="mt-3 w-full rounded-lg bg-admin-brand py-3 text-[13px] font-extrabold text-white"
+                    className="mt-3 w-full rounded-lg bg-admin-brand py-3 text-[15px] font-extrabold text-white"
                     onClick={() => setIsConfirmOpen(true)}
                 >
                     「{STATUS_LABEL[nextStatus]}」に変更する

@@ -20,11 +20,11 @@ export function QuantityStepper({
                 aria-label="数量を1つ減らす"
                 disabled={disabled || quantity <= 1}
                 onClick={() => onChange(quantity - 1)}
-                className="h-8 w-8 text-[15px] disabled:cursor-not-allowed disabled:opacity-40"
+                className="h-8 w-8 text-base disabled:cursor-not-allowed disabled:opacity-40"
             >
                 −
             </button>
-            <span className="min-w-[26px] text-center font-mono text-[13px]">
+            <span className="min-w-[26px] text-center font-mono text-[15px]">
                 {quantity}
             </span>
             <button
@@ -32,7 +32,7 @@ export function QuantityStepper({
                 aria-label="数量を1つ増やす"
                 disabled={disabled || quantity >= max}
                 onClick={() => onChange(quantity + 1)}
-                className="h-8 w-8 text-[15px] disabled:cursor-not-allowed disabled:opacity-40"
+                className="h-8 w-8 text-base disabled:cursor-not-allowed disabled:opacity-40"
             >
                 ＋
             </button>

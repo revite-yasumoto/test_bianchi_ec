@@ -68,11 +68,11 @@ export function PurchasePanel({
 
     return (
         <div>
-            <p className="text-xs text-ink2">{product.category_name}</p>
+            <p className="text-sm text-ink2">{product.category_name}</p>
             <h1 className="mt-1.5 text-[27px] leading-[1.35] font-black">
                 {product.name}
             </h1>
-            <p className="mt-2 font-mono text-xs text-ink2">
+            <p className="mt-2 font-mono text-sm text-ink2">
                 商品ID {product.product_code}
             </p>
 
@@ -80,7 +80,7 @@ export function PurchasePanel({
                 <span className="font-mono text-[30px] font-bold">
                     {yen(product.price)}
                 </span>
-                <span className="text-xs text-ink2">税込</span>
+                <span className="text-sm text-ink2">税込</span>
             </p>
 
             <div className="mt-3.5">
@@ -100,7 +100,7 @@ export function PurchasePanel({
                         onSelect={selectSize}
                         minWidthClassName="min-w-[52px]"
                     />
-                    <p className="font-mono text-[11px] text-ink2">
+                    <p className="font-mono text-sm text-ink2">
                         SKU: {selectedVariant?.sku_code ?? '— 選択してください'}
                     </p>
                 </div>
@@ -109,7 +109,7 @@ export function PurchasePanel({
             {showSelectionWarning ? (
                 <p
                     role="alert"
-                    className="mt-3.5 text-[12.5px] font-bold text-coral"
+                    className="mt-3.5 text-[15px] font-bold text-coral"
                 >
                     カラーとサイズを選択してください
                 </p>
@@ -118,7 +118,7 @@ export function PurchasePanel({
             {form.errors.product_variant_id ? (
                 <p
                     role="alert"
-                    className="mt-3.5 text-[12.5px] font-bold text-coral"
+                    className="mt-3.5 text-[15px] font-bold text-coral"
                 >
                     {form.errors.product_variant_id}
                 </p>
@@ -126,7 +126,7 @@ export function PurchasePanel({
             {form.errors.quantity ? (
                 <p
                     role="alert"
-                    className="mt-3.5 text-[12.5px] font-bold text-coral"
+                    className="mt-3.5 text-[15px] font-bold text-coral"
                 >
                     {form.errors.quantity}
                 </p>
@@ -138,7 +138,7 @@ export function PurchasePanel({
                     disabled={product.is_sold_out || form.processing}
                     onClick={addToCart}
                     className={cn(
-                        'min-w-[200px] flex-1 rounded-full px-6 py-4 text-[15px] font-extrabold text-white',
+                        'min-w-[200px] flex-1 rounded-full px-6 py-4 text-base font-extrabold text-white',
                         product.is_sold_out
                             ? 'cursor-not-allowed bg-[#C4C8CC]'
                             : 'bg-coral hover:bg-coral/90',
@@ -156,13 +156,13 @@ export function PurchasePanel({
                 <button
                     type="button"
                     onClick={onOpenShippingInfo}
-                    className="text-left text-[13px] font-semibold text-brand"
+                    className="text-left text-[15px] font-semibold text-brand"
                 >
                     送料・お支払い方法・発送日数について →
                 </button>
                 <Link
                     href={route('contact', { product_id: product.id })}
-                    className="text-left text-[13px] font-semibold text-brand"
+                    className="text-left text-[15px] font-semibold text-brand"
                 >
                     この商品について問い合わせる →
                 </Link>

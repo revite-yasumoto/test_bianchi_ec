@@ -23,7 +23,7 @@ export function Header({ onOpenCart }: HeaderProps) {
                     <span className="font-sans text-xl font-extrabold tracking-[.14em] text-brand-deep">
                         Bianchi
                     </span>
-                    <span className="mt-1 font-mono text-[8.5px] tracking-[.24em] text-ink2">
+                    <span className="mt-1 font-mono text-sm tracking-[.24em] text-ink2">
                         BICYCLE STORE
                     </span>
                 </Link>
@@ -36,7 +36,7 @@ export function Header({ onOpenCart }: HeaderProps) {
                         <NavLink
                             key={item.key}
                             item={item}
-                            className="text-[13.5px] font-medium whitespace-nowrap text-ink2"
+                            className="text-[15px] font-medium whitespace-nowrap text-ink2"
                             currentClassName="font-bold text-ink"
                         />
                     ))}
@@ -47,7 +47,7 @@ export function Header({ onOpenCart }: HeaderProps) {
                         <>
                             <span
                                 title={auth.user.name}
-                                className="hidden max-w-40 truncate text-xs font-bold text-ink lg:block"
+                                className="hidden max-w-40 truncate text-sm font-bold text-ink lg:block"
                             >
                                 {auth.user.name} 様
                             </span>
@@ -57,12 +57,12 @@ export function Header({ onOpenCart }: HeaderProps) {
                                     label: `お気に入り ${favoriteCount}`,
                                     routeName: 'mypage.favorites',
                                 }}
-                                className="rounded-full border border-line px-3 py-2 text-xs font-bold whitespace-nowrap"
+                                className="rounded-full border border-line px-3 py-2 text-sm font-bold whitespace-nowrap"
                             />
                             <button
                                 type="button"
                                 onClick={onOpenCart}
-                                className="rounded-full bg-coral px-3.5 py-2 text-xs font-bold whitespace-nowrap text-white"
+                                className="rounded-full bg-coral px-3.5 py-2 text-sm font-bold whitespace-nowrap text-white"
                             >
                                 カート
                                 <span className="ml-1.5 font-mono">
@@ -72,7 +72,7 @@ export function Header({ onOpenCart }: HeaderProps) {
                             <button
                                 type="button"
                                 onClick={() => router.post(route('logout'))}
-                                className="hidden text-xs font-bold text-ink2 lg:block"
+                                className="hidden text-sm font-bold text-ink2 lg:block"
                             >
                                 ログアウト
                             </button>
@@ -81,13 +81,13 @@ export function Header({ onOpenCart }: HeaderProps) {
                         <>
                             <Link
                                 href={route('login')}
-                                className="rounded-full border border-line px-3.5 py-2 text-xs font-bold whitespace-nowrap"
+                                className="rounded-full border border-line px-3.5 py-2 text-sm font-bold whitespace-nowrap"
                             >
                                 ログイン
                             </Link>
                             <Link
                                 href={route('register')}
-                                className="rounded-full bg-coral px-3.5 py-2 text-xs font-bold whitespace-nowrap text-white"
+                                className="rounded-full bg-coral px-3.5 py-2 text-sm font-bold whitespace-nowrap text-white"
                             >
                                 会員登録
                             </Link>

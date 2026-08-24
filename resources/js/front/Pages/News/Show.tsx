@@ -33,7 +33,7 @@ export default function Show({ news }: Props) {
             <div className="mx-auto max-w-[760px] px-[22px] py-[26px] pb-16">
                 <Link
                     href={route('news.index')}
-                    className="font-mono text-[11px] text-ink2"
+                    className="font-mono text-sm text-ink2"
                 >
                     ← 新着ニュース一覧へ戻る
                 </Link>
@@ -41,7 +41,7 @@ export default function Show({ news }: Props) {
                 <div className="mt-4 flex flex-wrap items-center gap-3">
                     <time
                         dateTime={news.published_on_iso}
-                        className="font-mono text-[11.5px] text-ink2"
+                        className="font-mono text-sm text-ink2"
                     >
                         {news.published_on}
                     </time>
@@ -52,7 +52,7 @@ export default function Show({ news }: Props) {
                     {news.title}
                 </h1>
 
-                <p className="mt-5 border-t border-line pt-5 text-[13.5px] leading-[1.95] whitespace-pre-line text-ink2">
+                <p className="mt-5 border-t border-line pt-5 text-[15px] leading-[1.95] whitespace-pre-line text-ink2">
                     {news.body}
                 </p>
             </div>

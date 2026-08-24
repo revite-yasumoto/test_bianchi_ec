@@ -34,16 +34,16 @@ export default function Show({ notice }: Props) {
             <div className="mx-auto max-w-[760px] px-[22px] py-[26px] pb-16">
                 <Link
                     href={route('notices.index')}
-                    className="font-mono text-[11px] text-ink2"
+                    className="font-mono text-sm text-ink2"
                 >
                     ← 重要なお知らせ一覧へ戻る
                 </Link>
 
                 <div className="mt-4 flex flex-wrap items-center gap-3">
-                    <span className="rounded bg-coral px-2 py-0.5 font-mono text-[10px] tracking-[.1em] text-white">
+                    <span className="rounded bg-coral px-2 py-0.5 font-mono text-sm tracking-[.1em] text-white">
                         重要
                     </span>
-                    <span className="font-mono text-[11.5px] text-ink2">
+                    <span className="font-mono text-sm text-ink2">
                         <time dateTime={notice.period_start_iso}>
                             {notice.period_start}
                         </time>
@@ -58,7 +58,7 @@ export default function Show({ notice }: Props) {
                     {notice.title}
                 </h1>
 
-                <p className="mt-5 border-t border-line pt-5 text-[13.5px] leading-[1.95] whitespace-pre-line text-ink2">
+                <p className="mt-5 border-t border-line pt-5 text-[15px] leading-[1.95] whitespace-pre-line text-ink2">
                     {notice.body}
                 </p>
             </div>

@@ -33,16 +33,16 @@ type Props = {
 
 const CARD_CLASS = 'rounded-xl border border-admin-line bg-white p-5';
 
-const CARD_HEADING_CLASS = 'mb-2.5 text-[13px] font-extrabold text-admin-ink';
+const CARD_HEADING_CLASS = 'mb-2.5 text-[15px] font-extrabold text-admin-ink';
 
-const NOTE_CLASS = 'text-[11px] leading-relaxed text-admin-ink-muted';
+const NOTE_CLASS = 'text-sm leading-relaxed text-admin-ink-muted';
 
 export default function Show({ contact, statusOptions }: Props) {
     return (
         <AdminLayout title="お問い合わせ詳細">
             <Link
                 href={route('admin.contacts.index')}
-                className="text-[12.5px] font-bold text-admin-brand"
+                className="text-[15px] font-bold text-admin-brand"
             >
                 ← お問い合わせ一覧へ
             </Link>
@@ -52,10 +52,10 @@ export default function Show({ contact, statusOptions }: Props) {
                     label={contact.status_label}
                     tone={contact.status_tone}
                 />
-                <p className="text-[12.5px] text-admin-ink-muted">
+                <p className="text-[15px] text-admin-ink-muted">
                     受信日時 {contact.received_at}
                 </p>
-                <p className="ml-auto font-mono text-[11px] text-admin-ink-muted">
+                <p className="ml-auto font-mono text-sm text-admin-ink-muted">
                     {contact.contact_number}
                 </p>
             </div>
@@ -63,7 +63,7 @@ export default function Show({ contact, statusOptions }: Props) {
             <div className="mt-3.5 grid grid-cols-[minmax(320px,1fr)_minmax(280px,360px)] gap-3.5">
                 <section className={CARD_CLASS}>
                     <h2 className={CARD_HEADING_CLASS}>お問い合わせ内容</h2>
-                    <p className="text-[13px] leading-[1.9] whitespace-pre-wrap text-admin-ink">
+                    <p className="text-[15px] leading-[1.9] whitespace-pre-wrap text-admin-ink">
                         {contact.body}
                     </p>
                     <p
@@ -79,7 +79,7 @@ export default function Show({ contact, statusOptions }: Props) {
                 <div className="flex flex-col gap-3.5">
                     <section className={CARD_CLASS}>
                         <h2 className={CARD_HEADING_CLASS}>送信者</h2>
-                        <dl className="flex flex-col gap-1.5 text-[12.5px]">
+                        <dl className="flex flex-col gap-1.5 text-[15px]">
                             <div>
                                 <dt className="sr-only">お名前</dt>
                                 <dd className="font-bold">{contact.name}</dd>
@@ -111,7 +111,7 @@ export default function Show({ contact, statusOptions }: Props) {
                             </div>
                         </dl>
 
-                        <h3 className="mt-3.5 mb-1.5 border-t border-admin-line pt-3.5 text-[12.5px] font-bold text-admin-ink">
+                        <h3 className="mt-3.5 mb-1.5 border-t border-admin-line pt-3.5 text-[15px] font-bold text-admin-ink">
                             対象商品
                         </h3>
                         <TargetProduct
@@ -159,12 +159,12 @@ function TargetProduct({
                     href={route('products.show', [product.id])}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[12.5px] font-bold text-admin-brand"
+                    className="text-[15px] font-bold text-admin-brand"
                 >
                     {product.name} →
                 </a>
                 {productCode ? (
-                    <p className="mt-1 font-mono text-[10.5px] text-admin-ink-muted">
+                    <p className="mt-1 font-mono text-sm text-admin-ink-muted">
                         {productCode}
                     </p>
                 ) : null}
@@ -173,14 +173,14 @@ function TargetProduct({
     }
 
     if (productName === null) {
-        return <p className="text-[12.5px] text-admin-ink-muted">なし</p>;
+        return <p className="text-[15px] text-admin-ink-muted">なし</p>;
     }
 
     return (
         <>
-            <p className="text-[12.5px] text-admin-ink">{productName}</p>
+            <p className="text-[15px] text-admin-ink">{productName}</p>
             {productCode ? (
-                <p className="mt-1 font-mono text-[10.5px] text-admin-ink-muted">
+                <p className="mt-1 font-mono text-sm text-admin-ink-muted">
                     {productCode}
                 </p>
             ) : null}

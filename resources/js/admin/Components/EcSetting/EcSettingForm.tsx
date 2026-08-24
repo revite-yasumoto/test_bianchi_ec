@@ -20,14 +20,14 @@ type EcSettingFields = {
 
 const CARD_CLASS = 'rounded-xl border border-admin-line bg-white p-5';
 
-const LABEL_CLASS = 'mb-1.5 block text-[11.5px] font-bold text-admin-ink';
+const LABEL_CLASS = 'mb-1.5 block text-sm font-bold text-admin-ink';
 
 const FIELD_CLASS =
     'w-full rounded-lg border border-admin-line px-3 py-2 text-base';
 
-const HINT_CLASS = 'mt-1.5 text-[11px] text-admin-ink-muted';
+const HINT_CLASS = 'mt-1.5 text-sm text-admin-ink-muted';
 
-const ERROR_CLASS = 'mt-1 text-[11px] font-bold text-admin-danger';
+const ERROR_CLASS = 'mt-1 text-sm font-bold text-admin-danger';
 
 export function EcSettingForm({ setting }: EcSettingFormProps) {
     const { showToast } = useAdminToast();
@@ -65,7 +65,7 @@ export function EcSettingForm({ setting }: EcSettingFormProps) {
             className="flex max-w-[640px] flex-col gap-4"
         >
             <section className={CARD_CLASS}>
-                <h2 className="mb-3.5 text-[13px] font-extrabold text-admin-ink">
+                <h2 className="mb-3.5 text-[15px] font-extrabold text-admin-ink">
                     金額設定
                 </h2>
 
@@ -130,10 +130,10 @@ export function EcSettingForm({ setting }: EcSettingFormProps) {
             </section>
 
             <section className={CARD_CLASS}>
-                <h2 className="mb-2 text-[13px] font-extrabold text-admin-ink">
+                <h2 className="mb-2 text-[15px] font-extrabold text-admin-ink">
                     銀行振込の案内文
                 </h2>
-                <p className="mb-3 text-[11.5px] text-admin-ink-muted">
+                <p className="mb-3 text-sm text-admin-ink-muted">
                     銀行振込を選んだ注文の完了画面と注文詳細に表示されます。
                 </p>
                 <label htmlFor="bank_transfer_note" className="sr-only">
@@ -157,7 +157,7 @@ export function EcSettingForm({ setting }: EcSettingFormProps) {
             <button
                 type="submit"
                 disabled={processing}
-                className="self-start rounded-lg bg-admin-brand px-7 py-3.5 text-[13.5px] font-extrabold text-white disabled:opacity-60"
+                className="self-start rounded-lg bg-admin-brand px-7 py-3.5 text-[15px] font-extrabold text-white disabled:opacity-60"
             >
                 設定を保存
             </button>

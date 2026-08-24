@@ -19,12 +19,12 @@ type NewsForm = {
     is_published: boolean;
 };
 
-const LABEL_CLASS = 'mb-1.5 block text-[11.5px] font-bold text-admin-ink';
+const LABEL_CLASS = 'mb-1.5 block text-sm font-bold text-admin-ink';
 
 const FIELD_CLASS =
     'w-full rounded-lg border border-admin-line px-3 py-2 text-base';
 
-const ERROR_CLASS = 'mt-1 text-[11px] font-bold text-admin-danger';
+const ERROR_CLASS = 'mt-1 text-sm font-bold text-admin-danger';
 
 export function NewsEditorModal({
     row,
@@ -148,7 +148,7 @@ export function NewsEditorModal({
                         <option value="published">公開</option>
                         <option value="draft">非公開</option>
                     </select>
-                    <p className="mt-1.5 text-[11px] text-admin-ink-muted">
+                    <p className="mt-1.5 text-sm text-admin-ink-muted">
                         非公開にするとフロント側の新着ニュースに表示されません。掲載日は表示用の日付で、公開の制御には使いません。
                     </p>
                 </div>
@@ -175,7 +175,7 @@ export function NewsEditorModal({
                 <button
                     type="submit"
                     disabled={processing}
-                    className="rounded-lg bg-admin-brand py-3 text-[13px] font-extrabold text-white disabled:opacity-60"
+                    className="rounded-lg bg-admin-brand py-3 text-[15px] font-extrabold text-white disabled:opacity-60"
                 >
                     保存する
                 </button>

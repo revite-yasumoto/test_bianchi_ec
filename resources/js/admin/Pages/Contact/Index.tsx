@@ -48,7 +48,7 @@ const FIELD_CLASS =
 // カレンダーアイコンは input の shadow DOM 内にあり枠線のホバーでは変化しないため、アイコン自体にも指定する（Chromium 系のみ有効）
 const DATE_FIELD_CLASS = `${FIELD_CLASS} [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:rounded [&::-webkit-calendar-picker-indicator:hover]:bg-admin-line`;
 
-const LABEL_CLASS = 'mb-1.5 block text-[11.5px] font-bold text-admin-ink';
+const LABEL_CLASS = 'mb-1.5 block text-sm font-bold text-admin-ink';
 
 export default function Index({
     contacts,
@@ -105,7 +105,7 @@ export default function Index({
                         tab: filters.tab,
                         ...query,
                     })}
-                    className="rounded-lg border border-admin-line bg-white px-3.5 py-2 text-[12.5px] font-bold whitespace-nowrap text-admin-ink"
+                    className="rounded-lg border border-admin-line bg-white px-3.5 py-2 text-[15px] font-bold whitespace-nowrap text-admin-ink"
                 >
                     絞り込み結果をCSVエクスポート
                 </a>
@@ -152,7 +152,7 @@ export default function Index({
                                     updateField('from', event.target.value)
                                 }
                             />
-                            <span className="text-xs text-admin-ink-muted">
+                            <span className="text-sm text-admin-ink-muted">
                                 〜
                             </span>
                             <input
@@ -195,7 +195,7 @@ export default function Index({
 
                 <div className="flex flex-wrap items-center justify-center gap-3">
                     <Pagination links={contacts.links} />
-                    <span className="mt-4 text-[11.5px] text-admin-ink-muted">
+                    <span className="mt-4 text-sm text-admin-ink-muted">
                         1ページ50件
                     </span>
                 </div>
@@ -235,11 +235,11 @@ function columnsOf(tab: ContactTab): Column<ContactRow>[] {
             header: '対象商品',
             render: (row: ContactRow) => (
                 <div className="whitespace-nowrap">
-                    <p className="text-[12px] font-semibold">
+                    <p className="text-sm font-semibold">
                         {row.product_name ?? '—'}
                     </p>
                     {row.product_code ? (
-                        <p className="font-mono text-[10.5px] text-admin-ink-muted">
+                        <p className="font-mono text-sm text-admin-ink-muted">
                             {row.product_code}
                         </p>
                     ) : null}
@@ -272,7 +272,7 @@ function columnsOf(tab: ContactTab): Column<ContactRow>[] {
             render: (row: ContactRow) => (
                 <Link
                     href={route('admin.contacts.show', [row.id])}
-                    className="block text-right text-[11.5px] font-bold text-admin-brand"
+                    className="block text-right text-sm font-bold text-admin-brand"
                 >
                     詳細
                 </Link>

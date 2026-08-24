@@ -40,7 +40,7 @@ export default function Index({ news }: Props) {
                                     <>
                                         <time
                                             dateTime={article.published_on_iso}
-                                            className="shrink-0 font-mono text-[11.5px] text-ink2"
+                                            className="shrink-0 font-mono text-sm text-ink2"
                                         >
                                             {article.published_on}
                                         </time>

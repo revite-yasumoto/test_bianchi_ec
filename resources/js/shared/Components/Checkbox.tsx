@@ -52,14 +52,14 @@ export function Checkbox({
                         <path d="M4 12.5 9.5 18 20 6.5" />
                     </svg>
                 </span>
-                <span className="text-xs leading-relaxed text-ink2">
+                <span className="text-sm leading-relaxed text-ink2">
                     {children}
                 </span>
             </label>
             {error ? (
                 <p
                     id={`${id}-error`}
-                    className="mt-1.5 text-[11.5px] font-bold text-coral"
+                    className="mt-1.5 text-sm font-bold text-coral"
                 >
                     {error}
                 </p>

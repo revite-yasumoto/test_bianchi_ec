@@ -15,7 +15,7 @@ export function Pagination({ links }: PaginationProps) {
             <ul className="flex justify-center gap-1">
                 {links.map((link, index) => {
                     const className = cn(
-                        'block rounded-full border border-line px-3.5 py-2 text-xs font-bold',
+                        'block rounded-full border border-line px-3.5 py-2 text-sm font-bold',
                         link.active
                             ? 'bg-brand text-white'
                             : 'bg-white text-ink',

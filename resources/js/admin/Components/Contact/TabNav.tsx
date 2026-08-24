@@ -29,7 +29,7 @@ export function TabNav({ current, query }: TabNavProps) {
                                 })}
                                 aria-current={isCurrent ? 'page' : undefined}
                                 className={cn(
-                                    'block border-b-2 px-5 py-3 text-[13px] font-bold',
+                                    'block border-b-2 px-5 py-3 text-[15px] font-bold',
                                     isCurrent
                                         ? 'border-admin-brand text-admin-ink'
                                         : 'border-transparent text-admin-ink-muted',

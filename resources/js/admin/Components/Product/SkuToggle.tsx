@@ -28,7 +28,7 @@ export function SkuToggle({ checked, onChange }: SkuToggleProps) {
                     )}
                 />
             </span>
-            <span className="text-xs font-bold text-admin-ink">
+            <span className="text-sm font-bold text-admin-ink">
                 {checked ? 'SKUあり' : 'SKUなし'}
             </span>
         </button>

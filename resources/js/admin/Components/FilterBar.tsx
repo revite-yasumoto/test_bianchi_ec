@@ -19,7 +19,7 @@ export function FilterBar({
             <div className="flex flex-1 flex-wrap items-center gap-3">
                 {children}
             </div>
-            <div className="ml-auto flex items-center gap-3 text-sm text-admin-ink-muted">
+            <div className="ml-auto flex items-center gap-3 text-base text-admin-ink-muted">
                 <span className="font-bold whitespace-nowrap">
                     {totalCount === undefined
                         ? `${resultCount}件`

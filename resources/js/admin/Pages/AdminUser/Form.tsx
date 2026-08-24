@@ -21,7 +21,7 @@ type AdminUserForm = {
 const FIELD_CLASS =
     'w-full rounded-lg border border-admin-line px-3 py-2 text-base';
 
-const LABEL_CLASS = 'mb-1.5 block text-[11.5px] font-bold text-admin-ink';
+const LABEL_CLASS = 'mb-1.5 block text-sm font-bold text-admin-ink';
 
 export default function Form({ admin }: Props) {
     const { data, setData, post, put, processing, errors, reset } =
@@ -53,7 +53,7 @@ export default function Form({ admin }: Props) {
             <form onSubmit={handleSubmit} className="max-w-[560px]">
                 <div className="rounded-xl border border-admin-line bg-white p-5">
                     {admin ? (
-                        <p className="mb-3.5 text-[12.5px] text-admin-ink-muted">
+                        <p className="mb-3.5 text-[15px] text-admin-ink-muted">
                             管理者ID{' '}
                             <span className="font-mono font-bold text-admin-ink">
                                 {admin.admin_code}
@@ -61,7 +61,7 @@ export default function Form({ admin }: Props) {
                             （変更できません）
                         </p>
                     ) : (
-                        <p className="mb-3.5 text-[11.5px] text-admin-ink-muted">
+                        <p className="mb-3.5 text-sm text-admin-ink-muted">
                             管理者IDは登録時に自動で採番されます。
                         </p>
                     )}
@@ -82,7 +82,7 @@ export default function Form({ admin }: Props) {
                                 }
                             />
                             {errors.name ? (
-                                <p className="mt-1 text-[11px] font-bold text-admin-danger">
+                                <p className="mt-1 text-sm font-bold text-admin-danger">
                                     {errors.name}
                                 </p>
                             ) : null}
@@ -103,7 +103,7 @@ export default function Form({ admin }: Props) {
                                 }
                             />
                             {errors.email ? (
-                                <p className="mt-1 text-[11px] font-bold text-admin-danger">
+                                <p className="mt-1 text-sm font-bold text-admin-danger">
                                     {errors.email}
                                 </p>
                             ) : null}
@@ -126,7 +126,7 @@ export default function Form({ admin }: Props) {
                                 }
                             />
                             {errors.password ? (
-                                <p className="mt-1 text-[11px] font-bold text-admin-danger">
+                                <p className="mt-1 text-sm font-bold text-admin-danger">
                                     {errors.password}
                                 </p>
                             ) : null}
@@ -160,13 +160,13 @@ export default function Form({ admin }: Props) {
                     <button
                         type="submit"
                         disabled={processing}
-                        className="flex-1 rounded-lg bg-admin-brand py-3 text-[13.5px] font-extrabold text-white disabled:opacity-60"
+                        className="flex-1 rounded-lg bg-admin-brand py-3 text-[15px] font-extrabold text-white disabled:opacity-60"
                     >
                         保存する
                     </button>
                     <Link
                         href={route('admin.admins.index')}
-                        className="rounded-lg border border-admin-line bg-white px-5 py-3 text-[13px] font-bold text-admin-ink"
+                        className="rounded-lg border border-admin-line bg-white px-5 py-3 text-[15px] font-bold text-admin-ink"
                     >
                         キャンセル
                     </Link>

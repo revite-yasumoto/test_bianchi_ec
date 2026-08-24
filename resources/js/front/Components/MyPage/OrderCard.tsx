@@ -23,28 +23,25 @@ export function OrderCard({ order }: { order: OrderSummary }) {
         <article className="rounded-2xl border border-line p-5">
             <div className="flex flex-wrap items-center gap-2.5">
                 <Badge tone={order.status_tone}>{order.status_label}</Badge>
-                <span className="font-mono text-[13px] font-bold">
+                <span className="font-mono text-[15px] font-bold">
                     {order.order_number}
                 </span>
-                <time
-                    dateTime={order.ordered_at}
-                    className="text-[12px] text-ink2"
-                >
+                <time dateTime={order.ordered_at} className="text-sm text-ink2">
                     {dotDateLabel(order.ordered_at)}
                 </time>
             </div>
 
-            <p className="mt-3 text-[13.5px] leading-[1.6] font-bold">
+            <p className="mt-3 text-[15px] leading-[1.6] font-bold">
                 {order.items_summary}
             </p>
-            <p className="mt-1.5 font-mono text-[15px] font-bold">
+            <p className="mt-1.5 font-mono text-base font-bold">
                 {yen(order.total)}
             </p>
 
             <div className="mt-4 flex flex-wrap gap-2.5">
                 <Link
                     href={route('mypage.orders.show', [order.id])}
-                    className="rounded-full bg-brand px-5 py-2 text-xs font-bold text-white"
+                    className="rounded-full bg-brand px-5 py-2 text-sm font-bold text-white"
                 >
                     注文詳細
                 </Link>

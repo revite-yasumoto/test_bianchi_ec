@@ -10,7 +10,7 @@ type CategoryChipsProps = {
 };
 
 const CHIP_CLASS =
-    'block rounded-full border px-4 py-2 text-[12.5px] font-bold transition-colors';
+    'block rounded-full border px-4 py-2 text-[15px] font-bold transition-colors';
 
 export function CategoryChips({
     categories,

@@ -32,7 +32,7 @@ export default function Create({ defaults, product }: Props) {
         >
             <div className="mx-auto max-w-[560px] px-[22px] py-[26px] pb-16">
                 <h1 className="text-[26px] font-black">お問い合わせ</h1>
-                <p className="mt-2.5 text-[13px] leading-[1.9] text-ink2">
+                <p className="mt-2.5 text-[15px] leading-[1.9] text-ink2">
                     商品・ご注文・配送についてのご質問を承ります。3営業日以内にご返信いたします。
                 </p>
 
@@ -71,10 +71,10 @@ export default function Create({ defaults, product }: Props) {
                     {product ? (
                         // 対象商品が確定している問い合わせは書き換えさせない（商品名はサーバー側で引き直す）
                         <dl>
-                            <dt className="mb-1.5 text-[12.5px] font-bold">
+                            <dt className="mb-1.5 text-[15px] font-bold">
                                 対象商品
                             </dt>
-                            <dd className="text-[13px] leading-[1.9]">
+                            <dd className="text-[15px] leading-[1.9]">
                                 {product.name}
                             </dd>
                         </dl>
@@ -106,7 +106,7 @@ export default function Create({ defaults, product }: Props) {
                     <button
                         type="submit"
                         disabled={processing}
-                        className="mt-1 rounded-full bg-brand py-3.5 text-sm font-extrabold text-white disabled:opacity-60"
+                        className="mt-1 rounded-full bg-brand py-3.5 text-base font-extrabold text-white disabled:opacity-60"
                     >
                         送信する
                     </button>

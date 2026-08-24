@@ -23,14 +23,14 @@ export function CartSummary({
 }: CartSummaryProps) {
     return (
         <aside className="rounded-[20px] bg-bg2 p-6">
-            <h2 className="mb-4 text-[15px] font-extrabold">お支払い金額</h2>
+            <h2 className="mb-4 text-base font-extrabold">お支払い金額</h2>
 
             <dl>
-                <div className="flex justify-between py-1.5 text-[13.5px]">
+                <div className="flex justify-between py-1.5 text-[15px]">
                     <dt>商品合計</dt>
                     <dd className="font-mono font-bold">{yen(subtotal)}</dd>
                 </div>
-                <div className="flex justify-between py-1.5 text-[13.5px]">
+                <div className="flex justify-between py-1.5 text-[15px]">
                     <dt>概算送料（{estimatedPrefectureName}）</dt>
                     <dd className="font-mono font-bold">
                         {estimatedShippingLabel}
@@ -52,7 +52,7 @@ export function CartSummary({
             {!canCheckout ? (
                 <p
                     role="alert"
-                    className="mt-4 text-[12.5px] font-bold text-coral"
+                    className="mt-4 text-[15px] font-bold text-coral"
                 >
                     在庫が不足している商品があります。数量を変更するか、その商品を削除してください。
                 </p>
@@ -61,14 +61,14 @@ export function CartSummary({
             {canCheckout ? (
                 <Link
                     href={route('checkout.index')}
-                    className="mt-5 block w-full rounded-full bg-coral py-4 text-center text-[15px] font-extrabold text-white"
+                    className="mt-5 block w-full rounded-full bg-coral py-4 text-center text-base font-extrabold text-white"
                 >
                     購入手続きへ進む
                 </Link>
             ) : (
                 <span
                     aria-disabled="true"
-                    className="mt-5 block w-full cursor-not-allowed rounded-full bg-coral py-4 text-center text-[15px] font-extrabold text-white opacity-40"
+                    className="mt-5 block w-full cursor-not-allowed rounded-full bg-coral py-4 text-center text-base font-extrabold text-white opacity-40"
                 >
                     購入手続きへ進む
                 </span>
@@ -76,12 +76,12 @@ export function CartSummary({
 
             <Link
                 href={route('products.index')}
-                className="mt-2.5 block w-full rounded-full border border-line py-3.5 text-center text-[13.5px] font-bold"
+                className="mt-2.5 block w-full rounded-full border border-line py-3.5 text-center text-[15px] font-bold"
             >
                 買い物を続ける
             </Link>
 
-            <p className="mt-3 text-[11.5px] leading-[1.6] text-ink2">
+            <p className="mt-3 text-sm leading-[1.6] text-ink2">
                 送料は配送先の都道府県で確定します。購入手続きで配送先を選ぶと再計算されます。
             </p>
         </aside>

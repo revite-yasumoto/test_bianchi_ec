@@ -34,7 +34,7 @@ const EMPTY_FILTERS: FilterFields = {
 const FIELD_CLASS =
     'w-full rounded-lg border border-admin-line px-3 py-2 text-base';
 
-const LABEL_CLASS = 'mb-1.5 block text-[11.5px] font-bold text-admin-ink';
+const LABEL_CLASS = 'mb-1.5 block text-sm font-bold text-admin-ink';
 
 function toQuantities(rows: StockRowData[]): Record<number, string> {
     return Object.fromEntries(
@@ -193,7 +193,7 @@ export function StockManager({
                 <button
                     type="button"
                     disabled={stocks.data.length === 0}
-                    className="self-end rounded-lg bg-admin-brand-deep px-4 py-2 text-[12.5px] font-bold whitespace-nowrap text-white disabled:opacity-50"
+                    className="self-end rounded-lg bg-admin-brand-deep px-4 py-2 text-[15px] font-bold whitespace-nowrap text-white disabled:opacity-50"
                     onClick={() => setIsBulkOpen(true)}
                 >
                     表示中を一括更新
@@ -202,12 +202,12 @@ export function StockManager({
 
             <div className="mt-3.5">
                 {stocks.data.length === 0 ? (
-                    <div className="flex items-center justify-center rounded-xl border border-admin-line bg-white p-12 text-sm text-admin-ink-muted">
+                    <div className="flex items-center justify-center rounded-xl border border-admin-line bg-white p-12 text-base text-admin-ink-muted">
                         該当する在庫データがありません
                     </div>
                 ) : (
                     <div className="overflow-x-auto rounded-xl border border-admin-line bg-white">
-                        <table className="w-full min-w-max text-left text-sm">
+                        <table className="w-full min-w-max text-left text-base">
                             <thead className="border-b border-admin-line bg-admin-sidebar-bg text-admin-ink-muted">
                                 <tr>
                                     <th

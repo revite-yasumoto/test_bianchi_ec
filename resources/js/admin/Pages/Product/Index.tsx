@@ -53,7 +53,7 @@ const EMPTY_FILTERS: FilterFields = {
 const FIELD_CLASS =
     'w-full rounded-lg border border-admin-line px-3 py-2 text-base';
 
-const LABEL_CLASS = 'mb-1.5 block text-[11.5px] font-bold text-admin-ink';
+const LABEL_CLASS = 'mb-1.5 block text-sm font-bold text-admin-ink';
 
 export default function Index({
     products,
@@ -99,7 +99,7 @@ export default function Index({
             headerActions={
                 <Link
                     href={route('admin.products.create')}
-                    className="rounded-lg bg-admin-brand px-4 py-2 text-[12.5px] font-bold text-white"
+                    className="rounded-lg bg-admin-brand px-4 py-2 text-[15px] font-bold text-white"
                 >
                     ＋ 商品登録
                 </Link>
@@ -182,7 +182,7 @@ export default function Index({
                                 updateField('price_min', event.target.value)
                             }
                         />
-                        <span className="text-xs text-admin-ink-muted">〜</span>
+                        <span className="text-sm text-admin-ink-muted">〜</span>
                         <label htmlFor="filter-price-max" className="sr-only">
                             価格の上限
                         </label>
@@ -208,7 +208,7 @@ export default function Index({
                             key: 'product_code',
                             header: '商品ID',
                             render: (row) => (
-                                <span className="font-mono text-[11.5px]">
+                                <span className="font-mono text-sm">
                                     {row.product_code}
                                 </span>
                             ),
@@ -289,7 +289,7 @@ export default function Index({
                                     href={route('admin.products.edit', [
                                         row.id,
                                     ])}
-                                    className="block text-right text-[11.5px] font-bold text-admin-brand"
+                                    className="block text-right text-sm font-bold text-admin-brand"
                                 >
                                     編集
                                 </Link>

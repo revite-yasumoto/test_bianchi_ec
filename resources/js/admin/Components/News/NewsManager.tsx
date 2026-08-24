@@ -68,8 +68,7 @@ export function NewsManager({
                     {
                         key: 'published_on',
                         header: '掲載日',
-                        className:
-                            'font-mono text-[11.5px] text-admin-ink-muted',
+                        className: 'font-mono text-sm text-admin-ink-muted',
                         render: (row) => row.published_on,
                     },
                     {
@@ -101,14 +100,14 @@ export function NewsManager({
                             <>
                                 <button
                                     type="button"
-                                    className="mr-3 text-[11.5px] font-bold text-admin-brand"
+                                    className="mr-3 text-sm font-bold text-admin-brand"
                                     onClick={() => onEdit(row)}
                                 >
                                     編集
                                 </button>
                                 <button
                                     type="button"
-                                    className="text-[11.5px] font-bold text-admin-danger"
+                                    className="text-sm font-bold text-admin-danger"
                                     onClick={() => setDeleteTarget(row)}
                                 >
                                     削除

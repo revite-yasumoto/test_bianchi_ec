@@ -85,7 +85,7 @@ type Props = {
 
 const CARD_CLASS = 'rounded-2xl border border-line p-5';
 
-const HEADING_CLASS = 'mb-3 text-[14px] font-extrabold';
+const HEADING_CLASS = 'mb-3 text-base font-extrabold';
 
 function AmountRow({
     label,
@@ -101,8 +101,8 @@ function AmountRow({
             className={cn(
                 'flex justify-between',
                 emphasized
-                    ? 'border-t border-line pt-2.5 text-[15px] font-extrabold'
-                    : 'text-[12.5px] text-ink2',
+                    ? 'border-t border-line pt-2.5 text-base font-extrabold'
+                    : 'text-[15px] text-ink2',
             )}
         >
             <span>{label}</span>
@@ -120,17 +120,14 @@ export default function OrderShow({ order }: Props) {
         >
             <Link
                 href={route('mypage.index')}
-                className="mb-3.5 inline-block font-mono text-[11px] text-ink2"
+                className="mb-3.5 inline-block font-mono text-sm text-ink2"
             >
                 ← 注文履歴へ
             </Link>
 
             <div className="flex flex-wrap items-center gap-2.5">
                 <Badge tone={order.status_tone}>{order.status_label}</Badge>
-                <time
-                    dateTime={order.ordered_at}
-                    className="text-[12px] text-ink2"
-                >
+                <time dateTime={order.ordered_at} className="text-sm text-ink2">
                     {dotDateTimeLabel(order.ordered_at)}
                 </time>
             </div>
@@ -156,7 +153,7 @@ export default function OrderShow({ order }: Props) {
                                     />
                                 </ItemLink>
                                 <div className="min-w-0 flex-1">
-                                    <p className="text-[13px] leading-[1.5] font-bold">
+                                    <p className="text-[15px] leading-[1.5] font-bold">
                                         <ItemLink
                                             href={item.product_url}
                                             className={cn(
@@ -167,12 +164,12 @@ export default function OrderShow({ order }: Props) {
                                             {item.product_name}
                                         </ItemLink>
                                     </p>
-                                    <p className="mt-1 text-[11.5px] text-ink2">
+                                    <p className="mt-1 text-sm text-ink2">
                                         {item.variant_label} ／{' '}
                                         {yen(item.unit_price)} × {item.quantity}
                                     </p>
                                 </div>
-                                <p className="font-mono text-[13px] font-bold">
+                                <p className="font-mono text-[15px] font-bold">
                                     {yen(item.subtotal)}
                                 </p>
                             </li>
@@ -199,7 +196,7 @@ export default function OrderShow({ order }: Props) {
                 <div className="flex flex-col gap-4">
                     <section className={CARD_CLASS}>
                         <h2 className={HEADING_CLASS}>お届け先</h2>
-                        <p className="text-[12.5px] leading-loose text-ink2">
+                        <p className="text-[15px] leading-loose text-ink2">
                             {order.shipping.recipient_name}
                             <br />〒{order.shipping.postal_code}
                             <br />
@@ -219,7 +216,7 @@ export default function OrderShow({ order }: Props) {
                         <h2 className={cn(HEADING_CLASS, 'mt-4')}>
                             お支払い・配送
                         </h2>
-                        <p className="text-[12.5px] leading-loose text-ink2">
+                        <p className="text-[15px] leading-loose text-ink2">
                             {order.payment_method_label}
                             <br />
                             お届け予定日{' '}
@@ -234,7 +231,7 @@ export default function OrderShow({ order }: Props) {
                     {order.bank_transfer_note ? (
                         <section className={CARD_CLASS}>
                             <h2 className={HEADING_CLASS}>お振込みのご案内</h2>
-                            <p className="text-[12.5px] leading-[1.9] whitespace-pre-line text-ink2">
+                            <p className="text-[15px] leading-[1.9] whitespace-pre-line text-ink2">
                                 {order.bank_transfer_note}
                             </p>
                         </section>
@@ -246,7 +243,7 @@ export default function OrderShow({ order }: Props) {
                             {order.histories.map((history) => (
                                 <li
                                     key={history.id}
-                                    className="flex justify-between gap-3 text-[12.5px]"
+                                    className="flex justify-between gap-3 text-[15px]"
                                 >
                                     <span className="font-bold">
                                         {history.to_status_label}

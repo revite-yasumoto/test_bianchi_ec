@@ -25,9 +25,7 @@ function FieldError({ message }: { message?: string }) {
     }
 
     return (
-        <p className="mt-1 text-[11px] font-bold text-admin-danger">
-            {message}
-        </p>
+        <p className="mt-1 text-sm font-bold text-admin-danger">{message}</p>
     );
 }
 
@@ -39,7 +37,7 @@ export function BasicInfoCard({
 }: BasicInfoCardProps) {
     return (
         <div className="rounded-xl border border-admin-line bg-white p-5">
-            <h2 className="mb-3.5 text-[13px] font-extrabold text-admin-ink">
+            <h2 className="mb-3.5 text-[15px] font-extrabold text-admin-ink">
                 基本情報
             </h2>
 
@@ -47,7 +45,7 @@ export function BasicInfoCard({
                 <div>
                     <label
                         htmlFor="product_code"
-                        className="mb-1.5 block text-[11.5px] font-bold text-admin-ink"
+                        className="mb-1.5 block text-sm font-bold text-admin-ink"
                     >
                         商品ID（ユーザー入力）
                     </label>
@@ -67,7 +65,7 @@ export function BasicInfoCard({
                 <div>
                     <label
                         htmlFor="price"
-                        className="mb-1.5 block text-[11.5px] font-bold text-admin-ink"
+                        className="mb-1.5 block text-sm font-bold text-admin-ink"
                     >
                         価格（税込）
                     </label>
@@ -88,7 +86,7 @@ export function BasicInfoCard({
                 <div className="col-span-full">
                     <label
                         htmlFor="name"
-                        className="mb-1.5 block text-[11.5px] font-bold text-admin-ink"
+                        className="mb-1.5 block text-sm font-bold text-admin-ink"
                     >
                         商品名
                     </label>
@@ -107,7 +105,7 @@ export function BasicInfoCard({
                 <div>
                     <label
                         htmlFor="category_id"
-                        className="mb-1.5 block text-[11.5px] font-bold text-admin-ink"
+                        className="mb-1.5 block text-sm font-bold text-admin-ink"
                     >
                         カテゴリ
                     </label>
@@ -132,7 +130,7 @@ export function BasicInfoCard({
                 <div>
                     <label
                         htmlFor="is_published"
-                        className="mb-1.5 block text-[11.5px] font-bold text-admin-ink"
+                        className="mb-1.5 block text-sm font-bold text-admin-ink"
                     >
                         公開状態
                     </label>
@@ -156,7 +154,7 @@ export function BasicInfoCard({
                 <div className="col-span-full">
                     <label
                         htmlFor="description"
-                        className="mb-1.5 block text-[11.5px] font-bold text-admin-ink"
+                        className="mb-1.5 block text-sm font-bold text-admin-ink"
                     >
                         商品説明
                     </label>

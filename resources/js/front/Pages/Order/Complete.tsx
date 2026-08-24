@@ -40,20 +40,18 @@ export default function Complete({ order }: Props) {
                     <h1 className="mt-5.5 text-[26px] font-black">
                         ご注文ありがとうございました
                     </h1>
-                    <p className="mt-3 text-[13.5px] leading-[1.9] text-ink2">
+                    <p className="mt-3 text-[15px] leading-[1.9] text-ink2">
                         {isCod
                             ? 'ご注文を受け付けました。出荷準備が整い次第、発送のご案内をお送りします。'
                             : 'ご注文を受け付けました。ステータスは「入金待ち」です。ご入金確認後に発送準備を開始します。'}
                     </p>
 
                     <div className="mt-6.5 rounded-2xl bg-bg2 p-5.5">
-                        <p className="text-[11.5px] font-bold text-ink2">
-                            注文番号
-                        </p>
+                        <p className="text-sm font-bold text-ink2">注文番号</p>
                         <p className="mt-1.5 font-mono text-[22px] font-bold">
                             {order.order_number}
                         </p>
-                        <p className="mt-3 text-[12.5px] text-ink2">
+                        <p className="mt-3 text-[15px] text-ink2">
                             お届け予定日{' '}
                             <time dateTime={order.estimated_delivery_date}>
                                 {japaneseDateLabel(
@@ -65,10 +63,10 @@ export default function Complete({ order }: Props) {
 
                     {order.bank_transfer_note ? (
                         <section className="mt-4 rounded-2xl border border-line p-5 text-left">
-                            <h2 className="text-[13px] font-extrabold">
+                            <h2 className="text-[15px] font-extrabold">
                                 お振込みのご案内
                             </h2>
-                            <p className="mt-2 text-[12.5px] leading-[1.9] whitespace-pre-line text-ink2">
+                            <p className="mt-2 text-[15px] leading-[1.9] whitespace-pre-line text-ink2">
                                 {order.bank_transfer_note}
                             </p>
                         </section>
@@ -77,13 +75,13 @@ export default function Complete({ order }: Props) {
                     <div className="mt-6.5 flex flex-wrap justify-center gap-2.5">
                         <Link
                             href={route('mypage.index')}
-                            className="rounded-full bg-brand px-6.5 py-3.5 text-sm font-bold text-white"
+                            className="rounded-full bg-brand px-6.5 py-3.5 text-base font-bold text-white"
                         >
                             注文履歴を見る
                         </Link>
                         <Link
                             href={route('top')}
-                            className="rounded-full border border-line px-6.5 py-3.5 text-sm font-bold"
+                            className="rounded-full border border-line px-6.5 py-3.5 text-base font-bold"
                         >
                             TOPへ戻る
                         </Link>

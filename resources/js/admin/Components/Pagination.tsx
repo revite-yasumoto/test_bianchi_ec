@@ -14,7 +14,7 @@ export function Pagination({ links }: PaginationProps) {
         <nav aria-label="ページ送り" className="mt-4 flex justify-center gap-1">
             {links.map((link) => {
                 const className = cn(
-                    'rounded-lg border border-admin-line px-3 py-1.5 text-xs font-bold',
+                    'rounded-lg border border-admin-line px-3 py-1.5 text-sm font-bold',
                     link.active
                         ? 'bg-admin-brand text-white'
                         : 'bg-white text-admin-ink',

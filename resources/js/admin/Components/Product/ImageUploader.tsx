@@ -75,10 +75,10 @@ export function ImageUploader({
     return (
         <div className="rounded-xl border border-admin-line bg-white p-5">
             <div className="mb-3.5 flex items-baseline gap-2.5">
-                <h2 className="text-[13px] font-extrabold text-admin-ink">
+                <h2 className="text-[15px] font-extrabold text-admin-ink">
                     商品画像
                 </h2>
-                <p className="text-[11.5px] text-admin-ink-muted">
+                <p className="text-sm text-admin-ink-muted">
                     メイン1枚＋サブ9枚（最大{MAX_IMAGES}枚）
                 </p>
             </div>
@@ -103,13 +103,13 @@ export function ImageUploader({
                             alt="メイン画像のプレビュー"
                             className="h-full w-full object-cover"
                         />
-                        <figcaption className="absolute top-1.5 left-1.5 rounded bg-admin-ink/70 px-1.5 py-0.5 font-mono text-[10px] text-white">
+                        <figcaption className="absolute top-1.5 left-1.5 rounded bg-admin-ink/70 px-1.5 py-0.5 font-mono text-sm text-white">
                             MAIN
                         </figcaption>
                         <button
                             type="button"
                             aria-label="メイン画像を削除"
-                            className="absolute top-1.5 right-1.5 rounded bg-admin-danger px-1.5 py-0.5 text-[10px] font-bold text-white"
+                            className="absolute top-1.5 right-1.5 rounded bg-admin-danger px-1.5 py-0.5 text-sm font-bold text-white"
                             onClick={() => removeSlot(mainSlot)}
                         >
                             削除
@@ -124,7 +124,7 @@ export function ImageUploader({
                         <span className="text-[22px] text-admin-ink-muted">
                             ＋
                         </span>
-                        <span className="text-[11.5px] font-bold text-admin-ink-muted">
+                        <span className="text-sm font-bold text-admin-ink-muted">
                             メイン画像
                         </span>
                     </button>
@@ -148,7 +148,7 @@ export function ImageUploader({
                                     <button
                                         type="button"
                                         aria-label={`サブ画像${index + 1}を削除`}
-                                        className="absolute top-1 right-1 rounded bg-admin-danger px-1 py-0.5 text-[9px] font-bold text-white"
+                                        className="absolute top-1 right-1 rounded bg-admin-danger px-1 py-0.5 text-sm font-bold text-white"
                                         onClick={() => removeSlot(slot)}
                                     >
                                         ×
@@ -162,7 +162,7 @@ export function ImageUploader({
                                 <button
                                     type="button"
                                     disabled={isFull}
-                                    className="flex aspect-square w-full items-center justify-center rounded-lg border border-dashed border-admin-line bg-admin-sidebar-bg font-mono text-[10px] text-admin-ink-muted disabled:opacity-50"
+                                    className="flex aspect-square w-full items-center justify-center rounded-lg border border-dashed border-admin-line bg-admin-sidebar-bg font-mono text-sm text-admin-ink-muted disabled:opacity-50"
                                     onClick={openFileDialog}
                                 >
                                     {index + 1}
@@ -185,13 +185,13 @@ export function ImageUploader({
                 }}
             />
 
-            <p className="mt-3 text-[11.5px] text-admin-ink-muted">
+            <p className="mt-3 text-sm text-admin-ink-muted">
                 jpg / png /
                 webp、1枚あたり5MBまで。ドラッグ＆ドロップでも追加できます。
             </p>
 
             {error ? (
-                <p className="mt-1.5 text-[11.5px] font-bold text-admin-danger">
+                <p className="mt-1.5 text-sm font-bold text-admin-danger">
                     {error}
                 </p>
             ) : null}

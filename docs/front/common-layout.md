@@ -107,6 +107,19 @@ type FrontSharedProps = {
 
 日本語本文を既定にするため、`resources/views/app.blade.php` の `<body>` に `font-jp` を指定する（Tailwind の既定である `--font-sans` は英字書体のため）。この指定はフロント・管理画面の共通テンプレートであり、管理画面の本文書体も `Zen Kaku Gothic New` になる。
 
+### 文字サイズ
+
+フロント・管理画面の双方に適用する。`@theme` にフォントサイズのトークンは置かず、Tailwind標準のユーティリティ（`text-sm` = 14px・`text-base` = 16px・`text-lg` = 18px）と、標準に無い値の任意値（`text-[15px]` 等）で指定する。
+
+| 用途 | 指定 |
+|---|---|
+| 補助テキスト・バッジ・表の見出し | `text-sm`（14px。**これより小さい指定は使わない**） |
+| 本文・一覧のセル | `text-[15px]` |
+| 小見出し・強調・入力要素 | `text-base`（16px）以上 |
+| 見出し | `text-lg`（18px）以上・`text-[22px]` 以上の任意値 |
+
+モックHTML（`docs/Markdown file UI mockups.zip`）は最小 8.5px までの文字サイズを使うが、可読性を優先して上表の下限を正とする。
+
 ### デザイントークン（`resources/css/app.css` `@theme`）
 
 フロント用。管理画面用の `--color-admin-*` は [docs/admin/common-layout.md](../admin/common-layout.md) が正本。

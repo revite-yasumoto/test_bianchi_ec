@@ -22,12 +22,12 @@ export default function Favorites({ products }: Props) {
         >
             {products.length === 0 ? (
                 <div className="rounded-[20px] bg-bg2 px-5 py-[60px] text-center">
-                    <p className="mb-3.5 text-[15px] font-bold">
+                    <p className="mb-3.5 text-base font-bold">
                         お気に入りに登録した商品はありません
                     </p>
                     <Link
                         href={route('products.index')}
-                        className="inline-block rounded-full bg-brand px-6.5 py-3.5 text-sm font-bold text-white"
+                        className="inline-block rounded-full bg-brand px-6.5 py-3.5 text-base font-bold text-white"
                     >
                         商品を探す
                     </Link>
@@ -40,7 +40,7 @@ export default function Favorites({ products }: Props) {
                             <button
                                 type="button"
                                 onClick={() => remove(product.id)}
-                                className="rounded-full border border-line py-2 text-xs font-bold text-coral"
+                                className="rounded-full border border-line py-2 text-sm font-bold text-coral"
                             >
                                 お気に入りから外す
                             </button>

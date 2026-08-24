@@ -77,29 +77,27 @@ export function MasterListCard({
             )}
         >
             {title ? (
-                <h2 className="mb-1.5 text-[13px] font-extrabold text-admin-ink">
+                <h2 className="mb-1.5 text-[15px] font-extrabold text-admin-ink">
                     {title}
                 </h2>
             ) : null}
-            <p className="mb-3.5 text-[11.5px] text-admin-ink-muted">
-                {description}
-            </p>
+            <p className="mb-3.5 text-sm text-admin-ink-muted">{description}</p>
 
             <ul className="flex flex-col">
                 {rows.map((row) => (
                     <li
                         key={row.id}
-                        className="flex items-center border-b border-admin-line py-2.5 text-[13px] font-semibold text-admin-ink"
+                        className="flex items-center border-b border-admin-line py-2.5 text-[15px] font-semibold text-admin-ink"
                     >
                         {row.name}
                         {row.note ? (
-                            <span className="ml-3.5 text-[11.5px] font-normal text-admin-ink-muted">
+                            <span className="ml-3.5 text-sm font-normal text-admin-ink-muted">
                                 {row.note}
                             </span>
                         ) : null}
                         <button
                             type="button"
-                            className="ml-auto text-[11.5px] font-bold text-admin-danger"
+                            className="ml-auto text-sm font-bold text-admin-danger"
                             onClick={() => setPendingRow(row)}
                         >
                             削除
@@ -131,13 +129,13 @@ export function MasterListCard({
                     <button
                         type="submit"
                         disabled={processing}
-                        className="rounded-lg bg-admin-brand px-5 py-2 text-[12.5px] font-bold whitespace-nowrap text-white disabled:opacity-60"
+                        className="rounded-lg bg-admin-brand px-5 py-2 text-[15px] font-bold whitespace-nowrap text-white disabled:opacity-60"
                     >
                         追加
                     </button>
                 </div>
                 {errors.name ? (
-                    <p className="mt-1.5 text-[11.5px] font-bold text-admin-danger">
+                    <p className="mt-1.5 text-sm font-bold text-admin-danger">
                         {errors.name}
                     </p>
                 ) : null}

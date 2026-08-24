@@ -11,16 +11,14 @@ export function SkuTable({ rows, errors, onChange }: SkuTableProps) {
     return (
         <div className="overflow-hidden rounded-xl border border-admin-line bg-white">
             <div className="flex items-baseline gap-2.5 border-b border-admin-line px-5 py-4">
-                <h2 className="text-[13px] font-extrabold text-admin-ink">
+                <h2 className="text-[15px] font-extrabold text-admin-ink">
                     SKU一覧（自動生成）
                 </h2>
-                <p className="text-[11.5px] text-admin-ink-muted">
-                    {rows.length}件
-                </p>
+                <p className="text-sm text-admin-ink-muted">{rows.length}件</p>
             </div>
 
             <div className="overflow-x-auto">
-                <table className="w-full min-w-max text-left text-sm">
+                <table className="w-full min-w-max text-left text-base">
                     <thead className="border-b border-admin-line bg-admin-sidebar-bg text-admin-ink-muted">
                         <tr>
                             <th scope="col" className="px-4 py-2 font-bold">
@@ -88,7 +86,7 @@ export function SkuTable({ rows, errors, onChange }: SkuTableProps) {
                                         className="w-20 rounded-lg border border-admin-line px-2 py-1 font-mono text-base disabled:bg-admin-sidebar-bg"
                                     />
                                     {errors[`variants.${index}.branch_code`] ? (
-                                        <p className="mt-1 text-[11px] font-bold text-admin-danger">
+                                        <p className="mt-1 text-sm font-bold text-admin-danger">
                                             {
                                                 errors[
                                                     `variants.${index}.branch_code`
@@ -99,7 +97,7 @@ export function SkuTable({ rows, errors, onChange }: SkuTableProps) {
                                 </td>
                                 <td
                                     className={cn(
-                                        'px-4 py-2 font-mono text-[11.5px] text-admin-ink-muted',
+                                        'px-4 py-2 font-mono text-sm text-admin-ink-muted',
                                         !row.is_available && 'opacity-45',
                                     )}
                                 >
@@ -133,7 +131,7 @@ export function SkuTable({ rows, errors, onChange }: SkuTableProps) {
                                         type="button"
                                         aria-pressed={row.is_available}
                                         className={cn(
-                                            'rounded-full border px-2.5 py-1 text-[11px] font-bold whitespace-nowrap',
+                                            'rounded-full border px-2.5 py-1 text-sm font-bold whitespace-nowrap',
                                             row.is_available
                                                 ? 'border-admin-brand text-admin-brand'
                                                 : 'border-admin-line text-admin-ink-muted',

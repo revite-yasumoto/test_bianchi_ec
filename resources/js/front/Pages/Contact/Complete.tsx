@@ -33,13 +33,13 @@ export default function Complete({ contactNumber }: Props) {
                     <h1 className="mt-5.5 text-[26px] font-black">
                         お問い合わせを送信しました
                     </h1>
-                    <p className="mt-3 text-[13.5px] leading-[1.9] text-ink2">
+                    <p className="mt-3 text-[15px] leading-[1.9] text-ink2">
                         3営業日以内にご返信いたします。
                         ご入力のメールアドレスへ控えをお送りしました。
                     </p>
 
                     <dl className="mt-6.5 rounded-2xl bg-bg2 p-5.5">
-                        <dt className="text-[11.5px] font-bold text-ink2">
+                        <dt className="text-sm font-bold text-ink2">
                             問い合わせ番号
                         </dt>
                         <dd className="mt-1.5 font-mono text-[22px] font-bold">
@@ -50,7 +50,7 @@ export default function Complete({ contactNumber }: Props) {
                     <div className="mt-6.5 flex justify-center">
                         <Link
                             href={route('top')}
-                            className="rounded-full bg-brand px-6.5 py-3.5 text-sm font-bold text-white"
+                            className="rounded-full bg-brand px-6.5 py-3.5 text-base font-bold text-white"
                         >
                             TOPへ戻る
                         </Link>

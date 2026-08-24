@@ -22,12 +22,12 @@ export function MyPageLayout({
     return (
         <FrontLayout title={title} description={description}>
             <div className="px-[22px] py-[26px] pb-14">
-                <p className="font-mono text-[11px] tracking-[.14em] text-ink2">
+                <p className="font-mono text-sm tracking-[.14em] text-ink2">
                     MY PAGE
                 </p>
                 <h1 className="mt-1 text-[26px] font-black">{heading}</h1>
                 {auth.user ? (
-                    <p className="mt-1.5 text-[12.5px] text-ink2">
+                    <p className="mt-1.5 text-[15px] text-ink2">
                         {auth.user.name} 様
                         <span className="ml-2.5 font-mono">
                             {auth.user.member_code}

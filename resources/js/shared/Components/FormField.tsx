@@ -21,7 +21,7 @@ export function FormField({
         <div className={className}>
             <label
                 htmlFor={id}
-                className="mb-1.5 block text-xs font-bold text-ink"
+                className="mb-1.5 block text-sm font-bold text-ink"
             >
                 {label}
                 {required ? (
@@ -34,7 +34,7 @@ export function FormField({
             {error ? (
                 <p
                     id={`${id}-error`}
-                    className="mt-1.5 text-[11.5px] font-bold text-coral"
+                    className="mt-1.5 text-sm font-bold text-coral"
                 >
                     {error}
                 </p>

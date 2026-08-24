@@ -20,7 +20,7 @@ export function StepIndicator({ current }: StepIndicatorProps) {
                             <span
                                 aria-hidden="true"
                                 className={cn(
-                                    'flex h-6 w-6 items-center justify-center rounded-full font-mono text-[11px] font-bold',
+                                    'flex h-6 w-6 items-center justify-center rounded-full font-mono text-sm font-bold',
                                     isDone
                                         ? 'bg-brand text-white'
                                         : 'bg-line text-ink2',
@@ -33,7 +33,7 @@ export function StepIndicator({ current }: StepIndicatorProps) {
                                     step === current ? 'step' : undefined
                                 }
                                 className={cn(
-                                    'text-[12.5px] font-bold whitespace-nowrap',
+                                    'text-[15px] font-bold whitespace-nowrap',
                                     isDone ? 'text-ink' : 'text-ink2',
                                 )}
                             >
