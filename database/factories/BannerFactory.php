@@ -21,6 +21,7 @@ class BannerFactory extends Factory
             'tag' => fake()->word(),
             'title' => fake()->sentence(),
             'subtitle' => fake()->sentence(),
+            'product_id' => null,
             'background' => 'linear-gradient(115deg,#2F6F86 0%,#274F60 60%,#1b3844 100%)',
             'link_url' => null,
             'sort_order' => 0,

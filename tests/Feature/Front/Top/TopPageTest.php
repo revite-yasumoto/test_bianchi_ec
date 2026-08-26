@@ -69,6 +69,30 @@ class TopPageTest extends TestCase
     }
 
     #[Test]
+    public function バナーに紐づく公開商品が遷移先として返る(): void
+    {
+        $product = $this->makeProduct();
+        Banner::factory()->create(['product_id' => $product->id]);
+
+        $this->get(route('top'))
+            ->assertInertia(fn ($page) => $page
+                ->where('banners.0.product_id', $product->id)
+            );
+    }
+
+    #[Test]
+    public function バナーに紐づく商品が非公開なら遷移先として返らない(): void
+    {
+        $product = $this->makeProduct(['is_published' => false]);
+        Banner::factory()->create(['product_id' => $product->id]);
+
+        $this->get(route('top'))
+            ->assertInertia(fn ($page) => $page
+                ->where('banners.0.product_id', null)
+            );
+    }
+
+    #[Test]
     public function おすすめは公開商品の新着順で四件まで返る(): void
     {
         $this->makeProduct(['is_published' => false, 'name' => '非公開商品']);

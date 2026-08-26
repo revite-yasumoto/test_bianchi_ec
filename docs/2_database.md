@@ -315,6 +315,7 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 | tag | string(50) | |
 | title | string(255) | 改行を含む |
 | subtitle | string(255) | nullable |
+| product_id | foreignId | nullable / FK `products.id` / `nullOnDelete` / 訴求する商品。「見る」ボタンの遷移先 |
 | background | string(255) | 背景スタイル値（例 `linear-gradient(...)`） |
 | link_url | string(255) | nullable |
 | sort_order | unsignedInteger | default `0` |
@@ -397,6 +398,7 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 | Migration | `database/migrations/2026_08_07_000022_create_banners_table.php` |
 | Migration | `database/migrations/2026_08_07_000023_create_contacts_table.php` |
 | Migration | `database/migrations/2026_08_18_000001_add_product_and_handling_columns_to_contacts_table.php` |
+| Migration | `database/migrations/2026_08_26_000001_add_product_id_to_banners_table.php` |
 | Enum | `app/Enums/OrderStatus.php` |
 | Enum | `app/Enums/PaymentMethod.php` |
 | Enum | `app/Enums/UserStatus.php` |
