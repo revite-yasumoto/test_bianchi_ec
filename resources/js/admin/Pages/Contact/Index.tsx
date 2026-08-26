@@ -6,6 +6,7 @@ import { TabNav } from '@/admin/Components/Contact/TabNav';
 import { DataTable, type Column } from '@/admin/Components/DataTable';
 import { FilterBar } from '@/admin/Components/FilterBar';
 import { Pagination } from '@/admin/Components/Pagination';
+import { cn } from '@/lib/utils';
 import { ContactTab } from '@/shared/lib/enums';
 import type { Tone } from '@/shared/lib/tone';
 
@@ -50,6 +51,8 @@ const DATE_FIELD_CLASS = `${FIELD_CLASS} [&::-webkit-calendar-picker-indicator]:
 
 const LABEL_CLASS = 'mb-1.5 block text-sm font-bold text-admin-ink';
 
+const DATE_RANGE_ERROR_ID = 'filter-received-at-error';
+
 export default function Index({
     contacts,
     filters,
@@ -65,11 +68,17 @@ export default function Index({
     const isFirstRender = useRef(true);
     // キーワードだけ入力の途中経過で送らないよう待ち、選択式の項目は即時に反映する
     const delayRef = useRef(0);
+    const isDateRangeInvalid =
+        fields.from !== '' && fields.to !== '' && fields.from > fields.to;
 
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
 
+            return;
+        }
+
+        if (isDateRangeInvalid) {
             return;
         }
 
@@ -82,7 +91,7 @@ export default function Index({
         }, delayRef.current);
 
         return () => clearTimeout(timer);
-    }, [fields, filters.tab]);
+    }, [fields, filters.tab, isDateRangeInvalid]);
 
     const updateField = (field: keyof FilterFields, value: string) => {
         delayRef.current = field === 'q' ? KEYWORD_DEBOUNCE_MS : 0;
@@ -94,7 +103,17 @@ export default function Index({
         setFields(EMPTY_FILTERS);
     };
 
-    const query = toQuery(fields);
+    // 期間が不正な間は検索を送っていないため、一覧に出ている条件（適用済みの絞り込み）を引き継ぐ
+    const query = toQuery(
+        isDateRangeInvalid
+            ? {
+                  status: filters.status,
+                  q: filters.q ?? '',
+                  from: filters.from ?? '',
+                  to: filters.to ?? '',
+              }
+            : fields,
+    );
 
     return (
         <AdminLayout
@@ -147,7 +166,16 @@ export default function Index({
                                 type="date"
                                 aria-label="受信日（開始）"
                                 value={fields.from}
-                                className={DATE_FIELD_CLASS}
+                                aria-invalid={isDateRangeInvalid}
+                                aria-describedby={
+                                    isDateRangeInvalid
+                                        ? DATE_RANGE_ERROR_ID
+                                        : undefined
+                                }
+                                className={cn(
+                                    DATE_FIELD_CLASS,
+                                    isDateRangeInvalid && 'border-admin-danger',
+                                )}
                                 onChange={(event) =>
                                     updateField('from', event.target.value)
                                 }
@@ -159,12 +187,30 @@ export default function Index({
                                 type="date"
                                 aria-label="受信日（終了）"
                                 value={fields.to}
-                                className={DATE_FIELD_CLASS}
+                                aria-invalid={isDateRangeInvalid}
+                                aria-describedby={
+                                    isDateRangeInvalid
+                                        ? DATE_RANGE_ERROR_ID
+                                        : undefined
+                                }
+                                className={cn(
+                                    DATE_FIELD_CLASS,
+                                    isDateRangeInvalid && 'border-admin-danger',
+                                )}
                                 onChange={(event) =>
                                     updateField('to', event.target.value)
                                 }
                             />
                         </div>
+                        {isDateRangeInvalid ? (
+                            <p
+                                id={DATE_RANGE_ERROR_ID}
+                                role="alert"
+                                className="mt-1.5 text-sm font-bold text-admin-danger"
+                            >
+                                終了日は開始日以降の日付を指定してください
+                            </p>
+                        ) : null}
                     </fieldset>
 
                     <div className="min-w-[200px] flex-1">

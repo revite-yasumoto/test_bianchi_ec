@@ -16,32 +16,32 @@
 ## ユーザーインターフェース仕様（ワイヤーフレーム）
 
 ```
-+----------+--------------------------------------------+
-| Bianchi  |  [ページタイトル]           [ヘッダーアクション] |
-| ADMIN    +--------------------------------------------+
-| CONSOLE  |                                              |
-|----------|  コンテンツ（各画面固有）                      |
-| ダッシュ  |                                              |
-| ボード    |                                              |
-| 注文管理  |                                              |
-| ▾商品管理 |                                              |
-|  商品一覧 |                                              |
-|  商品登録 |                                              |
-|  規格管理 |                                              |
-|  ...     |                                              |
-| 会員マスタ|                                              |
-| ...      |                                              |
-|----------|                                              |
-| 管理者名  |                                              |
-| メール    | [ログアウト]                                  |
-+----------+--------------------------------------------+
-                    [トースト（下部中央・2.2秒で自動消去）]
++----------+----------------------------------------------------+
+| Bianchi  | [ページタイトル]  [ヘッダーアクション] [ログアウト]  |
+| ADMIN    +----------------------------------------------------+
+| CONSOLE  |                                                      |
+|----------|  コンテンツ（各画面固有）                              |
+| ダッシュ  |                                                      |
+| ボード    |                                                      |
+| 注文管理  |                                                      |
+| ▾商品管理 |                                                      |
+|  商品一覧 |======= トースト（上下中央・全幅・2.2秒で自動消去）=====|
+|  商品登録 |                                                      |
+|  規格管理 |                                                      |
+|  ...     |                                                      |
+| 会員マスタ|                                                      |
+| ...      |                                                      |
+|----------|                                                      |
+| 管理者名  |                                                      |
+| メール    |                                                      |
++----------+----------------------------------------------------+
 ```
 
 - サイドバー幅: `w-admin-sidebar`（236px固定）。
 - グループ（商品管理）の開閉状態は、現在のページがそのグループの子項目に属する場合はデフォルトで開く。それ以外は閉じた状態で初期化される。
 - サイドメニューの各項目は対応するルート名が存在する（`route().has()` が `true`）場合のみリンクとして機能し、それ以外は非活性表示（クリック不可・淡色）になる。単位04以降が対応するルートを実装すると、コード変更なしに自動的にリンクとして有効化される。
-- トーストは画面下部中央に固定表示され、2200ms後に自動的に消える。
+- ログアウトボタンはヘッダー右端に常設し、ページ固有のヘッダーアクションはその左に並ぶ。サイドバー下部には管理者名とメールアドレスのみを表示する。
+- トーストは画面の上下中央にビューポート幅いっぱいのバーとして固定表示され、2200ms後に自動的に消える。確認モーダル（`ConfirmDialog`）より前面に出す。
 
 ## インターフェース ＆ データロジック
 
@@ -85,7 +85,6 @@ type AdminLayoutProps = {
 ### `Sidebar`（`resources/js/admin/Components/Sidebar.tsx`）
 
 - Props なし。`usePage<AdminSharedProps>().props.auth.admin` から管理者名・メールアドレスを取得して表示する。
-- ログアウトは `ConfirmDialog` での確認後に `router.post(route('admin.logout'))` を実行する。
 
 ### `SidebarMenu`（`resources/js/admin/Components/SidebarMenu.ts`）
 
@@ -120,6 +119,12 @@ type SidebarMenuItem = {
 ```ts
 type PageHeaderProps = { title: string; actions?: ReactNode };
 ```
+
+右端に `LogoutButton` を常設し、`actions` はその左に並べる。
+
+### `LogoutButton`（`resources/js/admin/Components/LogoutButton.tsx`）
+
+- Props なし。`ConfirmDialog` での確認後に `router.post(route('admin.logout'))` を実行する。
 
 ### `FilterBar`（`resources/js/admin/Components/FilterBar.tsx`）
 
@@ -208,6 +213,7 @@ type ConfirmDialogProps = {
 | Component | `resources/js/admin/Components/Sidebar.tsx` |
 | Component | `resources/js/admin/Components/SidebarMenu.ts` |
 | Component | `resources/js/admin/Components/PageHeader.tsx` |
+| Component | `resources/js/admin/Components/LogoutButton.tsx` |
 | Component | `resources/js/admin/Components/FilterBar.tsx` |
 | Component | `resources/js/admin/Components/DataTable.tsx` |
 | Component | `resources/js/admin/Components/ConfirmDialog.tsx` |
@@ -225,7 +231,7 @@ type ConfirmDialogProps = {
 - サイドバーの全11メニューが表示され、未実装項目は非活性表示になる: 目視確認
 - 実装済み項目（現時点ではダッシュボードを除くサイドメニューの全項目）へのリンクが機能する: 目視確認
 - グループの開閉、開閉時のデフォルト状態: 目視確認
-- ログアウト確認モーダルの表示・キャンセル・`Escape`キーでの閉じる動作: 目視確認
-- トーストの表示位置・自動消去（2.2秒）: 目視確認
+- ヘッダー右端のログアウトボタンから確認モーダルが開き、キャンセル・`Escape`キーで閉じる: 目視確認
+- トーストの表示位置（上下中央・全幅バー）・自動消去（2.2秒）: 目視確認
 - レスポンシブ表示（PC・SP）: 目視確認
 - Props型定義の整合性: `npx tsc --noEmit`

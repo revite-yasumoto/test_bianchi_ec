@@ -1,7 +1,6 @@
-import { Link, router, usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { ConfirmDialog } from './ConfirmDialog';
 import { SIDEBAR_MENU, type SidebarMenuItem } from './SidebarMenu';
 
 function isItemEnabled(item: SidebarMenuItem): boolean {
@@ -100,11 +99,6 @@ function MenuGroup({ item }: { item: SidebarMenuItem }) {
 
 export function Sidebar() {
     const { auth } = usePage<AdminSharedProps>().props;
-    const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
-
-    const handleLogout = () => {
-        router.post(route('admin.logout'));
-    };
 
     return (
         <aside className="flex w-admin-sidebar flex-shrink-0 flex-col border-r border-admin-line bg-admin-sidebar-bg">
@@ -129,32 +123,14 @@ export function Sidebar() {
                     ))}
                 </ul>
             </nav>
-            <div className="flex items-center gap-2 border-t border-admin-line px-3 py-3">
-                <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-bold text-admin-ink">
-                        {auth.admin?.name}
-                    </p>
-                    <p className="truncate text-sm text-admin-ink-muted">
-                        {auth.admin?.email}
-                    </p>
-                </div>
-                <button
-                    type="button"
-                    className="ml-auto rounded-lg border border-admin-line bg-white px-3 py-1.5 text-sm font-bold text-admin-ink"
-                    onClick={() => setIsLogoutConfirmOpen(true)}
-                >
-                    ログアウト
-                </button>
+            <div className="border-t border-admin-line px-3 py-3">
+                <p className="truncate text-sm font-bold text-admin-ink">
+                    {auth.admin?.name}
+                </p>
+                <p className="truncate text-sm text-admin-ink-muted">
+                    {auth.admin?.email}
+                </p>
             </div>
-            <ConfirmDialog
-                isOpen={isLogoutConfirmOpen}
-                title="ログアウトしますか？"
-                message="編集中の内容は保存されません。再度ログインするには管理者IDとパスワードが必要です。"
-                confirmLabel="ログアウト"
-                confirmVariant="danger"
-                onConfirm={handleLogout}
-                onCancel={() => setIsLogoutConfirmOpen(false)}
-            />
         </aside>
     );
 }
