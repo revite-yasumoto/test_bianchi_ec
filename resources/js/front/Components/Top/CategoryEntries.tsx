@@ -22,8 +22,8 @@ export function CategoryEntries({ entries }: CategoryEntriesProps) {
             <p className="mb-1.5 font-mono text-sm tracking-[.16em] text-brand">
                 SHOP BY CATEGORY
             </p>
-            <h2 className="mb-5 text-2xl font-black">購入方法から探す</h2>
-            <ul className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3">
+            <h2 className="mb-5 text-2xl font-black">カテゴリー</h2>
+            <ul className="grid grid-cols-[repeat(auto-fill,minmax(190px,1fr))] gap-3.5">
                 {entries.map((entry) => (
                     <li key={entry.id}>
                         <Link
@@ -33,7 +33,7 @@ export function CategoryEntries({ entries }: CategoryEntriesProps) {
                             className="block overflow-hidden rounded-[18px] border border-line bg-white"
                         >
                             <div
-                                className="flex h-22 items-center justify-center"
+                                className="flex aspect-4/3 items-center justify-center"
                                 style={{
                                     backgroundImage: categoryTint(entry.name),
                                 }}
@@ -43,7 +43,7 @@ export function CategoryEntries({ entries }: CategoryEntriesProps) {
                                     className="w-1/2 text-white/35"
                                 />
                             </div>
-                            <div className="px-4 py-3.5">
+                            <div className="px-4 pt-3.5 pb-4">
                                 <p className="text-base font-extrabold">
                                     {entry.name}
                                 </p>

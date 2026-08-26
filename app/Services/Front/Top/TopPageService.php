@@ -73,12 +73,13 @@ class TopPageService
     }
 
     /**
-     * @return array<int, array{id: int, tag: string, title: string, subtitle: string|null, background: string, link_url: string|null}>
+     * @return array<int, array{id: int, tag: string, title: string, subtitle: string|null, product_id: int|null, background: string, link_url: string|null}>
      */
     private function banners(): array
     {
         return Banner::query()
             ->active()
+            ->with('product:id,is_published')
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get()
@@ -87,6 +88,8 @@ class TopPageService
                 'tag' => $banner->tag,
                 'title' => $banner->title,
                 'subtitle' => $banner->subtitle,
+                // 非公開・削除済みの商品は商品詳細が404になるため遷移先にしない
+                'product_id' => $banner->product?->is_published === true ? $banner->product_id : null,
                 'background' => $banner->background,
                 'link_url' => $banner->link_url,
             ])

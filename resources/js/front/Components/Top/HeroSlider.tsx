@@ -10,6 +10,7 @@ export type BannerData = {
     title: string;
     subtitle: string | null;
     background: string;
+    product_id: number | null;
     link_url: string | null;
 };
 
@@ -19,9 +20,15 @@ type HeroSliderProps = {
 
 const SLIDE_INTERVAL_MS = 5200;
 
-/** `javascript:` 等を弾くため、サイト内の絶対パスのみ遷移先に使う */
-function linkOf(url: string | null): string {
-    return url && url.startsWith('/') ? url : route('products.index');
+function linkOf(banner: BannerData): string {
+    if (banner.product_id !== null) {
+        return route('products.show', [banner.product_id]);
+    }
+
+    // `javascript:` 等を弾くため、サイト内の絶対パスのみ遷移先に使う
+    return banner.link_url && banner.link_url.startsWith('/')
+        ? banner.link_url
+        : route('products.index');
 }
 
 export function HeroSlider({ banners }: HeroSliderProps) {
@@ -70,7 +77,7 @@ export function HeroSlider({ banners }: HeroSliderProps) {
                         </p>
                     ) : null}
                     <Link
-                        href={linkOf(current.link_url)}
+                        href={linkOf(current)}
                         className="mt-5 inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-base font-bold text-ink"
                     >
                         見る<span className="font-mono">→</span>
