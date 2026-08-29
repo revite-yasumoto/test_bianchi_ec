@@ -185,9 +185,9 @@ export default function Register({ prefectures }: Props) {
                         />
                     </div>
 
-                    <h2 className="mt-7 text-base font-black">お届け先</h2>
+                    <h2 className="mt-7 text-base font-black">住所</h2>
                     <p className="mt-1.5 text-[15px] leading-[1.9] text-ink2">
-                        ご注文時の既定のお届け先として登録します。
+                        ご注文時のお届け先として登録します。
                     </p>
 
                     <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
