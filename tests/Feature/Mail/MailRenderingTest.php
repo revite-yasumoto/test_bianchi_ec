@@ -28,6 +28,8 @@ use Tests\TestCase;
  *
  * 問い合わせは Factory で用意する。送信の経路（`POST /contact`）は
  * `Tests\Feature\Front\Contact\ContactStoreTest` が検証している。
+ * 会員も Factory で用意する。登録の経路（`POST /register`）は
+ * `Tests\Feature\Front\Auth\RegisterTest` が検証している。
  */
 class MailRenderingTest extends TestCase
 {
@@ -57,15 +59,24 @@ class MailRenderingTest extends TestCase
     }
 
     #[Test]
-    public function 会員登録完了メールが描画できる(): void
+    public function 会員登録完了メールに登録メールアドレスとログイン方法が載り会員番号は載らない(): void
     {
-        $user = User::factory()->create(['name' => '架空 太郎', 'member_code' => 'M-100001']);
+        $user = User::factory()->create([
+            'name' => '架空 太郎',
+            'email' => 'taro@example.test',
+            'member_code' => 'M-100001',
+        ]);
 
         $mailable = new RegistrationCompleted($user);
 
         $mailable->assertSeeInHtml('架空 太郎');
-        $mailable->assertSeeInHtml('M-100001');
+        $mailable->assertSeeInHtml('taro@example.test');
+        $mailable->assertSeeInHtml('ご登録時にお客様が設定されたパスワード');
         $mailable->assertSeeInHtml(route('mypage.index'));
+        $mailable->assertDontSeeInHtml('M-100001');
+        // Markdown メールは HTML 版とテキスト版が別に生成されるため、テキスト版にも会員IDが
+        // 残っていないことを確かめる
+        $mailable->assertDontSeeInText('M-100001');
     }
 
     #[Test]
