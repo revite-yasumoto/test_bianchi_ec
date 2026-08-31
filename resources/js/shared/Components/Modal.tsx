@@ -6,6 +6,8 @@ type ModalProps = {
     isOpen: boolean;
     title: string;
     onClose: () => void;
+    /** 入力途中の内容を背景の誤操作で失わせたくないモーダルでは false にする（Escape と「×」での脱出は残る） */
+    closeOnOverlayClick?: boolean;
     className?: string;
     children: ReactNode;
 };
@@ -14,6 +16,7 @@ export function Modal({
     isOpen,
     title,
     onClose,
+    closeOnOverlayClick = true,
     className,
     children,
 }: ModalProps) {
@@ -59,7 +62,7 @@ export function Modal({
             // items-center のままだと上端が切れてスクロールで到達できなくなるため、
             // items-start + 本体の my-auto で「短いときは中央・長いときは上端から」にする
             className="fixed inset-0 z-[75] flex items-start justify-center overflow-y-auto bg-ink/50 p-6"
-            onClick={onClose}
+            onClick={closeOnOverlayClick ? onClose : undefined}
         >
             <div
                 ref={dialogRef}

@@ -76,6 +76,7 @@ export function AddressModal({
             isOpen={isOpen}
             title={isEditing ? 'お届け先の編集' : '新しいお届け先'}
             onClose={close}
+            closeOnOverlayClick={false}
         >
             <form
                 onSubmit={(event) => {
@@ -202,13 +203,22 @@ export function AddressModal({
                     既定のお届け先にする
                 </Checkbox>
 
-                <button
-                    type="submit"
-                    disabled={processing}
-                    className="mt-1 rounded-full bg-brand py-3.5 text-base font-extrabold text-white disabled:opacity-60"
-                >
-                    {isEditing ? '保存する' : 'この住所を使う'}
-                </button>
+                <div className="mt-1 flex gap-2.5">
+                    <button
+                        type="button"
+                        onClick={close}
+                        className="flex-1 rounded-full border border-line py-3.5 text-base font-bold"
+                    >
+                        キャンセル
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={processing}
+                        className="flex-1 rounded-full bg-brand py-3.5 text-base font-extrabold text-white disabled:opacity-60"
+                    >
+                        保存
+                    </button>
+                </div>
             </form>
         </Modal>
     );

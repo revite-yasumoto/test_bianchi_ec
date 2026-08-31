@@ -55,7 +55,7 @@ SP幅（lg未満）: ヘッダーのナビと会員名を隠し、右端のハ�
 - ログイン中はヘッダー右側の先頭に会員名を `架空 太郎 様` の形で表示する。氏名が長い場合は幅 10rem で省略し、`title` 属性に全文を持たせる。
 - 未ログイン時のヘッダー右側は「ログイン」「会員登録」の2ボタンになる（会員名・お気に入り・カート・ログアウトは表示しない）。カートとお気に入りは会員に紐づくため、ゲストは利用できない。
 - ヘッダー・フッター・SPメニューの各リンクは、対応するルート名が存在する（`route().has()` が `true`）場合のみリンクとして機能し、それ以外は非活性表示（クリック不可・淡色）になる。現在はナビゲーションに載る全リンクのルートが実装済みで、非活性になる項目はない。
-- カートドロワー・モーダルは `Escape` キーと背景クリックで閉じ、閉じたときに元のフォーカス位置へ戻る。
+- カートドロワー・モーダルは `Escape` キーと背景クリックで閉じ、閉じたときに元のフォーカス位置へ戻る。モーダルは呼び出し側が `closeOnOverlayClick={false}` を渡したときだけ背景クリックで閉じず、`Escape` キーと「×」で閉じる。
 
 ## インターフェース ＆ データロジック
 
@@ -346,12 +346,14 @@ type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
 // Badge — 配色は Tailwind のトークン外のため tone の実値を style で当てる
 type BadgeProps = { tone: Tone; className?: string; children: ReactNode };
 
-// Modal — 背景クリック・Escape で閉じる。内容が画面より高いときは背景側がスクロールし、
+// Modal — 「×」・Escape・背景クリックで閉じる。内容が画面より高いときは背景側がスクロールし、
 //         収まるときは中央に置く（入力欄の多いモーダルで下端のボタンに届かなくなるのを防ぐ）
 type ModalProps = {
     isOpen: boolean;
     title: string;
     onClose: () => void;
+    // 既定は true。false を渡すと背景クリックでは閉じない（Escape と「×」は変わらない）
+    closeOnOverlayClick?: boolean;
     className?: string;
     children: ReactNode;
 };
