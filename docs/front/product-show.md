@@ -108,7 +108,7 @@ type Props = {
 
 | 対象 | 「在庫あり」の条件 |
 |---|---|
-| 商品（一覧のバッジ・詳細上部のバッジ） | `is_available = true` のバリエーションのうち、`stocks.quantity > 0` が1件以上存在する |
+| 商品（一覧のバッジと在庫絞り込み・詳細上部のバッジ） | `is_available = true` のバリエーションのうち、`stocks.quantity > 0` が1件以上存在する |
 | バリエーション（カラー／サイズの選択肢） | そのバリエーションの `stocks.quantity > 0` |
 
 在庫レコードが無いバリエーションは在庫0として扱う。取扱対象外（`is_available = false`）のバリエーションは、在庫があっても商品の在庫判定から除外する。
@@ -163,7 +163,7 @@ type Props = {
 
 ## 関連ドキュメント
 
-- [docs/front/product-index.md](product-index.md) — 商品一覧。カードの在庫切れ表示は本書の判定に従う
+- [docs/front/product-index.md](product-index.md) — 商品一覧。カードの在庫切れ表示と在庫状態の絞り込みは本書の判定に従う
 - [docs/front/favorite.md](favorite.md) — お気に入りの登録・解除の正本
 - [docs/front/cart.md](cart.md) — カートページの正本。投入後の明細・数量変更・削除を扱う
 - [docs/front/common-layout.md](common-layout.md) — `FrontLayout`・カートドロワー・共通UIの正本

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Front\Product;
 
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -23,10 +24,20 @@ class BuildProductCard
     {
         return $query
             ->with(['category', 'mainImage'])
-            ->withCount(['variants as in_stock_variants_count' => fn (Builder $variants) => $variants
-                ->where('is_available', true)
-                ->whereHas('stock', fn (Builder $stock) => $stock->where('quantity', '>', 0)),
-            ]);
+            ->withCount(['variants as in_stock_variants_count' => fn (Builder $variants) => $this->inStockVariants($variants)]);
+    }
+
+    /**
+     * 在庫ありと数えるバリエーションの条件。カードの在庫二値判定と一覧の在庫絞り込みで共用する。
+     *
+     * @param  Builder<ProductVariant>  $variants
+     * @return Builder<ProductVariant>
+     */
+    public function inStockVariants(Builder $variants): Builder
+    {
+        return $variants
+            ->where('is_available', true)
+            ->whereHas('stock', fn (Builder $stock) => $stock->where('quantity', '>', 0));
     }
 
     /**

@@ -218,6 +218,145 @@ class ProductIndexTest extends TestCase
             ));
     }
 
+    #[Test]
+    public function 在庫ありで絞り込める(): void
+    {
+        $this->makeProduct(['name' => '在庫あり商品']);
+        $this->makeProduct(['name' => '在庫切れ商品'], quantity: 0);
+
+        $this->get(route('products.index', ['stock' => 'in_stock']))
+            ->assertInertia(fn ($page) => $page
+                ->has('products.data', 1)
+                ->where('products.data.0.name', '在庫あり商品')
+                ->where('products.data.0.is_sold_out', false)
+                ->where('filters.stock', 'in_stock')
+                ->where('totalCount', 2)
+            );
+    }
+
+    #[Test]
+    public function 在庫切れで絞り込める(): void
+    {
+        $this->makeProduct(['name' => '在庫あり商品']);
+        $this->makeProduct(['name' => '在庫切れ商品'], quantity: 0);
+
+        $this->get(route('products.index', ['stock' => 'sold_out']))
+            ->assertInertia(fn ($page) => $page
+                ->has('products.data', 1)
+                ->where('products.data.0.name', '在庫切れ商品')
+                ->where('products.data.0.is_sold_out', true)
+            );
+    }
+
+    #[Test]
+    public function 在庫状態はカテゴリ・価格帯と併用できる(): void
+    {
+        $wear = Category::factory()->create(['name' => 'アパレル']);
+        $bike = Category::factory()->create(['name' => 'ロードバイク']);
+        $this->makeProduct(['name' => '在庫ありの安いジャージ', 'price' => 9900, 'category_id' => $wear->id]);
+        $this->makeProduct(['name' => '在庫切れの安いジャージ', 'price' => 9900, 'category_id' => $wear->id], quantity: 0);
+        $this->makeProduct(['name' => '在庫ありの高いジャージ', 'price' => 39900, 'category_id' => $wear->id]);
+        $this->makeProduct(['name' => '在庫ありの安い車体', 'price' => 9900, 'category_id' => $bike->id]);
+
+        $this->get(route('products.index', [
+            'category_id' => $wear->id,
+            'price_range' => 'under_10000',
+            'stock' => 'in_stock',
+        ]))->assertInertia(fn ($page) => $page
+            ->has('products.data', 1)
+            ->where('products.data.0.name', '在庫ありの安いジャージ')
+        );
+    }
+
+    #[Test]
+    public function 存在しない在庫状態の値は絞り込みに使われない(): void
+    {
+        $this->makeProduct(['name' => '在庫あり商品']);
+        $this->makeProduct(['name' => '在庫切れ商品'], quantity: 0);
+
+        $this->get(route('products.index', ['stock' => 'unknown-stock']))
+            ->assertInertia(fn ($page) => $page
+                ->has('products.data', 2)
+                ->where('filters.stock', null)
+            );
+    }
+
+    #[Test]
+    public function 価格が安い順で並べ替えられる(): void
+    {
+        $this->makeProduct(['name' => '高価格', 'price' => 398000]);
+        $this->makeProduct(['name' => '低価格', 'price' => 9900]);
+        $this->makeProduct(['name' => '中価格', 'price' => 49900]);
+
+        $this->get(route('products.index', ['sort' => 'price_asc']))
+            ->assertInertia(fn ($page) => $page
+                ->where('products.data.0.name', '低価格')
+                ->where('products.data.1.name', '中価格')
+                ->where('products.data.2.name', '高価格')
+                ->where('filters.sort', 'price_asc')
+            );
+    }
+
+    #[Test]
+    public function 価格が高い順で並べ替えられる(): void
+    {
+        $this->makeProduct(['name' => '高価格', 'price' => 398000]);
+        $this->makeProduct(['name' => '低価格', 'price' => 9900]);
+        $this->makeProduct(['name' => '中価格', 'price' => 49900]);
+
+        $this->get(route('products.index', ['sort' => 'price_desc']))
+            ->assertInertia(fn ($page) => $page
+                ->where('products.data.0.name', '高価格')
+                ->where('products.data.1.name', '中価格')
+                ->where('products.data.2.name', '低価格')
+                ->where('filters.sort', 'price_desc')
+            );
+    }
+
+    #[Test]
+    public function 並び替えの指定が無いときは新着順で並ぶ(): void
+    {
+        $this->makeProduct(['name' => '先に登録した商品', 'price' => 9900]);
+        $this->makeProduct(['name' => '後に登録した商品', 'price' => 398000]);
+
+        $this->get(route('products.index'))
+            ->assertInertia(fn ($page) => $page
+                ->where('products.data.0.name', '後に登録した商品')
+                ->where('products.data.1.name', '先に登録した商品')
+                ->where('filters.sort', 'newest')
+            );
+    }
+
+    #[Test]
+    public function 存在しない並び替えの値は新着順で扱われる(): void
+    {
+        $this->makeProduct(['name' => '先に登録した商品', 'price' => 9900]);
+        $this->makeProduct(['name' => '後に登録した商品', 'price' => 398000]);
+
+        $this->get(route('products.index', ['sort' => 'unknown-sort']))
+            ->assertInertia(fn ($page) => $page
+                ->where('products.data.0.name', '後に登録した商品')
+                ->where('filters.sort', 'newest')
+            );
+    }
+
+    #[Test]
+    public function 並び替えは絞り込みと併用できる(): void
+    {
+        $wear = Category::factory()->create(['name' => 'アパレル']);
+        $bike = Category::factory()->create(['name' => 'ロードバイク']);
+        $this->makeProduct(['name' => '高いジャージ', 'price' => 39900, 'category_id' => $wear->id]);
+        $this->makeProduct(['name' => '安いジャージ', 'price' => 9900, 'category_id' => $wear->id]);
+        $this->makeProduct(['name' => 'さらに安い車体', 'price' => 4900, 'category_id' => $bike->id]);
+
+        $this->get(route('products.index', ['category_id' => $wear->id, 'sort' => 'price_asc']))
+            ->assertInertia(fn ($page) => $page
+                ->has('products.data', 2)
+                ->where('products.data.0.name', '安いジャージ')
+                ->where('products.data.1.name', '高いジャージ')
+            );
+    }
+
     private function countQueriesOfIndex(): int
     {
         $count = 0;
