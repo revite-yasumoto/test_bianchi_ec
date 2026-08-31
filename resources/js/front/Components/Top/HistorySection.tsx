@@ -1,13 +1,11 @@
-import { Link } from '@inertiajs/react';
+import { ProductCard } from '@/front/Components/Product/ProductCard';
 import type { ProductCardData } from '@/front/Components/Product/ProductCard';
-import { ProductVisual } from '@/front/Components/Product/ProductVisual';
-import { yen } from '@/shared/lib/yen';
 
 type HistorySectionProps = {
     products: ProductCardData[];
 };
 
-/** ログイン中の会員にだけ出す「最近見た商品」。横スクロールの小カードで並べる */
+/** ログイン中の会員にだけ出す「最近見た商品」。ランキング・おすすめと同じ商品カードを横スクロールで並べる */
 export function HistorySection({ products }: HistorySectionProps) {
     if (products.length === 0) {
         return null;
@@ -16,28 +14,10 @@ export function HistorySection({ products }: HistorySectionProps) {
     return (
         <section className="px-5 pt-10 pb-2">
             <h2 className="mb-3.5 text-xl font-black">最近見た商品</h2>
-            <ul className="flex gap-3 overflow-x-auto pb-1.5">
+            <ul className="flex gap-3.5 overflow-x-auto pb-1.5">
                 {products.map((product) => (
-                    <li key={product.id} className="flex-none">
-                        <Link
-                            href={route('products.show', [product.id])}
-                            className="block w-[148px] overflow-hidden rounded-[14px] border border-line bg-white"
-                        >
-                            <div className="h-20">
-                                <ProductVisual
-                                    imageUrl={product.main_image_url}
-                                    categoryName={product.category_name}
-                                />
-                            </div>
-                            <div className="px-3 pt-2.5 pb-3">
-                                <p className="text-sm leading-[1.4] font-bold">
-                                    {product.name}
-                                </p>
-                                <p className="mt-1 font-mono text-sm">
-                                    {yen(product.price)}
-                                </p>
-                            </div>
-                        </Link>
+                    <li key={product.id} className="w-[190px] flex-none">
+                        <ProductCard product={product} />
                     </li>
                 ))}
             </ul>
