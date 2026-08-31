@@ -44,8 +44,11 @@ export function ProductCard({ product, rank }: ProductCardProps) {
                 ) : null}
             </div>
             <div className="px-4 pt-3.5 pb-4">
-                <p className="text-sm text-ink2">{product.category_name}</p>
-                <p className="mt-1 text-base leading-[1.45] font-bold">
+                <p className="truncate text-sm text-ink2">
+                    {product.category_name}
+                </p>
+                {/* 商品名は255文字まで登録できるため、行数を固定して並べたカードの高さを揃える */}
+                <p className="mt-1 line-clamp-2 min-h-[2.9em] text-base leading-[1.45] font-bold">
                     {product.name}
                 </p>
                 <p className="mt-2 font-mono text-base font-bold">
