@@ -1,18 +1,24 @@
 import { Link } from '@inertiajs/react';
 import { Pagination } from '@/front/Components/Pagination';
-import { CategoryChips } from '@/front/Components/Product/CategoryChips';
-import { PriceRangeChips } from '@/front/Components/Product/PriceRangeChips';
+import { FilterChips } from '@/front/Components/Product/FilterChips';
 import { ProductCard } from '@/front/Components/Product/ProductCard';
 import type { ProductCardData } from '@/front/Components/Product/ProductCard';
+import { SortSelect } from '@/front/Components/Product/SortSelect';
 import { FrontLayout } from '@/front/Layouts/FrontLayout';
+import {
+    productIndexQuery,
+    type ProductIndexFilters,
+} from '@/front/lib/productIndexQuery';
 import { EmptyState } from '@/shared/Components/EmptyState';
-import type { PriceRange } from '@/shared/lib/enums';
+import type { PriceRange, ProductSort, StockFilter } from '@/shared/lib/enums';
 
 type Props = {
     products: Paginated<ProductCardData>;
     categories: { id: number; name: string }[];
     priceRanges: { value: PriceRange; label: string }[];
-    filters: { category_id: number | null; price_range: PriceRange | null };
+    stockFilters: { value: StockFilter; label: string }[];
+    sorts: { value: ProductSort; label: string }[];
+    filters: ProductIndexFilters;
     totalCount: number;
 };
 
@@ -20,11 +26,15 @@ export default function Index({
     products,
     categories,
     priceRanges,
+    stockFilters,
+    sorts,
     filters,
     totalCount,
 }: Props) {
     const isFiltered =
-        filters.category_id !== null || filters.price_range !== null;
+        filters.category_id !== null ||
+        filters.price_range !== null ||
+        filters.stock !== null;
 
     return (
         <FrontLayout
@@ -43,21 +53,55 @@ export default function Index({
                 </nav>
 
                 <h1 className="mb-1.5 text-[28px] font-black">商品一覧</h1>
-                <p className="mb-5 text-[15px] text-ink2">
-                    {products.total}件の商品
-                    {isFiltered ? ` / 全${totalCount}件` : ''}
-                </p>
+
+                <div className="mb-5 flex flex-wrap items-center justify-between gap-2.5">
+                    <p className="text-[15px] text-ink2">
+                        {products.total}件の商品
+                        {isFiltered ? ` / 全${totalCount}件` : ''}
+                    </p>
+                    <SortSelect sorts={sorts} filters={filters} />
+                </div>
 
                 <div className="mb-5 flex flex-col gap-2.5">
-                    <CategoryChips
-                        categories={categories}
-                        selectedId={filters.category_id}
-                        priceRange={filters.price_range}
+                    <FilterChips
+                        label="カテゴリ"
+                        options={categories.map((category) => ({
+                            value: category.id,
+                            label: category.name,
+                        }))}
+                        selected={filters.category_id}
+                        buildHref={(value) =>
+                            route(
+                                'products.index',
+                                productIndexQuery(filters, {
+                                    category_id: value,
+                                }),
+                            )
+                        }
                     />
-                    <PriceRangeChips
-                        ranges={priceRanges}
-                        selectedValue={filters.price_range}
-                        categoryId={filters.category_id}
+                    <FilterChips
+                        label="価格帯"
+                        options={priceRanges}
+                        selected={filters.price_range}
+                        buildHref={(value) =>
+                            route(
+                                'products.index',
+                                productIndexQuery(filters, {
+                                    price_range: value,
+                                }),
+                            )
+                        }
+                    />
+                    <FilterChips
+                        label="在庫"
+                        options={stockFilters}
+                        selected={filters.stock}
+                        buildHref={(value) =>
+                            route(
+                                'products.index',
+                                productIndexQuery(filters, { stock: value }),
+                            )
+                        }
                     />
                 </div>
 

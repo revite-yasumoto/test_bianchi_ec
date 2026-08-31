@@ -64,7 +64,7 @@
 |  電話番号*        |  性別              |
 |  生年月日（全幅）  [年v] [月v] [日v]    |
 |                                      |
-|  お届け先                （小見出し）    |
+|  住所                    （小見出し）    |
 |  郵便番号*（全幅）  [123] − [4567]      |
 |  都道府県*        |  市区町村*          |
 |  番地*（全幅）                          |
@@ -86,13 +86,30 @@
 |  お楽しみください。                     |
 |  [ ログインする ] [ TOPへ戻る ]        |
 +--------------------------------------+
+
+利用規約／プライバシーポリシー モーダル      ← 会員登録の同意チェック内のボタン押下
+（最大幅640px）:
++--------------------------------------+
+| 利用規約                        [×]  |   ← 見出しと「×」は固定
+| ┌----------------------------------┐ |
+| | 本サイトはデモ用であり記載は架空です | |
+| | 第1条（適用）         （小見出し）  | |   ← 本文だけが縦スクロール
+| | ...                              | |     （最大高さ62dvh）
+| └----------------------------------┘ |
+|        [    閉じる    ]              |   ← 幅は本文の半分・中央寄せ
++--------------------------------------+
 ```
 
 - エラー表示: 各入力欄の直下にインラインで表示する。認証失敗・レート制限・休会中のメッセージは `email` の直下にまとめて表示する。
 - 必須項目のラベルには `*` を表示する。
-- 同意チェックの「利用規約」「プライバシーポリシー」はそれぞれの静的ページ（[docs/front/static-pages.md](static-pages.md)）へのリンクにする。リンクはチェックボックスのラベル内に置く（ラベル内の対話的要素へのクリックではチェックが切り替わらない）。
+- 同意チェックの「利用規約」「プライバシーポリシー」は、押すと画面遷移せずにモーダルで本文を表示する。本文は静的ページ（[docs/front/static-pages.md](static-pages.md)）と同じものを共用する。
+- モーダルを開く要素はリンクではなくボタンとし、チェックボックスのラベル内に置く（ラベル内の対話的要素への押下ではチェックが切り替わらない）。モーダルは「×」・Escape・背景クリックで閉じ（共通 `Modal` の既定の挙動。[docs/front/common-layout.md](common-layout.md) が正本）、閉じても入力内容と同意チェックの状態は変わらない。
+- 本文の下端に「閉じる」ボタンを置く（幅は本文領域の半分・中央寄せ、共通 `Button` の `outline`）。長い本文を読み終えた位置から、上端の「×」まで戻らずに閉じられるようにするため。
+- 縦スクロールはモーダル本体ではなく本文の領域に持たせる（本体側に持たせるとスクロールバーが角丸の上に重なる）。見出しと「×」「閉じる」は本文をスクロールしても位置が変わらない。
+- モーダル内に静的ページへの導線は置かない。ページはフッターの LEGAL カラム（[docs/front/common-layout.md](common-layout.md)）と直リンクからの閲覧用に残す。
+- モーダル内の各節の見出しは、ダイアログの見出し（モーダルのタイトル）の下位に入るため `h3` で描画する（静的ページでは `h2`）。
 - メールマガジンのチェックボックスは既定でチェック済みにする。同意チェックとは別の欄として独立させ、ラジオボタン（受け取る／受け取らない）にはしない。
-- 住所の入力欄は「お届け先」の小見出しで区切る。郵便番号欄・自動セットの挙動は [docs/front/postal-code-lookup.md](postal-code-lookup.md) が正本で、配送先モーダルと同じ `PostalCodeField` を使う。
+- 住所の入力欄は「住所」の小見出しで区切り、「ご注文時のお届け先として登録します。」と用途を添える。郵便番号欄・自動セットの挙動は [docs/front/postal-code-lookup.md](postal-code-lookup.md) が正本で、配送先モーダルと同じ `PostalCodeField` を使う。
 - 生年月日は年・月・日の3つのプルダウンで選ぶ。年は当年から100年前までを新しい順に並べ、いずれも未選択（`--`）を先頭に置く。
 - 性別のプルダウンは未選択（`--`）・男性・女性の3択にする。
 - 表示名（`user_addresses.label`）・宛名（`recipient_name`）の入力欄は置かない（下記の処理フロー参照）。
@@ -136,6 +153,18 @@ type RegisterForm = {
 // resources/js/front/Pages/Auth/Register.tsx
 type Props = {
     prefectures: { id: number; name: string }[];
+};
+```
+
+規約・ポリシーのモーダル（`LegalModal`）の Props:
+
+```ts
+// resources/js/front/Components/Auth/LegalModal.tsx
+type LegalDocument = 'terms' | 'privacy';   // LEGAL_DOCUMENTS 定数で管理する
+
+type LegalModalProps = {
+    openDocument: LegalDocument | null;     // null なら閉じた状態
+    onClose: () => void;
 };
 ```
 
@@ -241,6 +270,7 @@ type Props = {
 | Page | `resources/js/front/Pages/Auth/Login.tsx` |
 | Page | `resources/js/front/Pages/Auth/Register.tsx` |
 | Component | `resources/js/front/Components/Auth/BirthdayField.tsx` |
+| Component | `resources/js/front/Components/Auth/LegalModal.tsx` |
 | Component | `resources/js/front/Components/Checkout/PostalCodeField.tsx` |
 | Page | `resources/js/front/Pages/Auth/RegisterComplete.tsx` |
 | 区分値 | `resources/js/shared/lib/enums.ts` |
@@ -288,4 +318,5 @@ type Props = {
 - ログイン済みはログイン画面を開けない: 同上（`ログイン済みの会員はログイン画面を開けない`）
 - ログアウトでTOPへ戻り未認証になる: `tests/Feature/Front/Auth/LogoutTest.php`（`ログアウトするとトップページへ戻り未認証になる`）
 - ログアウトでセッションが無効化される: 同上（`ログアウト時にセッションが無効化される`）
+- 同意チェックの「利用規約」「プライバシーポリシー」の押下でモーダルが開き、画面遷移せず入力内容と同意チェックの状態が保たれること: 自動テストなし。実機の操作で担保する
 - 会員登録・ログイン画面のレスポンシブ表示（SP1カラム／sm以上2カラム）: 自動テストなし。目視確認で担保する

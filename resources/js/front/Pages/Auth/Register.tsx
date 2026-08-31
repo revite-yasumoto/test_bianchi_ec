@@ -1,6 +1,12 @@
 import { Link, useForm } from '@inertiajs/react';
+import { useState } from 'react';
 import type { FormEventHandler } from 'react';
 import { BirthdayField } from '@/front/Components/Auth/BirthdayField';
+import {
+    LEGAL_DOCUMENTS,
+    LegalModal,
+} from '@/front/Components/Auth/LegalModal';
+import type { LegalDocument } from '@/front/Components/Auth/LegalModal';
 import { PostalCodeField } from '@/front/Components/Checkout/PostalCodeField';
 import { FrontLayout } from '@/front/Layouts/FrontLayout';
 import { Button } from '@/shared/Components/Button';
@@ -35,6 +41,8 @@ type RegisterForm = {
 };
 
 export default function Register({ prefectures }: Props) {
+    const [openLegalDocument, setOpenLegalDocument] =
+        useState<LegalDocument | null>(null);
     const { data, setData, post, processing, errors, reset } =
         useForm<RegisterForm>({
             name: '',
@@ -185,9 +193,9 @@ export default function Register({ prefectures }: Props) {
                         />
                     </div>
 
-                    <h2 className="mt-7 text-base font-black">お届け先</h2>
+                    <h2 className="mt-7 text-base font-black">住所</h2>
                     <p className="mt-1.5 text-[15px] leading-[1.9] text-ink2">
-                        ご注文時の既定のお届け先として登録します。
+                        ご注文時のお届け先として登録します。
                     </p>
 
                     <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -300,19 +308,25 @@ export default function Register({ prefectures }: Props) {
                             setData('agree', event.target.checked)
                         }
                     >
-                        <Link
-                            href={route('legal.terms')}
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setOpenLegalDocument(LEGAL_DOCUMENTS.Terms)
+                            }
                             className="font-bold text-brand underline"
                         >
                             利用規約
-                        </Link>
+                        </button>
                         {' および '}
-                        <Link
-                            href={route('legal.privacy')}
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setOpenLegalDocument(LEGAL_DOCUMENTS.Privacy)
+                            }
                             className="font-bold text-brand underline"
                         >
                             プライバシーポリシー
-                        </Link>
+                        </button>
                         {' に同意します'}
                     </Checkbox>
 
@@ -334,6 +348,11 @@ export default function Register({ prefectures }: Props) {
                         </Link>
                     </p>
                 </form>
+
+                <LegalModal
+                    openDocument={openLegalDocument}
+                    onClose={() => setOpenLegalDocument(null)}
+                />
             </div>
         </FrontLayout>
     );
