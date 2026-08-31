@@ -25,13 +25,23 @@ export function StaticPageLayout({
 
 type StaticSectionProps = {
     heading: string;
+    /** モーダル内ではダイアログの見出し（h2）の下位に入るため 3 を渡す */
+    headingLevel?: 2 | 3;
     children: ReactNode;
 };
 
-export function StaticSection({ heading, children }: StaticSectionProps) {
+export function StaticSection({
+    heading,
+    headingLevel = 2,
+    children,
+}: StaticSectionProps) {
+    const Heading = headingLevel === 3 ? 'h3' : 'h2';
+
     return (
         <section>
-            <h2 className="mb-2.5 text-[16px] font-extrabold">{heading}</h2>
+            <Heading className="mb-2.5 text-[16px] font-extrabold">
+                {heading}
+            </Heading>
             <div className="flex flex-col gap-2.5 text-[15px] leading-[1.95] text-ink2">
                 {children}
             </div>

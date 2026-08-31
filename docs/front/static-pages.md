@@ -45,6 +45,7 @@
 - 4ページとも最大760px・中央寄せの共通枠を使い、`h1` にページ名、各節の見出しを `h2` に置く。
 - 特定商取引法に基づく表記は用語と説明の対（`dl`）で組み、PC幅では見出し180pxの2カラム、SP幅では縦積みにする。
 - 4ページとも冒頭に、デモサイトであり記載内容が架空である旨を明記する。
+- 利用規約・プライバシーポリシーの本文は、ページと会員登録画面のモーダル（[docs/front/auth.md](auth.md)）で共用する。本文の内容は本ドキュメントが正本で、各節の見出しはページでは `h2`、モーダル内ではダイアログの見出しの下位に入るため `h3` で描画する。
 
 ## インターフェース ＆ データロジック
 
@@ -60,6 +61,21 @@ type Props = {
 
 `ShippingTableRow` は [docs/front/product-show.md](product-show.md) が正本（送料モーダルと同じ形）。法的3ページは props を持たない。
 
+利用規約・プライバシーポリシーの本文コンポーネントと、共通枠の節見出しは見出しレベルを受け取る。
+
+```ts
+// resources/js/front/Components/Support/TermsBody.tsx
+// resources/js/front/Components/Support/PrivacyBody.tsx
+type Props = { headingLevel?: 2 | 3 };   // 既定は 2。モーダルからは 3 を渡す
+
+// resources/js/front/Components/Support/StaticPageLayout.tsx
+type StaticSectionProps = {
+    heading: string;
+    headingLevel?: 2 | 3;                // 既定は 2
+    children: ReactNode;
+};
+```
+
 ### 入力値バリデーションルール
 
 なし（入力を受け取らない）。
@@ -74,7 +90,8 @@ type Props = {
 
 **法的3ページ**
 
-1. 本文をページコンポーネントに直接記述して返す。データベース・管理画面を参照しない。
+1. 本文を画面に直接記述して返す。データベース・管理画面を参照しない。
+2. 利用規約・プライバシーポリシーの本文は、会員登録画面のモーダルでも表示するため本文コンポーネントに切り出し、ページはそれを共通枠へ差し込む。特定商取引法に基づく表記はページに直接記述する（モーダルで表示しないため）。
 
 ## 業務ルール
 
@@ -89,7 +106,7 @@ type Props = {
 - [docs/shipping-calculation.md](../shipping-calculation.md) — 送料・代引き手数料の算出規則の正本
 - [docs/front/product-show.md](product-show.md) — 送料モーダル（`ShippingTableRow` の正本。本ページへの導線を持つ）
 - [docs/front/contact.md](contact.md) — 買い物ガイドから案内するお問い合わせ
-- [docs/front/auth.md](auth.md) — 会員登録の同意チェックから参照する利用規約・プライバシーポリシー
+- [docs/front/auth.md](auth.md) — 会員登録の同意チェックが利用規約・プライバシーポリシーの本文をモーダルで表示する（本文の呼び出し元）
 - [docs/2_database.md](../2_database.md) — テーブル定義の正本
 
 ## ソースファイル
@@ -99,6 +116,8 @@ type Props = {
 | Route | `routes/web.php` |
 | Controller | `app/Http/Controllers/Front/StaticPageController.php` |
 | Component | `resources/js/front/Components/Support/StaticPageLayout.tsx` |
+| Component | `resources/js/front/Components/Support/TermsBody.tsx` |
+| Component | `resources/js/front/Components/Support/PrivacyBody.tsx` |
 | Page | `resources/js/front/Pages/Static/Guide.tsx` |
 | Page | `resources/js/front/Pages/Static/Tokushoho.tsx` |
 | Page | `resources/js/front/Pages/Static/Privacy.tsx` |
