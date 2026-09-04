@@ -72,14 +72,6 @@ export const ContactTab = {
 
 export type ContactTab = (typeof ContactTab)[keyof typeof ContactTab];
 
-/** 商品一覧の在庫絞り込み。「すべて」は値を持たず、クエリを付けないことで表す */
-export const StockFilter = {
-    InStock: 'in_stock',
-    SoldOut: 'sold_out',
-} as const;
-
-export type StockFilter = (typeof StockFilter)[keyof typeof StockFilter];
-
 export const ProductSort = {
     Newest: 'newest',
     PriceAsc: 'price_asc',

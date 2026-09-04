@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { Pagination } from '@/front/Components/Pagination';
 import { FilterChips } from '@/front/Components/Product/FilterChips';
+import { InStockCheckbox } from '@/front/Components/Product/InStockCheckbox';
 import { ProductCard } from '@/front/Components/Product/ProductCard';
 import type { ProductCardData } from '@/front/Components/Product/ProductCard';
 import { SortSelect } from '@/front/Components/Product/SortSelect';
@@ -10,13 +11,12 @@ import {
     type ProductIndexFilters,
 } from '@/front/lib/productIndexQuery';
 import { EmptyState } from '@/shared/Components/EmptyState';
-import type { PriceRange, ProductSort, StockFilter } from '@/shared/lib/enums';
+import type { PriceRange, ProductSort } from '@/shared/lib/enums';
 
 type Props = {
     products: Paginated<ProductCardData>;
     categories: { id: number; name: string }[];
     priceRanges: { value: PriceRange; label: string }[];
-    stockFilters: { value: StockFilter; label: string }[];
     sorts: { value: ProductSort; label: string }[];
     filters: ProductIndexFilters;
     totalCount: number;
@@ -26,7 +26,6 @@ export default function Index({
     products,
     categories,
     priceRanges,
-    stockFilters,
     sorts,
     filters,
     totalCount,
@@ -34,7 +33,7 @@ export default function Index({
     const isFiltered =
         filters.category_id !== null ||
         filters.price_range !== null ||
-        filters.stock !== null;
+        filters.in_stock;
 
     return (
         <FrontLayout
@@ -92,17 +91,7 @@ export default function Index({
                             )
                         }
                     />
-                    <FilterChips
-                        label="在庫"
-                        options={stockFilters}
-                        selected={filters.stock}
-                        buildHref={(value) =>
-                            route(
-                                'products.index',
-                                productIndexQuery(filters, { stock: value }),
-                            )
-                        }
-                    />
+                    <InStockCheckbox filters={filters} />
                 </div>
 
                 {products.data.length > 0 ? (

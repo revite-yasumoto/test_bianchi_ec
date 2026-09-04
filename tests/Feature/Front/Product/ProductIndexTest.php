@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
+/**
+ * 商品・バリエーション・在庫は Factory で用意する。商品とバリエーションの登録経路
+ * （`POST /admin/products`）は `Tests\Feature\Admin\Product\ProductStoreTest`、
+ * 在庫数の更新経路（`PUT /admin/stocks/{stock}`）は
+ * `Tests\Feature\Admin\Stock\StockUpdateTest` が検証している。
+ */
 class ProductIndexTest extends TestCase
 {
     use RefreshDatabase;
@@ -25,13 +31,22 @@ class ProductIndexTest extends TestCase
     {
         $product = Product::factory()->create($attributes);
 
-        $variant = ProductVariant::factory()->create(['product_id' => $product->id]);
+        $this->makeVariant($product, $quantity);
+
+        return $product;
+    }
+
+    private function makeVariant(Product $product, int $quantity, bool $isAvailable = true): void
+    {
+        $variant = ProductVariant::factory()->create([
+            'product_id' => $product->id,
+            'is_available' => $isAvailable,
+        ]);
+
         Stock::factory()->create([
             'product_variant_id' => $variant->id,
             'quantity' => $quantity,
         ]);
-
-        return $product;
     }
 
     #[Test]
@@ -219,37 +234,54 @@ class ProductIndexTest extends TestCase
     }
 
     #[Test]
-    public function 在庫ありで絞り込める(): void
+    public function 在庫ありのみで絞り込める(): void
     {
         $this->makeProduct(['name' => '在庫あり商品']);
         $this->makeProduct(['name' => '在庫切れ商品'], quantity: 0);
 
-        $this->get(route('products.index', ['stock' => 'in_stock']))
+        $this->get(route('products.index', ['in_stock' => 1]))
             ->assertInertia(fn ($page) => $page
                 ->has('products.data', 1)
                 ->where('products.data.0.name', '在庫あり商品')
                 ->where('products.data.0.is_sold_out', false)
-                ->where('filters.stock', 'in_stock')
+                ->where('filters.in_stock', true)
                 ->where('totalCount', 2)
             );
     }
 
     #[Test]
-    public function 在庫切れで絞り込める(): void
+    public function 在庫ありのみの絞り込みはカードの在庫切れ判定と同じ条件で振り分ける(): void
     {
-        $this->makeProduct(['name' => '在庫あり商品']);
-        $this->makeProduct(['name' => '在庫切れ商品'], quantity: 0);
+        $partiallyInStock = Product::factory()->create(['name' => '一部のSKUに在庫がある商品']);
+        $this->makeVariant($partiallyInStock, 0);
+        $this->makeVariant($partiallyInStock, 2);
 
-        $this->get(route('products.index', ['stock' => 'sold_out']))
+        $unavailableOnly = Product::factory()->create(['name' => '取扱対象外のSKUにだけ在庫がある商品']);
+        $this->makeVariant($unavailableOnly, 5, isAvailable: false);
+
+        $this->get(route('products.index', ['in_stock' => 1]))
             ->assertInertia(fn ($page) => $page
                 ->has('products.data', 1)
-                ->where('products.data.0.name', '在庫切れ商品')
-                ->where('products.data.0.is_sold_out', true)
+                ->where('products.data.0.name', '一部のSKUに在庫がある商品')
+                ->where('products.data.0.is_sold_out', false)
             );
     }
 
     #[Test]
-    public function 在庫状態はカテゴリ・価格帯と併用できる(): void
+    public function 在庫の指定が無いときは在庫切れの商品も表示される(): void
+    {
+        $this->makeProduct(['name' => '在庫あり商品']);
+        $this->makeProduct(['name' => '在庫切れ商品'], quantity: 0);
+
+        $this->get(route('products.index'))
+            ->assertInertia(fn ($page) => $page
+                ->has('products.data', 2)
+                ->where('filters.in_stock', false)
+            );
+    }
+
+    #[Test]
+    public function 在庫の絞り込みはカテゴリ・価格帯と併用できる(): void
     {
         $wear = Category::factory()->create(['name' => 'アパレル']);
         $bike = Category::factory()->create(['name' => 'ロードバイク']);
@@ -261,7 +293,7 @@ class ProductIndexTest extends TestCase
         $this->get(route('products.index', [
             'category_id' => $wear->id,
             'price_range' => 'under_10000',
-            'stock' => 'in_stock',
+            'in_stock' => 1,
         ]))->assertInertia(fn ($page) => $page
             ->has('products.data', 1)
             ->where('products.data.0.name', '在庫ありの安いジャージ')
@@ -269,15 +301,41 @@ class ProductIndexTest extends TestCase
     }
 
     #[Test]
-    public function 存在しない在庫状態の値は絞り込みに使われない(): void
+    public function 真でない在庫の指定は絞り込みに使われない(): void
     {
         $this->makeProduct(['name' => '在庫あり商品']);
         $this->makeProduct(['name' => '在庫切れ商品'], quantity: 0);
 
-        $this->get(route('products.index', ['stock' => 'unknown-stock']))
+        $this->get(route('products.index', ['in_stock' => 0]))
             ->assertInertia(fn ($page) => $page
                 ->has('products.data', 2)
-                ->where('filters.stock', null)
+                ->where('filters.in_stock', false)
+            );
+    }
+
+    #[Test]
+    public function 真と解釈できない文字列の在庫の指定は絞り込みに使われない(): void
+    {
+        $this->makeProduct(['name' => '在庫あり商品']);
+        $this->makeProduct(['name' => '在庫切れ商品'], quantity: 0);
+
+        $this->get(route('products.index', ['in_stock' => 'unknown-value']))
+            ->assertInertia(fn ($page) => $page
+                ->has('products.data', 2)
+                ->where('filters.in_stock', false)
+            );
+    }
+
+    #[Test]
+    public function 配列の在庫の指定は絞り込みに使われない(): void
+    {
+        $this->makeProduct(['name' => '在庫あり商品']);
+        $this->makeProduct(['name' => '在庫切れ商品'], quantity: 0);
+
+        $this->get(route('products.index', ['in_stock' => [1]]))
+            ->assertInertia(fn ($page) => $page
+                ->has('products.data', 2)
+                ->where('filters.in_stock', false)
             );
     }
 

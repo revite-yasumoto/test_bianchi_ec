@@ -1,17 +1,17 @@
-import type { PriceRange, ProductSort, StockFilter } from '@/shared/lib/enums';
+import type { PriceRange, ProductSort } from '@/shared/lib/enums';
 import { ProductSort as ProductSortValue } from '@/shared/lib/enums';
 
 export type ProductIndexFilters = {
     category_id: number | null;
     price_range: PriceRange | null;
-    stock: StockFilter | null;
+    in_stock: boolean;
     sort: ProductSort;
 };
 
 type ProductIndexQuery = {
     category_id?: number;
     price_range?: PriceRange;
-    stock?: StockFilter;
+    in_stock?: 1;
     sort?: ProductSort;
 };
 
@@ -33,7 +33,7 @@ export function productIndexQuery(
         ...(merged.price_range === null
             ? {}
             : { price_range: merged.price_range }),
-        ...(merged.stock === null ? {} : { stock: merged.stock }),
+        ...(merged.in_stock ? ({ in_stock: 1 } as const) : {}),
         ...(merged.sort === ProductSortValue.Newest
             ? {}
             : { sort: merged.sort }),

@@ -9,7 +9,6 @@ use App\Actions\Front\Product\BuildProductDetail;
 use App\Actions\Front\Product\RecordBrowsingHistory;
 use App\Enums\PriceRange;
 use App\Enums\ProductSort;
-use App\Enums\StockFilter;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
@@ -33,13 +32,12 @@ class ProductController extends Controller
         $rawPriceRange = $request->query('price_range');
         $priceRange = is_string($rawPriceRange) ? PriceRange::tryFrom($rawPriceRange) : null;
 
-        $rawStock = $request->query('stock');
-        $stock = is_string($rawStock) ? StockFilter::tryFrom($rawStock) : null;
+        $inStock = $request->boolean('in_stock');
 
         $rawSort = $request->query('sort');
         $sort = (is_string($rawSort) ? ProductSort::tryFrom($rawSort) : null) ?? ProductSort::Newest;
 
-        $products = $this->buildQuery($buildCard, $categoryId, $priceRange, $stock, $sort)
+        $products = $this->buildQuery($buildCard, $categoryId, $priceRange, $inStock, $sort)
             ->paginate(self::PER_PAGE)
             ->withQueryString()
             ->through($buildCard);
@@ -48,16 +46,15 @@ class ProductController extends Controller
             'products' => $products,
             'categories' => $this->categoryOptions(),
             'priceRanges' => PriceRange::options(),
-            'stockFilters' => StockFilter::options(),
             'sorts' => ProductSort::options(),
             'filters' => [
                 'category_id' => $categoryId,
                 'price_range' => $priceRange?->value,
-                'stock' => $stock?->value,
+                'in_stock' => $inStock,
                 'sort' => $sort->value,
             ],
             // 絞り込みが無ければページャの総件数と一致するため、追加のCOUNTを発行しない
-            'totalCount' => $categoryId === null && $priceRange === null && $stock === null
+            'totalCount' => $categoryId === null && $priceRange === null && ! $inStock
                 ? $products->total()
                 : Product::query()->where('is_published', true)->count(),
         ]);
@@ -70,14 +67,18 @@ class ProductController extends Controller
         BuildProductCard $buildCard,
         ?int $categoryId,
         ?PriceRange $priceRange,
-        ?StockFilter $stock,
+        bool $inStock,
         ProductSort $sort,
     ): Builder {
         $query = $buildCard
             ->scope(Product::query()->where('is_published', true))
             ->when($categoryId, fn (Builder $inner, int $id) => $inner->where('category_id', $id))
             ->when($priceRange, fn (Builder $inner, PriceRange $range) => $this->applyPriceRange($inner, $range))
-            ->when($stock, fn (Builder $inner, StockFilter $filter) => $this->applyStockFilter($inner, $filter, $buildCard));
+            // 在庫の有無は、カードの在庫切れバッジと同じ条件（`BuildProductCard`）で判定する
+            ->when($inStock, fn (Builder $inner) => $inner->whereHas(
+                'variants',
+                fn (Builder $variants) => $buildCard->inStockVariants($variants),
+            ));
 
         foreach ($sort->columns() as [$column, $direction]) {
             $query->orderBy($column, $direction);
@@ -96,18 +97,6 @@ class ProductController extends Controller
 
         return $query->where('price', '>=', $min)
             ->when($max !== null, fn (Builder $inner) => $inner->where('price', '<', $max));
-    }
-
-    /**
-     * 在庫の有無は、カードの在庫切れバッジと同じ条件（`BuildProductCard`）で判定する。
-     */
-    private function applyStockFilter(Builder $query, StockFilter $filter, BuildProductCard $buildCard): Builder
-    {
-        $condition = fn (Builder $variants) => $buildCard->inStockVariants($variants);
-
-        return $filter === StockFilter::InStock
-            ? $query->whereHas('variants', $condition)
-            : $query->whereDoesntHave('variants', $condition);
     }
 
     public function show(
