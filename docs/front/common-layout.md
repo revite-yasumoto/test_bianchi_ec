@@ -164,6 +164,7 @@ Tailwind CSS v4 の Preflight はv3と違いボタンへ `cursor: pointer` を�
 |---|---|
 | `button:not(:disabled)` | ボタン・タブ・規格の選択肢・ページ送り |
 | `select:not(:disabled)` | 絞り込み・都道府県などのプルダウン |
+| `input[type='file']:not(:disabled)` とその `::file-selector-button` | 管理画面の画像のファイル選択欄（「ファイルを選択」ボタンと「選択されていません」の表示） |
 
 - チェックボックス・ラジオのラベル（`label`）は `:has()` セレクタでの一括指定を避け、ラベルを描画する各コンポーネント側で `cursor-pointer` を当てる。
 - 非活性の要素はポインタにしない。押せないことを示す要素（`disabled` のボタン、`aria-disabled="true"` の `span`）には `cursor-not-allowed` を当てる。

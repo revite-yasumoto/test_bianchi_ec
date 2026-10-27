@@ -51,4 +51,10 @@
     select:not(:disabled) {
         cursor: pointer;
     }
+
+    /* 疑似要素を未対応のブラウザで上のボタン・セレクトの指定ごと無効にならないよう、別の規則に分ける */
+    input[type='file']:not(:disabled),
+    input[type='file']:not(:disabled)::file-selector-button {
+        cursor: pointer;
+    }
 }
