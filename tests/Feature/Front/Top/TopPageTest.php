@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Front\Top;
 
+use App\Enums\BannerBackground;
 use App\Models\Banner;
 use App\Models\BrowsingHistory;
 use App\Models\Category;
@@ -120,6 +121,60 @@ class TopPageTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->where('categoryEntries.0.name', 'ロードバイク')
                 ->where('categoryEntries.0.product_count', 1)
+            );
+    }
+
+    /**
+     * 画像パスは Factory で用意する。画像を保存する経路は Admin\Category\CategoryImageTest が検証している。
+     */
+    #[Test]
+    public function カテゴリ入口に登録した画像のアドレスが付く(): void
+    {
+        Category::factory()->create(['sort_order' => 1, 'image_path' => 'categories/road.jpg']);
+        Category::factory()->create(['sort_order' => 2]);
+
+        $this->get(route('top'))
+            ->assertInertia(fn ($page) => $page
+                ->where('categoryEntries.0.image_url', asset('storage/categories/road.jpg'))
+                ->where('categoryEntries.1.image_url', null)
+            );
+    }
+
+    /**
+     * 背景は Factory で用意する。背景を保存して作成する経路は Admin\Banner\BannerStoreTest が検証している。
+     */
+    #[Test]
+    public function バナーの背景は配色の値で返す(): void
+    {
+        Banner::factory()->create(['background' => BannerBackground::Coral]);
+
+        $this->get(route('top'))
+            ->assertInertia(fn ($page) => $page
+                ->where('banners.0.background', 'linear-gradient(115deg,#E1664B 0%,#b64530 55%,#7d2d1e 100%)')
+            );
+    }
+
+    /**
+     * 画像パスは Factory で用意する。画像を保存して作成する経路は Admin\Banner\BannerStoreTest が検証している。
+     */
+    #[Test]
+    public function バナーの画像はパソコン用とスマホ用を別々に返す(): void
+    {
+        Banner::factory()->create(['sort_order' => 0, 'pc_image_path' => 'banners/a-pc.jpg', 'sp_image_path' => 'banners/a-sp.jpg']);
+        Banner::factory()->create(['sort_order' => 1, 'pc_image_path' => 'banners/b-pc.jpg']);
+        Banner::factory()->create(['sort_order' => 2, 'sp_image_path' => 'banners/c-sp.jpg']);
+        Banner::factory()->create(['sort_order' => 3]);
+
+        $this->get(route('top'))
+            ->assertInertia(fn ($page) => $page
+                ->where('banners.0.pc_image_url', asset('storage/banners/a-pc.jpg'))
+                ->where('banners.0.sp_image_url', asset('storage/banners/a-sp.jpg'))
+                ->where('banners.1.pc_image_url', asset('storage/banners/b-pc.jpg'))
+                ->where('banners.1.sp_image_url', null)
+                ->where('banners.2.pc_image_url', null)
+                ->where('banners.2.sp_image_url', asset('storage/banners/c-sp.jpg'))
+                ->where('banners.3.pc_image_url', null)
+                ->where('banners.3.sp_image_url', null)
             );
     }
 

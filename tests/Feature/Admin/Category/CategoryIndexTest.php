@@ -35,6 +35,24 @@ class CategoryIndexTest extends TestCase
             );
     }
 
+    /**
+     * 画像パスは Factory で用意する。画像を保存する経路は CategoryImageTest が検証している。
+     */
+    #[Test]
+    public function 画像を登録したカテゴリには画像のアドレスが付く(): void
+    {
+        $admin = Admin::factory()->create();
+        Category::factory()->create(['sort_order' => 1, 'image_path' => 'categories/helmet.jpg']);
+        Category::factory()->create(['sort_order' => 2]);
+
+        $this->actingAs($admin, 'admin')
+            ->get(route('admin.categories.index'))
+            ->assertInertia(fn ($page) => $page
+                ->where('categories.0.image_url', asset('storage/categories/helmet.jpg'))
+                ->where('categories.1.image_url', null)
+            );
+    }
+
     #[Test]
     public function 一覧は表示順の昇順で並ぶ(): void
     {

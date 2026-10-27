@@ -113,7 +113,7 @@ type SkuRow = {
 | `description` | 任意・文字列・最大5000 |
 | `is_published` / `has_sku` | 必須・真偽値 |
 | `images` | 任意・配列。**既存の残り＋新規の合計**が10枚以下 |
-| `images.*` | 画像・jpg / jpeg / png / webp・5MB以下・最大辺4000px |
+| `images.*` | 画像・jpg / jpeg / png / webp・5MB以下・最大辺4000px（バナー・カテゴリ画像と共通の定義。正本は [docs/admin/banner.md](banner.md)） |
 | `deleted_image_ids` | 任意・配列・各要素は整数 |
 | `specs` | 任意・配列・最大20要素 |
 | `specs.*.label` / `specs.*.value` | 必須・最大100 / 最大255 |

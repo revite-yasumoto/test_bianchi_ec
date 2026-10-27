@@ -101,6 +101,7 @@
 | id | bigIncrements | PK |
 | name | string(50) | unique |
 | sort_order | unsignedInteger | default `0` |
+| image_path | string(255) | nullable / TOPのカテゴリ入口カードの画像（`public` ディスク上のパス） |
 
 #### `spec_options`（規格管理：サイズ・カラー）
 
@@ -307,7 +308,7 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 
 #### `banners`（TOPメインビジュアル）
 
-管理UIは要件の10メニューに含まれないため作らない。`BannerSeeder` で投入する。
+管理画面は [docs/admin/banner.md](admin/banner.md)。
 
 | カラム | 型 | 制約・既定値 |
 |---|---|---|
@@ -316,7 +317,9 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 | title | string(255) | 改行を含む |
 | subtitle | string(255) | nullable |
 | product_id | foreignId | nullable / FK `products.id` / `nullOnDelete` / 訴求する商品。「見る」ボタンの遷移先 |
-| background | string(255) | 背景スタイル値（例 `linear-gradient(...)`） |
+| background | string(255) | 背景色の区分コード（`BannerBackground`）。描画する CSS の値は Enum の `gradient()` が返す |
+| pc_image_path | string(255) | nullable / PC幅で表示する画像（`public` ディスク上のパス） |
+| sp_image_path | string(255) | nullable / スマホ幅で表示する画像（`public` ディスク上のパス） |
 | link_url | string(255) | nullable |
 | sort_order | unsignedInteger | default `0` |
 | is_active | boolean | default `true` |
@@ -355,6 +358,7 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 | `Gender` | `male` / `female` | `label()` で日本語表示名。任意項目のため、未回答は列を `null` にして表す（Enumに未回答の値は持たせない） |
 | `SpecOptionType` | `size` / `color` | `label()` で日本語表示名 |
 | `NewsCategory` | `新商品` / `お知らせ` / `商品情報` | `label()` / `color()` |
+| `BannerBackground` | `blue` / `rose` / `coral` / `teal` / `charcoal` | `label()` で選択肢の表示名、`gradient()` で描画する `linear-gradient(...)` の値を提供。`banners.background` の許可値 |
 | `ContactStatus` | `unhandled` / `in_progress` / `handled` | `label()` で日本語表示名、`color()` でバッジ配色。遷移の制限は設けない（[docs/admin/contact.md](admin/contact.md) が正本） |
 
 ## 業務ルール
@@ -398,6 +402,9 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 | Migration | `database/migrations/2026_08_07_000022_create_banners_table.php` |
 | Migration | `database/migrations/2026_08_07_000023_create_contacts_table.php` |
 | Migration | `database/migrations/2026_08_18_000001_add_product_and_handling_columns_to_contacts_table.php` |
+| Migration | `database/migrations/2026_10_27_000001_add_image_columns_to_banners_table.php` |
+| Migration | `database/migrations/2026_10_27_000002_add_image_path_to_categories_table.php` |
+| Migration | `database/migrations/2026_10_27_000003_convert_banner_backgrounds_to_codes.php` |
 | Migration | `database/migrations/2026_08_26_000001_add_product_id_to_banners_table.php` |
 | Enum | `app/Enums/OrderStatus.php` |
 | Enum | `app/Enums/PaymentMethod.php` |
@@ -405,6 +412,7 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 | Enum | `app/Enums/SpecOptionType.php` |
 | Enum | `app/Enums/NewsCategory.php` |
 | Enum | `app/Enums/ContactStatus.php` |
+| Enum | `app/Enums/BannerBackground.php` |
 | Model | `app/Models/User.php` |
 | Model | `app/Models/Admin.php` |
 | Model | `app/Models/Prefecture.php` |
@@ -472,6 +480,7 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 | Test | `tests/Feature/Database/OrderSnapshotTest.php` |
 | Test | `tests/Feature/Database/SeederTest.php` |
 | Test | `tests/Unit/Enums/OrderStatusTest.php` |
+| Test | `tests/Feature/Database/BannerBackgroundMigrationTest.php` |
 
 ## 受け入れ条件
 
@@ -481,4 +490,5 @@ SKUなし商品も `size_name` / `color_name` を `null` としたバリエー�
 - Seeder実行後に前月のランキングが全体・カテゴリ別の双方で作られ、順位が1から連番で付き、販売数の最も多い商品が1位になる: 同上（`シード実行後に前月のランキングが全体とカテゴリ別で作られる`・`ランキングの順位は一位から連番で付く`・`販売数の最も多い商品が全体ランキングの一位になる`）
 - 全体のSeederを2回実行しても注文とランキングが重複しない: 同上（`シードを二回実行しても注文とランキングが重複しない`）
 - `OrderStatus` の `label()` が各ステータスの日本語表示名を返し、`allowedTransitions()` / `canTransitionTo()` が終端ステータス（出荷済み・キャンセル）からの遷移を許可しない: `tests/Unit/Enums/OrderStatusTest.php` で担保
+- 投入済みのバナーの背景（CSS の値）が区分コードに変換され、戻すと元の値に戻る: `tests/Feature/Database/BannerBackgroundMigrationTest.php`（`投入済みの背景の配色の値が区分コードに置き換わる`・`戻すと区分コードが元の配色の値に戻る`）
 - 未確定: `php artisan migrate` の実行（本番相当のMySQLへのスキーマ反映）はユーザー承認前のため未実施。現状の実装はテスト用SQLite in-memory上でのみ検証済み。

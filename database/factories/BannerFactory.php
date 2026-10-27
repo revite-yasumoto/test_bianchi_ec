@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\BannerBackground;
 use App\Models\Banner;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,7 +23,7 @@ class BannerFactory extends Factory
             'title' => fake()->sentence(),
             'subtitle' => fake()->sentence(),
             'product_id' => null,
-            'background' => 'linear-gradient(115deg,#2F6F86 0%,#274F60 60%,#1b3844 100%)',
+            'background' => BannerBackground::Blue,
             'link_url' => null,
             'sort_order' => 0,
             'is_active' => true,

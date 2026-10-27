@@ -3,7 +3,9 @@
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminUserCsvController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AdminAuthenticatedSessionController;
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CategoryImageController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\ContactCsvController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -95,7 +97,12 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::resource('news', NewsController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('notices', NoticeController::class)->only(['index', 'store', 'update', 'destroy']);
 
+        Route::resource('banners', BannerController::class)->only(['index', 'store', 'update', 'destroy']);
+
         Route::resource('categories', CategoryController::class)->only(['index', 'store', 'destroy']);
+        Route::singleton('categories.image', CategoryImageController::class)
+            ->destroyable()
+            ->only(['update', 'destroy']);
         // 既定のパラメータ名 spec_option ではメソッド引数 $specOption とバインドされないため明示する
         Route::resource('spec-options', SpecOptionController::class)
             ->only(['index', 'store', 'destroy'])

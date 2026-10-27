@@ -73,7 +73,7 @@ class TopPageService
     }
 
     /**
-     * @return array<int, array{id: int, tag: string, title: string, subtitle: string|null, product_id: int|null, background: string, link_url: string|null}>
+     * @return array<int, array{id: int, tag: string, title: string, subtitle: string|null, product_id: int|null, background: string, link_url: string|null, pc_image_url: string|null, sp_image_url: string|null}>
      */
     private function banners(): array
     {
@@ -90,14 +90,16 @@ class TopPageService
                 'subtitle' => $banner->subtitle,
                 // 非公開・削除済みの商品は商品詳細が404になるため遷移先にしない
                 'product_id' => $banner->product?->is_published === true ? $banner->product_id : null,
-                'background' => $banner->background,
+                'background' => $banner->background->gradient(),
                 'link_url' => $banner->link_url,
+                'pc_image_url' => $banner->pc_image_path !== null ? asset('storage/'.$banner->pc_image_path) : null,
+                'sp_image_url' => $banner->sp_image_path !== null ? asset('storage/'.$banner->sp_image_path) : null,
             ])
             ->all();
     }
 
     /**
-     * @return array<int, array{id: int, name: string, product_count: int}>
+     * @return array<int, array{id: int, name: string, product_count: int, image_url: string|null}>
      */
     private function categoryEntries(): array
     {
@@ -110,6 +112,7 @@ class TopPageService
                 'id' => $category->id,
                 'name' => $category->name,
                 'product_count' => (int) $category->product_count,
+                'image_url' => $category->image_path !== null ? asset('storage/'.$category->image_path) : null,
             ])
             ->all();
     }

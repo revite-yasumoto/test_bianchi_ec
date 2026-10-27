@@ -97,7 +97,7 @@ type SidebarMenuItem = {
 };
 ```
 
-`SIDEBAR_MENU` に全11メニュー分の項目を定義する（グループを除く実項目数は16）。
+`SIDEBAR_MENU` に全12メニュー分の項目を定義する（グループを除く実項目数は17）。
 
 | 表示名 | 子項目 | `routeName` |
 |---|---|---|
@@ -111,6 +111,7 @@ type SidebarMenuItem = {
 | 新着ニュース管理 | - | `admin.news.index` |
 | 重要なお知らせ管理 | - | `admin.notices.index` |
 | お問い合わせ管理 | - | `admin.contacts.index` |
+| メインビジュアル管理 | - | `admin.banners.index` |
 
 各項目のルート名は、対応する単位がその名前でルートを実装することを前提に本書が定めたもの。単位04以降で異なる名前を採用する場合は、実装側で本テーブルと `SidebarMenu.ts` の両方を更新する。
 
@@ -167,11 +168,13 @@ type MasterListCardProps = {
     addedMessage: string;
     deletedMessage: string;
     deleteNote: string;
+    renderLeading?: (row: MasterListRow) => ReactNode;
+    renderActions?: (row: MasterListRow) => ReactNode;
     className?: string;
 };
 ```
 
-名称の一覧と末尾の追加フォームを1枚の白カードにまとめたマスタ編集用のカード。追加（`useForm`）・削除（`router.delete` ＋ `ConfirmDialog`）・成功時のトースト表示までをカード内で完結させる。`storeParams` は追加時に `name` と一緒に送る固定値（規格管理の `type` 等）。削除に失敗した場合はサーバーが返す `delete` キーのメッセージをトーストで表示する。
+名称の一覧と末尾の追加フォームを1枚の白カードにまとめたマスタ編集用のカード。追加（`useForm`）・削除（`router.delete` ＋ `ConfirmDialog`）・成功時のトースト表示までをカード内で完結させる。`storeParams` は追加時に `name` と一緒に送る固定値（規格管理の `type` 等）。`renderLeading` は各行の名称の前に、`renderActions` は各行の「削除」の前に要素を差し込む（カテゴリ管理の画像サムネイルと「画像」ボタン）。削除に失敗した場合はサーバーが返す `delete` キーのメッセージをトーストで表示する。
 
 利用画面: [docs/admin/category.md](category.md)（カテゴリ管理）、[docs/admin/spec-option.md](spec-option.md)（規格管理）。
 
@@ -203,6 +206,7 @@ type ConfirmDialogProps = {
 - [docs/admin/category.md](category.md) — `MasterListCard` の利用画面
 - [docs/admin/spec-option.md](spec-option.md) — `MasterListCard` の利用画面
 - [docs/admin/contact.md](contact.md) — お問い合わせ管理（サイドメニューに追加した11番目のメニュー）
+- [docs/admin/banner.md](banner.md) — メインビジュアル管理（サイドメニューに追加した12番目のメニュー）
 - [docs/1_system_overview.md](../1_system_overview.md) — ブランド表記・技術構成の前提
 
 ## ソースファイル
@@ -228,7 +232,7 @@ type ConfirmDialogProps = {
 
 本機能を担保する自動テストは存在しない（フロントエンドのユニットテスト基盤は本プロジェクトに未導入）。以下は型チェック（`npx tsc --noEmit`）と目視確認で担保する。
 
-- サイドバーの全11メニューが表示され、未実装項目は非活性表示になる: 目視確認
+- サイドバーの全12メニューが表示され、未実装項目は非活性表示になる: 目視確認
 - 実装済み項目（現時点ではダッシュボードを除くサイドメニューの全項目）へのリンクが機能する: 目視確認
 - グループの開閉、開閉時のデフォルト状態: 目視確認
 - ヘッダー右端のログアウトボタンから確認モーダルが開き、キャンセル・`Escape`キーで閉じる: 目視確認

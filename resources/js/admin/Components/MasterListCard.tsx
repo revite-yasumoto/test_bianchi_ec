@@ -1,6 +1,6 @@
 import { router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
-import type { FormEventHandler } from 'react';
+import type { FormEventHandler, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { ConfirmDialog } from './ConfirmDialog';
 import { useAdminToast } from '@/admin/Layouts/AdminLayout';
@@ -25,6 +25,10 @@ type MasterListCardProps = {
     deletedMessage: string;
     /** 削除確認モーダルで対象名の後に添える注意文 */
     deleteNote: string;
+    /** 行の名称の前に置く要素（カテゴリの画像サムネイルなど） */
+    renderLeading?: (row: MasterListRow) => ReactNode;
+    /** 行の「削除」の前に置く操作（カテゴリの画像設定など） */
+    renderActions?: (row: MasterListRow) => ReactNode;
     className?: string;
 };
 
@@ -39,6 +43,8 @@ export function MasterListCard({
     addedMessage,
     deletedMessage,
     deleteNote,
+    renderLeading,
+    renderActions,
     className,
 }: MasterListCardProps) {
     const { showToast } = useAdminToast();
@@ -89,19 +95,23 @@ export function MasterListCard({
                         key={row.id}
                         className="flex items-center border-b border-admin-line py-2.5 text-[15px] font-semibold text-admin-ink"
                     >
+                        {renderLeading?.(row)}
                         {row.name}
                         {row.note ? (
                             <span className="ml-3.5 text-sm font-normal text-admin-ink-muted">
                                 {row.note}
                             </span>
                         ) : null}
-                        <button
-                            type="button"
-                            className="ml-auto text-sm font-bold text-admin-danger"
-                            onClick={() => setPendingRow(row)}
-                        >
-                            削除
-                        </button>
+                        <span className="ml-auto flex items-center gap-4">
+                            {renderActions?.(row)}
+                            <button
+                                type="button"
+                                className="text-sm font-bold text-admin-danger"
+                                onClick={() => setPendingRow(row)}
+                            >
+                                削除
+                            </button>
+                        </span>
                     </li>
                 ))}
             </ul>

@@ -67,4 +67,9 @@ export const SIDEBAR_MENU: SidebarMenuItem[] = [
         label: 'お問い合わせ管理',
         routeName: 'admin.contacts.index',
     },
+    {
+        key: 'banners',
+        label: 'メインビジュアル管理',
+        routeName: 'admin.banners.index',
+    },
 ];

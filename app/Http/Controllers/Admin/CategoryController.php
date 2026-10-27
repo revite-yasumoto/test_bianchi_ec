@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Category\StoreCategoryRequest;
 use App\Models\Category;
+use App\Services\Admin\Category\CategoryImageService;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -24,6 +25,7 @@ class CategoryController extends Controller
                 'id' => $category->id,
                 'name' => $category->name,
                 'product_count' => $category->products_count,
+                'image_url' => $category->image_path !== null ? asset('storage/'.$category->image_path) : null,
             ]);
 
         return Inertia::render('admin/Category/Index', [
@@ -41,7 +43,7 @@ class CategoryController extends Controller
         return redirect()->route('admin.categories.index');
     }
 
-    public function destroy(Category $category): RedirectResponse
+    public function destroy(Category $category, CategoryImageService $imageService): RedirectResponse
     {
         // products.category_id は ON DELETE RESTRICT のため、DBエラーになる前にアプリ側で弾く
         if ($category->products()->exists()) {
@@ -51,6 +53,7 @@ class CategoryController extends Controller
         }
 
         $category->delete();
+        $imageService->deleteStoredImage($category);
 
         return redirect()->route('admin.categories.index');
     }

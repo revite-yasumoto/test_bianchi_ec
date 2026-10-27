@@ -8,6 +8,7 @@ use App\Models\Admin;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -26,6 +27,25 @@ class CategoryDestroyTest extends TestCase
 
         $response->assertRedirect(route('admin.categories.index'));
         $this->assertDatabaseMissing('categories', ['id' => $category->id]);
+    }
+
+    /**
+     * 画像を持つカテゴリは Factory と偽のストレージで用意する。画像を保存する経路は CategoryImageTest が検証している。
+     */
+    #[Test]
+    public function カテゴリを削除すると画像ファイルも削除される(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('categories/helmet.jpg', 'image');
+        $admin = Admin::factory()->create();
+        $category = Category::factory()->create(['image_path' => 'categories/helmet.jpg']);
+
+        $this->actingAs($admin, 'admin')
+            ->delete(route('admin.categories.destroy', $category))
+            ->assertRedirect(route('admin.categories.index'));
+
+        $this->assertDatabaseMissing('categories', ['id' => $category->id]);
+        Storage::disk('public')->assertMissing('categories/helmet.jpg');
     }
 
     #[Test]

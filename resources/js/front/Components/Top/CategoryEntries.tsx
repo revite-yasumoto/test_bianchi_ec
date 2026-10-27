@@ -6,6 +6,7 @@ export type CategoryEntryData = {
     id: number;
     name: string;
     product_count: number;
+    image_url: string | null;
 };
 
 type CategoryEntriesProps = {
@@ -32,17 +33,30 @@ export function CategoryEntries({ entries }: CategoryEntriesProps) {
                             })}
                             className="block overflow-hidden rounded-[18px] border border-line bg-white"
                         >
-                            <div
-                                className="flex aspect-4/3 items-center justify-center"
-                                style={{
-                                    backgroundImage: categoryTint(entry.name),
-                                }}
-                            >
-                                <CategorySilhouette
-                                    categoryName={entry.name}
-                                    className="w-1/2 text-white/35"
+                            {entry.image_url ? (
+                                <img
+                                    src={entry.image_url}
+                                    alt=""
+                                    width={400}
+                                    height={300}
+                                    loading="lazy"
+                                    className="aspect-4/3 w-full object-cover"
                                 />
-                            </div>
+                            ) : (
+                                <div
+                                    className="flex aspect-4/3 items-center justify-center"
+                                    style={{
+                                        backgroundImage: categoryTint(
+                                            entry.name,
+                                        ),
+                                    }}
+                                >
+                                    <CategorySilhouette
+                                        categoryName={entry.name}
+                                        className="w-1/2 text-white/35"
+                                    />
+                                </div>
+                            )}
                             <div className="px-4 pt-3.5 pb-4">
                                 <p className="text-base font-extrabold">
                                     {entry.name}

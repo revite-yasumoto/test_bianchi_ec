@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\BannerBackground;
 use Database\Factories\BannerFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['tag', 'title', 'subtitle', 'product_id', 'background', 'link_url', 'sort_order', 'is_active'])]
+#[Fillable(['tag', 'title', 'subtitle', 'product_id', 'background', 'pc_image_path', 'sp_image_path', 'link_url', 'sort_order', 'is_active'])]
 class Banner extends Model
 {
     /** @use HasFactory<BannerFactory> */
@@ -25,6 +26,7 @@ class Banner extends Model
     protected function casts(): array
     {
         return [
+            'background' => BannerBackground::class,
             'is_active' => 'boolean',
         ];
     }
